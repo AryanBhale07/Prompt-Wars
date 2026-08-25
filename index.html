@@ -6,30 +6,172 @@
   <title>RExchange — Campus Community Exchange Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Three.js (r125) from Stitch Design Reference -->
+  <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
 </head>
 <body>
 
-  <!-- Sticky Navbar -->
+  <!-- STITCH 3D Connected Node Constellation Background (Interactive WebGL Canvas) -->
+  <div id="threejs-container-ANIMATION_9" class="stitch-canvas-bg" aria-hidden="true"></div>
+
+  <!-- SRM STUDENT VERIFICATION / ACCESS GATE OVERLAY -->
+  <div id="srm-access-gate" class="srm-gate-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="gate-welcome-title">
+    <div class="srm-gate-card">
+      
+      <!-- STEP 1: WELCOME ACCESS SCREEN -->
+      <div id="gate-step-welcome" class="gate-step-view">
+        <div class="gate-brand-header">
+          <div class="brand-logo">
+            <span class="logo-accent">RE</span><span>xchange</span>
+          </div>
+          <span class="srm-exclusive-tag">SRM Exclusive</span>
+        </div>
+
+        <h1 id="gate-welcome-title" class="gate-headline">Welcome to RExchange.</h1>
+        <p class="gate-subtitle">Your private campus exchange for SRM students.</p>
+        <p class="gate-supporting-text">Discover items, skills and opportunities shared by students within your campus community.</p>
+
+        <!-- Subtle Visual Pillars -->
+        <div class="gate-pillars-row">
+          <div class="gate-pill">
+            <span class="pill-check">✓</span> Verified Students
+          </div>
+          <div class="gate-pill">
+            <span class="pill-icon">📚</span> Campus Resources
+          </div>
+          <div class="gate-pill">
+            <span class="pill-icon">🤝</span> Student Connections
+          </div>
+        </div>
+
+        <div class="gate-actions-wrap">
+          <button type="button" id="btn-continue-srm" class="btn-gate-primary">
+            Continue with SRM →
+          </button>
+          <p class="gate-disclaimer">RExchange is currently available exclusively to SRM students.</p>
+        </div>
+      </div>
+
+      <!-- STEP 2: SRM EMAIL VERIFICATION FORM -->
+      <div id="gate-step-email" class="gate-step-view" style="display: none;">
+        <div class="gate-step-nav">
+          <button type="button" id="btn-email-back" class="btn-gate-back">← Back</button>
+          <span class="step-indicator">Step 1 of 2</span>
+        </div>
+
+        <div class="gate-form-header">
+          <div class="gate-icon-badge">🎓</div>
+          <h2 class="gate-form-heading">Verify your SRM account</h2>
+          <p class="gate-form-desc">Use your official SRM institutional email to join the campus community.</p>
+        </div>
+
+        <form id="srm-email-form" novalidate>
+          <div class="gate-form-group">
+            <label for="srm-email-input" class="gate-label">SRM Student Email</label>
+            <div class="gate-input-wrapper">
+              <input type="email" id="srm-email-input" class="gate-input" placeholder="yourname@srmuniv.ac.in" autocomplete="email" required>
+            </div>
+            <div id="srm-email-error" class="gate-error-message" style="display: none;" role="alert">
+              Please use your official SRM student email.
+            </div>
+            <span class="gate-input-hint">Only official SRM student email addresses are accepted.</span>
+          </div>
+
+          <button type="submit" id="btn-verify-email" class="btn-gate-primary">
+            <span id="btn-verify-email-text">Verify Email</span>
+          </button>
+        </form>
+
+        <p class="demo-security-notice">Demo verification • Prototype mode</p>
+      </div>
+
+      <!-- STEP 3: VERIFICATION CODE STEP (DEMO MODE) -->
+      <div id="gate-step-code" class="gate-step-view" style="display: none;">
+        <div class="gate-step-nav">
+          <button type="button" id="btn-code-back" class="btn-gate-back">← Edit Email</button>
+          <span class="demo-pill-badge">Demo verification</span>
+        </div>
+
+        <div class="gate-form-header">
+          <div class="gate-icon-badge">📩</div>
+          <h2 class="gate-form-heading">Check your SRM email</h2>
+          <p class="gate-form-desc">We've sent a verification code to your institutional email: <strong id="srm-target-email" class="text-green"></strong></p>
+        </div>
+
+        <!-- Demo Verification Box -->
+        <div class="demo-code-helper">
+          <span class="demo-helper-title">⚡ Demo Mode Activated</span>
+          <p class="demo-helper-desc">For testing this frontend prototype, use demo code: <button type="button" id="btn-autofill-code" class="code-copy-chip">123456 (Click to auto-fill)</button></p>
+        </div>
+
+        <form id="srm-code-form" novalidate>
+          <div class="gate-form-group">
+            <label for="srm-code-input" class="gate-label">Enter verification code</label>
+            <input type="text" id="srm-code-input" class="gate-input gate-code-input" placeholder="6-digit code" maxlength="6" autocomplete="one-time-code" required>
+            <div id="srm-code-error" class="gate-error-message" style="display: none;" role="alert">
+              Invalid verification code. Use demo code: 123456
+            </div>
+          </div>
+
+          <div class="gate-dual-actions">
+            <button type="submit" id="btn-verify-code" class="btn-gate-primary">
+              <span id="btn-verify-code-text">Verify Code</span>
+            </button>
+            <button type="button" id="btn-resend-code" class="btn-gate-secondary">
+              Resend Code
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- STEP 4: SUCCESS VERIFIED STATE -->
+      <div id="gate-step-success" class="gate-step-view" style="display: none;">
+        <div class="gate-success-icon-wrap">
+          <div class="gate-success-checkmark">✓</div>
+        </div>
+
+        <h2 class="gate-success-title">✓ SRM Student Verified</h2>
+        <p class="gate-success-sub">Welcome to the campus.</p>
+        <p class="gate-success-note">You now have verified access to browse, trade items, share skills, and post opportunities within SRM.</p>
+
+        <button type="button" id="btn-enter-rexchange" class="btn-gate-primary btn-gate-success">
+          Enter RExchange →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Sticky Navbar (Stitch Design Reference) -->
   <nav class="navbar">
     <div class="nav-container">
       <a href="#" class="brand-logo">
         <span class="logo-accent">RE</span><span>xchange</span>
       </a>
       <div class="nav-links">
-        <a href="#explore" class="nav-link">Explore</a>
+        <a href="#explore" class="nav-link active">Explore</a>
+        <a href="#inbox" class="nav-link" id="nav-inbox-link">Inbox <span id="inbox-unread-badge" class="inbox-nav-badge" style="display: none;">2</span></a>
         <a href="#categories" class="nav-link">Categories</a>
         <a href="#pulse" class="nav-link">Campus Pulse</a>
         <a href="#how-it-works" class="nav-link">How It Works</a>
       </div>
       <div class="nav-actions">
+        <!-- SRM Verified Status Badge in Navbar -->
+        <div id="nav-srm-badge" class="nav-srm-verified-badge" style="display: none;" title="Verified SRM Student Member">
+          <span class="srm-badge-icon">✓</span> <span class="srm-badge-text">SRM Verified</span>
+        </div>
+        <button type="button" id="btn-reset-srm-demo" class="btn-demo-reset" title="Reset SRM Access Gate to test verification flow again">
+          🔒 Reset SRM Demo
+        </button>
+        <a href="#explore" class="nav-btn-ghost">Explore</a>
         <a href="#post" class="nav-btn-primary">+ Post Something</a>
       </div>
     </div>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero Section (Two-Column Layout with Stitch Visual Polish) -->
   <header class="hero-section">
     <div class="hero-container">
       
@@ -37,25 +179,28 @@
       <div class="hero-content">
         <div class="hero-badge">
           <span class="pulse-dot"></span>
-          <span>Active University Community Platform</span>
+          <span>Live SRM Community Network</span>
         </div>
         
         <h1 class="hero-headline">
-          Everything your campus has.<br>
-          <span class="hero-headline-gradient">Everything your campus needs.</span>
+          Everything your<br>
+          campus has.<br>
+          <span class="hero-headline-green">Everything your campus needs.</span>
         </h1>
         
         <p class="hero-subtext">
-          RExchange connects students to the items, skills and opportunities already available within their campus community.
+          A platform that makes it easier for students to exchange resources, services, and opportunities within their college community. Trade textbooks, electronics, and skills instantly.
         </p>
 
         <!-- Hero Actions -->
         <div class="hero-actions">
           <a href="#explore" class="btn-hero-primary">Explore Campus</a>
-          <a href="#post" class="btn-hero-secondary">+ Post Something</a>
+          <a href="#post" class="btn-hero-secondary">
+            <span class="btn-icon-green">+</span> Post Something
+          </a>
         </div>
 
-        <!-- Real AI-Powered Search Component -->
+        <!-- AI-Powered Quick Search Component -->
         <div class="hero-search-wrapper">
           <div class="hero-search-box">
             <span class="hero-search-sparkle">✨</span>
@@ -64,70 +209,66 @@
           </div>
           
           <div class="hero-search-prompts">
-            <span class="prompts-label">Try searching:</span>
-            <button type="button" class="prompt-chip" data-query="Python tutor">Find a Python tutor</button>
-            <button type="button" class="prompt-chip" data-query="free textbook">Show me free textbooks</button>
-            <button type="button" class="prompt-chip" data-query="hackathon teammates">Find hackathon teammates</button>
+            <span class="prompts-label">Popular:</span>
+            <button type="button" class="prompt-chip" data-query="Python tutor">Python Tutor</button>
+            <button type="button" class="prompt-chip" data-query="DBMS textbook">DBMS Textbook</button>
+            <button type="button" class="prompt-chip" data-query="Hackathon">Hackathon Team</button>
           </div>
         </div>
       </div>
 
-      <!-- Right Hero Column: Connected Campus Visual (Small Floating Cards) -->
+      <!-- Right Hero Column: Mock App Window with Live Feed Cards -->
       <div class="hero-visual" aria-hidden="true">
-        <div class="ecosystem-container">
-          <!-- Subtle Animated SVG Connection Lines -->
-          <svg class="connection-svg" viewBox="0 0 420 340" fill="none">
-            <path class="conn-line conn-line-1" d="M190,50 Q110,130 90,140" />
-            <path class="conn-line conn-line-2" d="M230,50 Q310,120 320,140" />
-            <path class="conn-line conn-line-3" d="M90,160 Q170,220 180,230" />
-            <path class="conn-line conn-line-4" d="M320,160 Q260,220 220,230" />
-            <path class="conn-line conn-line-5" d="M180,250 Q250,290 290,300" />
-            <!-- Pulse Nodes -->
-            <circle class="pulse-node" cx="210" cy="50" r="3" />
-            <circle class="pulse-node" cx="90" cy="140" r="3" />
-            <circle class="pulse-node" cx="320" cy="140" r="3" />
-            <circle class="pulse-node" cx="200" cy="230" r="3" />
-            <circle class="pulse-node" cx="290" cy="300" r="3" />
-          </svg>
-
-          <!-- Floating Node Cards -->
-          <div class="eco-card eco-card-books">
-            <div class="eco-icon-wrap icon-item">📚</div>
-            <div class="eco-info">
-              <span class="eco-title">Textbooks</span>
-              <span class="eco-tag">DBMS, Calc & Notes</span>
+        <div class="mock-app-window">
+          <!-- Titlebar -->
+          <div class="mock-window-header">
+            <div class="mock-window-dots">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
             </div>
+            <span class="mock-url-text">app.rexchange.edu</span>
           </div>
 
-          <div class="eco-card eco-card-skills">
-            <div class="eco-icon-wrap icon-skill">🧠</div>
-            <div class="eco-info">
-              <span class="eco-title">Skills</span>
-              <span class="eco-tag">Python, React, Figma</span>
+          <!-- Cards Stack -->
+          <div class="mock-cards-stack">
+            <!-- Mock Card 1 -->
+            <div class="mock-card">
+              <div class="mock-card-left">
+                <div class="mock-icon-wrap icon-item">📖</div>
+                <div class="mock-card-info">
+                  <span class="mock-card-title">Calculus Early Transcendentals</span>
+                  <span class="mock-card-desc">Excellent condition, 8th edition.</span>
+                </div>
+              </div>
+              <span class="mock-card-tag tag-green">$40 or Trade</span>
             </div>
-          </div>
 
-          <div class="eco-card eco-card-students">
-            <div class="eco-icon-wrap icon-student">👥</div>
-            <div class="eco-info">
-              <span class="eco-title">Students</span>
-              <span class="eco-tag tag-green">31 Active Matches</span>
+            <!-- Mock Card 2 (Active/Glow Highlight) -->
+            <div class="mock-card mock-card-active">
+              <div class="mock-card-left">
+                <div class="mock-icon-wrap icon-skill">💻</div>
+                <div class="mock-card-info">
+                  <div class="mock-title-with-status">
+                    <span class="mock-card-title">Calculus & Python Tutoring</span>
+                    <span class="online-indicator"></span>
+                  </div>
+                  <span class="mock-card-desc">CS Major, able to help with Python & DSA.</span>
+                </div>
+              </div>
+              <span class="mock-card-tag tag-green-solid">Exchange</span>
             </div>
-          </div>
 
-          <div class="eco-card eco-card-opportunities">
-            <div class="eco-icon-wrap icon-opp">🚀</div>
-            <div class="eco-info">
-              <span class="eco-title">Opportunities</span>
-              <span class="eco-tag">Hackathon Teammates</span>
-            </div>
-          </div>
-
-          <div class="eco-card eco-card-events">
-            <div class="eco-icon-wrap icon-event">🎟️</div>
-            <div class="eco-info">
-              <span class="eco-title">Events</span>
-              <span class="eco-tag">Campus Meetups & Passes</span>
+            <!-- Mock Card 3 -->
+            <div class="mock-card">
+              <div class="mock-card-left">
+                <div class="mock-icon-wrap icon-ticket">🎟️</div>
+                <div class="mock-card-info">
+                  <span class="mock-card-title">Campus Hackathon Pass</span>
+                  <span class="mock-card-desc">Spare ticket, can transfer to student ID.</span>
+                </div>
+              </div>
+              <span class="mock-card-tag tag-muted">Claimed</span>
             </div>
           </div>
         </div>
@@ -136,28 +277,25 @@
     </div>
   </header>
 
-  <!-- Three Large Feature Category Cards -->
+  <!-- Three Feature Category Cards (The Campus Exchange) -->
   <section id="categories" class="categories-section">
     <div class="site-container">
-      <div class="section-title-wrap">
-        <span class="section-eyebrow">Explore Categories</span>
-        <h2 class="section-heading">Three Ways to Exchange Value</h2>
+      <div class="section-title-wrap text-center">
+        <h2 class="section-heading">The Campus Exchange</h2>
+        <p class="section-subtext">Every college has unused value sitting within its student community. RExchange bridges the gap, turning dormant assets into active resources.</p>
       </div>
 
       <div class="category-cards-grid">
         <!-- Card 1: Items -->
         <div class="feature-cat-card" data-category="Item" role="button" tabindex="0">
           <div class="cat-card-header">
-            <div class="cat-icon-badge badge-color-item">
-              <span class="cat-emoji">📦</span>
+            <div class="cat-icon-badge">
+              <span class="cat-emoji">📖</span>
             </div>
-            <div class="cat-header-right">
-              <span class="cat-badge-label">ITEMS</span>
-              <span class="cat-count-badge" id="count-items">4 Listings</span>
-            </div>
+            <span class="cat-count-badge" id="count-items">4 Listings</span>
           </div>
-          <h3 class="cat-card-title">Items</h3>
-          <p class="cat-card-desc">Books, electronics, study materials and useful college resources.</p>
+          <h3 class="cat-card-title">Textbooks & Notes</h3>
+          <p class="cat-card-desc">Don't sell back for pennies. Trade textbooks, study guides, and lab equipment directly with peers.</p>
           <div class="cat-card-action">
             <span>Browse Items</span>
             <span class="arrow-icon">→</span>
@@ -167,16 +305,13 @@
         <!-- Card 2: Skills -->
         <div class="feature-cat-card" data-category="Skill" role="button" tabindex="0">
           <div class="cat-card-header">
-            <div class="cat-icon-badge badge-color-skill">
-              <span class="cat-emoji">🧠</span>
+            <div class="cat-icon-badge">
+              <span class="cat-emoji">💻</span>
             </div>
-            <div class="cat-header-right">
-              <span class="cat-badge-label">SKILLS</span>
-              <span class="cat-count-badge" id="count-skills">4 Listings</span>
-            </div>
+            <span class="cat-count-badge" id="count-skills">4 Listings</span>
           </div>
-          <h3 class="cat-card-title">Skills</h3>
-          <p class="cat-card-desc">Find students who can teach, mentor or help you.</p>
+          <h3 class="cat-card-title">Skills & Tutoring</h3>
+          <p class="cat-card-desc">Find peers who can teach programming, design, languages, or help you prep for technical interviews.</p>
           <div class="cat-card-action">
             <span>Browse Skills</span>
             <span class="arrow-icon">→</span>
@@ -186,16 +321,13 @@
         <!-- Card 3: Opportunities -->
         <div class="feature-cat-card" data-category="Opportunity" role="button" tabindex="0">
           <div class="cat-card-header">
-            <div class="cat-icon-badge badge-color-opp">
+            <div class="cat-icon-badge">
               <span class="cat-emoji">🚀</span>
             </div>
-            <div class="cat-header-right">
-              <span class="cat-badge-label">OPPORTUNITIES</span>
-              <span class="cat-count-badge" id="count-opportunities">4 Listings</span>
-            </div>
+            <span class="cat-count-badge" id="count-opportunities">4 Listings</span>
           </div>
-          <h3 class="cat-card-title">Opportunities</h3>
-          <p class="cat-card-desc">Discover projects, hackathons, events and other opportunities.</p>
+          <h3 class="cat-card-title">Projects & Events</h3>
+          <p class="cat-card-desc">Discover hackathon teammates, startup collaborators, workshops, and campus event opportunities.</p>
           <div class="cat-card-action">
             <span>Browse Opportunities</span>
             <span class="arrow-icon">→</span>
@@ -205,52 +337,18 @@
     </div>
   </section>
 
-  <!-- Campus Pulse Section (Real Calculated Data) -->
-  <section id="pulse" class="pulse-section">
-    <div class="site-container">
-      <div class="pulse-card-wrapper">
-        <div class="pulse-header">
-          <div class="pulse-title-group">
-            <span class="pulse-live-indicator"><span class="pulse-ring"></span></span>
-            <h3>Campus Pulse</h3>
-          </div>
-          <span class="pulse-time-tag">Real-Time Community Metrics</span>
-        </div>
-
-        <div class="pulse-metrics-grid">
-          <div class="pulse-metric-item">
-            <span class="metric-number" id="pulse-new-listings">12</span>
-            <span class="metric-label">New Listings</span>
-          </div>
-          <div class="pulse-metric-item">
-            <span class="metric-number" id="pulse-skills-shared">4</span>
-            <span class="metric-label">Skills Shared</span>
-          </div>
-          <div class="pulse-metric-item">
-            <span class="metric-number" id="pulse-opportunities">4</span>
-            <span class="metric-label">Opportunities</span>
-          </div>
-          <div class="pulse-metric-item highlight-metric">
-            <span class="metric-number text-accent-green" id="pulse-potential-matches">0</span>
-            <span class="metric-label">Potential Matches</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dedicated Explore Experience Section -->
+  <!-- Dedicated Explore Directory Section -->
   <section id="explore" class="explore-section">
     <div class="site-container">
       
       <!-- Page Header -->
       <div class="explore-header">
-        <span class="section-eyebrow">Campus Discovery Directory</span>
+        <span class="section-eyebrow">CAMPUS DIRECTORY</span>
         <h2 class="explore-title">Discover your campus</h2>
         <p class="explore-subtitle">Find useful things, talented people and opportunities shared by students.</p>
       </div>
 
-      <!-- Large Search Bar + AI Assist Button -->
+      <!-- Search Bar + AI Assist Button -->
       <div class="explore-search-wrapper">
         <div class="explore-search-box">
           <span class="search-icon-text">🔍</span>
@@ -286,7 +384,7 @@
         </div>
       </div>
 
-      <!-- Empty State (Hidden when listings exist) -->
+      <!-- Empty State -->
       <div id="empty-state" class="empty-state" style="display: none;">
         <div class="empty-icon">📦</div>
         <h3 id="empty-title" class="empty-title">No matches found</h3>
@@ -300,13 +398,114 @@
     </div>
   </section>
 
+  <!-- Dedicated Inbox / Messaging Section -->
+  <section id="inbox" class="inbox-section">
+    <div class="site-container">
+      
+      <!-- Section Header -->
+      <div class="inbox-section-header">
+        <span class="section-eyebrow">STUDENT MESSAGING</span>
+        <h2 class="inbox-main-title">Inbox</h2>
+        <p class="inbox-main-subtitle">Connect with students about the things you're interested in.</p>
+      </div>
+
+      <!-- Main Inbox Card Container (Two-column desktop / responsive mobile) -->
+      <div class="inbox-container-card" id="inbox-main-card">
+        
+        <!-- LEFT: Conversation List Panel -->
+        <div class="inbox-conversations-panel" id="inbox-convos-panel">
+          
+          <!-- Search Header -->
+          <div class="inbox-search-header">
+            <div class="inbox-search-wrap">
+              <span class="inbox-search-icon">🔍</span>
+              <input type="text" id="inbox-search-input" class="inbox-search-input" placeholder="Search messages..." aria-label="Search messages">
+            </div>
+          </div>
+
+          <!-- Conversations Stream List -->
+          <div class="inbox-conversations-list" id="inbox-conversations-list" role="list">
+            <!-- Populated dynamically by JavaScript -->
+          </div>
+
+          <!-- Search / Empty Fallback inside panel -->
+          <div id="inbox-search-empty" class="inbox-search-empty" style="display: none;">
+            <span class="empty-mini-icon">💬</span>
+            <p class="empty-mini-text">No conversations found.</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: Active Conversation View Panel -->
+        <div class="inbox-chat-panel" id="inbox-chat-panel">
+          
+          <!-- Chat Header Bar -->
+          <div class="chat-header-bar">
+            <div class="chat-header-left">
+              <button type="button" id="btn-chat-back-mobile" class="btn-chat-back-mobile" aria-label="Back to conversations">←</button>
+              <div id="chat-header-avatar" class="chat-avatar">RS</div>
+              <div class="chat-header-details">
+                <div class="chat-header-name-row">
+                  <span id="chat-header-name" class="chat-student-name">Rahul Sharma</span>
+                  <span class="badge-srm-verified">✓ SRM Verified</span>
+                </div>
+                <div class="chat-header-status">
+                  <span class="online-indicator"></span>
+                  <span class="status-text">Active on campus</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Small Related Listing Card Banner -->
+          <div id="chat-related-listing-banner" class="chat-related-listing-banner">
+            <div class="chat-listing-left">
+              <span id="chat-listing-icon" class="chat-listing-icon">📖</span>
+              <div class="chat-listing-meta">
+                <span id="chat-listing-title" class="chat-listing-title">DBMS Textbook (Database System Concepts 7th Ed)</span>
+                <span class="chat-listing-sub">
+                  <span id="chat-listing-category" class="badge badge-item">Item</span>
+                  <span id="chat-listing-author-info">Posted by Rahul</span>
+                </span>
+              </div>
+            </div>
+            <button type="button" id="btn-chat-view-listing" class="btn-chat-listing-view">View Listing →</button>
+          </div>
+
+          <!-- Messages Stream Bubble Container -->
+          <div class="chat-messages-stream" id="chat-messages-stream" role="log" aria-live="polite">
+            <!-- Populated dynamically by JavaScript -->
+          </div>
+
+          <!-- Message Input Bar -->
+          <form id="chat-send-form" class="chat-input-bar">
+            <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Type a message..." autocomplete="off" required>
+            <button type="submit" id="btn-send-message" class="btn-send-message">
+              Send
+            </button>
+          </form>
+
+        </div>
+
+        <!-- Global Empty Inbox State (When 0 conversations exist) -->
+        <div id="inbox-empty-global" class="inbox-empty-global" style="display: none;">
+          <div class="empty-inbox-graphic">📬</div>
+          <h3 class="empty-inbox-title">Your inbox is quiet.</h3>
+          <p class="empty-inbox-desc">Message a student when you find something you need.</p>
+          <a href="#explore" class="btn-gate-primary" style="max-width: 220px; text-decoration: none; margin: 0 auto;">Explore Campus</a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
   <!-- Post a Listing Section -->
   <section id="post" class="post-section">
     <div class="site-container">
       <div class="post-card-container">
         <div class="section-header">
-          <div class="section-header-badge">Share Value</div>
-          <h2>Post Something on Campus</h2>
+          <div class="section-header-badge">POST A LISTING</div>
+          <h2>Share Value on Campus</h2>
           <span class="section-hint">Offer an item, teach a skill, or post an open student opportunity</span>
         </div>
 
@@ -386,122 +585,153 @@
     </div>
   </section>
 
-  <!-- How RExchange Works Section -->
+  <!-- How It Works Section (High-Velocity Exchange with Live Stats) -->
   <section id="how-it-works" class="how-it-works-section">
     <div class="site-container">
-      <div class="section-title-wrap text-center">
-        <span class="section-eyebrow">Simple & Transparent</span>
-        <h2 class="section-heading">How RExchange Works</h2>
-        <p class="section-subtext">A frictionless 4-step loop designed specifically for university students.</p>
+      <div class="section-title-wrap">
+        <h2 class="section-heading">High-Velocity Exchange</h2>
+        <p class="section-subtext">A streamlined process designed for student life.</p>
       </div>
 
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-num">01</span>
-            <span class="step-tag">POST</span>
-          </div>
-          <h3 class="step-title">Post</h3>
-          <p class="step-desc">Share an item, skill or opportunity.</p>
+      <div class="steps-layout-grid">
+        <!-- Step 01 -->
+        <div class="step-card-modern step-card-glow">
+          <span class="step-big-num">01</span>
+          <h3 class="step-title">List & Detail</h3>
+          <p class="step-desc">Write a quick description or use AI Assist to set your exchange terms in under 30 seconds.</p>
         </div>
 
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-num">02</span>
-            <span class="step-tag">DISCOVER</span>
+        <!-- Step 02 -->
+        <div class="step-card-modern">
+          <div class="step-card-top">
+            <span class="step-big-num">02</span>
+            <div class="step-connect-badge">
+              <span>👤</span><span class="connect-dash"></span><span>👥</span>
+            </div>
           </div>
-          <h3 class="step-title">Discover</h3>
-          <p class="step-desc">Browse your campus or ask RExchange AI.</p>
+          <h3 class="step-title">Connect & Exchange</h3>
+          <p class="step-desc">Match with peers locally. Reach out directly with verified student contact info until you meet on campus.</p>
         </div>
 
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-num">03</span>
-            <span class="step-tag">CONNECT</span>
+        <!-- Step 03 with Live Stats (Campus Pulse integration) -->
+        <div class="step-card-modern step-span-2">
+          <div class="step-03-content">
+            <span class="step-big-num">03</span>
+            <h3 class="step-title">Save & Thrive</h3>
+            <p class="step-desc">Keep money in your pocket and reduce campus waste. Build a reputation as a reliable community member.</p>
           </div>
-          <h3 class="step-title">Connect</h3>
-          <p class="step-desc">Message students who have what you need.</p>
-        </div>
 
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-num">04</span>
-            <span class="step-tag">EXCHANGE</span>
-          </div>
-          <h3 class="step-title">Exchange</h3>
-          <p class="step-desc">Turn unused campus value into something useful.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Final CTA Banner -->
-  <section class="final-cta-section">
-    <div class="site-container">
-      <div class="cta-banner-card">
-        <div class="cta-content">
-          <span class="cta-badge">Join Your Campus Network</span>
-          <h2 class="cta-headline">Your campus has more to offer.</h2>
-          <p class="cta-desc">Discover the people, resources and opportunities already around you.</p>
-          <div class="cta-buttons">
-            <a href="#explore" class="btn-cta-explore">Explore RExchange</a>
+          <div id="pulse" class="pulse-stats-row">
+            <div class="pulse-stat-pill">
+              <span class="stat-value text-green" id="pulse-new-listings">12</span>
+              <span class="stat-label">Items & Listings</span>
+            </div>
+            <div class="pulse-stat-pill">
+              <span class="stat-value text-green" id="pulse-skills-shared">4</span>
+              <span class="stat-label">Skills Shared</span>
+            </div>
+            <div class="pulse-stat-pill">
+              <span class="stat-value text-green" id="pulse-opportunities">4</span>
+              <span class="stat-label">Active Opportunities</span>
+            </div>
+            <div class="pulse-stat-pill" style="display: none;">
+              <span class="stat-value" id="pulse-potential-matches">0</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Listing Detail View Modal with Related Listings & Action Buttons -->
+  <!-- Detailed Listing View Modal -->
   <div id="listing-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
-      <div class="modal-top-bar">
-        <div class="modal-badges-group">
-          <span id="modal-category-badge" class="badge badge-item">Item</span>
-          <span id="modal-avail-badge" class="badge-avail">🟢 Available</span>
+      
+      <!-- Visual Image / Graphic Banner -->
+      <div id="modal-visual-banner" class="modal-visual-banner banner-item">
+        <div class="banner-overlay-top">
+          <div class="modal-badges-group">
+            <span id="modal-category-badge" class="badge badge-item">Item</span>
+            <span id="modal-avail-badge" class="badge-avail">🟢 Available</span>
+            <span class="badge-srm-verified" title="Verified SRM Student">✓ SRM Verified</span>
+          </div>
+          <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close details">✕</button>
         </div>
-        <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close details">✕</button>
+        <div class="banner-icon-center" id="modal-banner-icon">📖</div>
       </div>
 
-      <h2 id="modal-title" class="modal-listing-title">Listing Title</h2>
+      <div class="modal-inner-content">
+        <h2 id="modal-title" class="modal-listing-title">Listing Title</h2>
 
-      <div class="modal-author-profile">
-        <div id="modal-avatar" class="author-avatar-large">AC</div>
-        <div class="author-meta-large">
-          <span id="modal-author-name" class="author-name-text">Alex Chen</span>
-          <span id="modal-posted-time" class="author-time-text">Posted 25 mins ago</span>
-        </div>
-      </div>
-
-      <div class="modal-body-section">
-        <p id="modal-desc" class="modal-description-text"></p>
-
-        <div id="modal-tags" class="modal-tags-list"></div>
-
-        <div class="modal-contact-box">
-          <span class="contact-box-label">Student Contact & Meetup</span>
-          <div class="contact-box-body">
-            <span id="modal-contact" class="contact-box-text">alex.chen@campus.edu</span>
-            <button type="button" id="modal-copy-btn" class="btn-copy-contact">Copy</button>
+        <!-- Student Profile Row with Department & Year -->
+        <div class="modal-author-profile">
+          <div id="modal-avatar" class="author-avatar-large">RS</div>
+          <div class="author-meta-large">
+            <div class="author-name-row">
+              <span id="modal-author-name" class="author-name-text">Rahul Sharma</span>
+              <span class="author-srm-tag">✓ Verified Student</span>
+            </div>
+            <div class="author-sub-meta">
+              <span id="modal-student-dept" class="student-dept-text">2nd Year CSE • SRM Institute</span>
+              <span class="meta-dot">•</span>
+              <span id="modal-posted-time" class="author-time-text">Posted 25 mins ago</span>
+            </div>
           </div>
         </div>
+
+        <!-- ✨ AI Match Section -->
+        <div class="modal-ai-match-card">
+          <div class="ai-match-header">
+            <div class="ai-match-title-group">
+              <span class="ai-sparkle">✨</span>
+              <span class="ai-match-label">AI Match Analysis</span>
+            </div>
+            <span id="modal-ai-match-score" class="ai-match-percentage">94% Match</span>
+          </div>
+          <p id="modal-ai-match-reason" class="ai-match-reason">
+            Matches your interests in DBMS and computer science coursework.
+          </p>
+        </div>
+
+        <div class="modal-body-section">
+          <span class="section-micro-label">Description</span>
+          <p id="modal-desc" class="modal-description-text"></p>
+
+          <span class="section-micro-label">Tags</span>
+          <div id="modal-tags" class="modal-tags-list"></div>
+
+          <!-- Student Contact & Meetup Box -->
+          <div class="modal-contact-box">
+            <span class="contact-box-label">Verified SRM Contact & Meetup</span>
+            <div class="contact-box-body">
+              <span id="modal-contact" class="contact-box-text">rahul.sharma@srmuniv.ac.in</span>
+              <button type="button" id="modal-copy-btn" class="btn-copy-contact">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons: [ Message Student ], [ Save ], [ Share ], [ Close ] -->
+        <div class="modal-footer-actions">
+          <button type="button" id="modal-msg-btn" class="btn-modal-msg">
+            <span class="btn-icon">💬</span> Message Student
+          </button>
+          <button type="button" id="modal-save-btn" class="btn-modal-save">
+            <span class="save-icon">🔖</span> <span id="modal-save-text">Save</span>
+          </button>
+          <button type="button" id="modal-share-btn" class="btn-modal-share" title="Share listing link">
+            <span class="share-icon">🔗</span> Share
+          </button>
+          <button type="button" id="modal-close-action-btn" class="btn-modal-close">Close</button>
+        </div>
+
+        <!-- "You may also like" Related Listings -->
+        <div class="modal-related-section">
+          <h3 class="related-section-title">You may also like</h3>
+          <p class="related-section-sub">Similar offerings shared by SRM peers in this category</p>
+          <div id="modal-related-listings" class="related-listings-grid"></div>
+        </div>
       </div>
 
-      <!-- Action Buttons (Message Student, Save Listing, Close) -->
-      <div class="modal-footer-actions">
-        <button type="button" id="modal-msg-btn" class="btn-modal-msg">
-          <span class="btn-icon">💬</span> Message Student
-        </button>
-        <button type="button" id="modal-save-btn" class="btn-modal-save">
-          <span class="save-icon">🔖</span> <span id="modal-save-text">Save Listing</span>
-        </button>
-        <button type="button" id="modal-close-action-btn" class="btn-modal-close">Close</button>
-      </div>
-
-      <!-- Related Listings: "You may also like" -->
-      <div class="modal-related-section">
-        <h3 class="related-section-title">You may also like</h3>
-        <div id="modal-related-listings" class="related-listings-grid"></div>
-      </div>
     </div>
   </div>
 
@@ -511,31 +741,121 @@
   <!-- Modern Startup Footer -->
   <footer class="app-footer">
     <div class="site-container">
-      <div class="footer-top">
-        <div class="footer-brand-group">
+      <div class="footer-layout">
+        <div class="footer-brand-side">
           <div class="footer-brand"><span class="logo-accent">RE</span><span>xchange</span></div>
-          <p class="footer-tagline">Campus community exchange platform for items, skills, and opportunities.</p>
+          <p class="footer-copy">© 2026 RExchange. Built for SRM students, by students.</p>
         </div>
-        <div class="footer-nav">
-          <a href="#explore">Explore Listings</a>
-          <a href="#post">Post a Listing</a>
-          <a href="#categories">Categories</a>
-          <a href="#pulse">Campus Pulse</a>
-          <a href="#how-it-works">How It Works</a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-text">© 2026 RExchange. Built for students, by students.</p>
-        <div class="footer-sublinks">
-          <span>Student Safe Meetups</span>
-          <span>•</span>
-          <span>Zero Fees</span>
-          <span>•</span>
-          <span>Open Campus Exchange</span>
+        <div class="footer-links-side">
+          <a href="#explore">Terms of Service</a>
+          <a href="#explore">Privacy Policy</a>
+          <a href="#post">Contact Support</a>
+          <a href="#categories">Campus Ambassadors</a>
         </div>
       </div>
     </div>
   </footer>
+
+  <!-- Stitch Three.js 3D Constellation Mesh Background Script -->
+  <script>
+  (function() {
+    const container = document.getElementById('threejs-container-ANIMATION_9');
+    if (!container || typeof THREE === 'undefined') return;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    container.appendChild(renderer.domElement);
+
+    const points = [];
+    const nodeCount = 10;
+
+    // Create Nodes in Stitch Neon Green (#00FF85)
+    const geometry = new THREE.SphereGeometry(0.06, 16, 16);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00FF85 });
+
+    for (let i = 0; i < nodeCount; i++) {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 5,
+        (Math.random() - 0.5) * 3
+      );
+      mesh.userData = {
+        velocity: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.004,
+          (Math.random() - 0.5) * 0.004,
+          (Math.random() - 0.5) * 0.004
+        )
+      };
+      scene.add(mesh);
+      points.push(mesh);
+    }
+
+    // Dynamic Connections Line Segments
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0x00FF85,
+      transparent: true,
+      opacity: 0.18
+    });
+
+    const lineGeometry = new THREE.BufferGeometry();
+    const linePositions = new Float32Array(nodeCount * nodeCount * 6);
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+    scene.add(lines);
+
+    camera.position.z = 5;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      let lineIdx = 0;
+      points.forEach((p, i) => {
+        p.position.add(p.userData.velocity);
+
+        // Gentle bounding box bounce
+        if (Math.abs(p.position.x) > 4) p.userData.velocity.x *= -1;
+        if (Math.abs(p.position.y) > 2.5) p.userData.velocity.y *= -1;
+
+        // Proximity connections
+        for (let j = i + 1; j < points.length; j++) {
+          const p2 = points[j];
+          const dist = p.position.distanceTo(p2.position);
+          if (dist < 3.2) {
+            linePositions[lineIdx++] = p.position.x;
+            linePositions[lineIdx++] = p.position.y;
+            linePositions[lineIdx++] = p.position.z;
+            linePositions[lineIdx++] = p2.position.x;
+            linePositions[lineIdx++] = p2.position.y;
+            linePositions[lineIdx++] = p2.position.z;
+          }
+        }
+      });
+
+      for (let k = lineIdx; k < linePositions.length; k++) {
+        linePositions[k] = 0;
+      }
+
+      lineGeometry.attributes.position.needsUpdate = true;
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+
+    animate();
+  })();
+  </script>
 
   <script src="app.js"></script>
 </body>
