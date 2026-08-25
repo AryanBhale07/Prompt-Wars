@@ -3,140 +3,171 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RExchange — Campus Community Exchange Platform</title>
+  <title>RExchange — The Private Campus Platform for Verified SRM Students</title>
+  <meta name="description" content="A futuristic, peer-to-peer campus exchange network exclusively for verified SRM Institute students. Trade textbooks, share skills, and discover campus opportunities.">
+
+  <!-- Google Fonts for High-Tech / Futuristic Aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
-  <!-- Three.js (r125) from Stitch Design Reference -->
-  <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
 </head>
 <body>
 
-  <!-- STITCH 3D Connected Node Constellation Background (Interactive WebGL Canvas) -->
-  <div id="threejs-container-ANIMATION_9" class="stitch-canvas-bg" aria-hidden="true"></div>
+  <!-- Futuristic Ambient Glow Layers -->
+  <div class="glow-sphere glow-sphere-1" aria-hidden="true"></div>
+  <div class="glow-sphere glow-sphere-2" aria-hidden="true"></div>
+  <div class="glow-sphere glow-sphere-3" aria-hidden="true"></div>
 
-  <!-- SRM STUDENT VERIFICATION / ACCESS GATE OVERLAY -->
-  <div id="srm-access-gate" class="srm-gate-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="gate-welcome-title">
-    <div class="srm-gate-card">
+  <!-- Background WebGL Particle Canvas -->
+  <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- =========================================================================
+       SRM Student Verification & Access Gate (Full-Screen Shield Overlay)
+       ========================================================================= -->
+  <div id="srm-access-gate" class="srm-gate-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="gate-main-heading">
+    <div class="srm-gate-container">
       
-      <!-- STEP 1: WELCOME ACCESS SCREEN -->
-      <div id="gate-step-welcome" class="gate-step-view">
-        <div class="gate-brand-header">
-          <div class="brand-logo">
-            <span class="logo-accent">RE</span><span>xchange</span>
-          </div>
-          <span class="srm-exclusive-tag">SRM Exclusive</span>
-        </div>
-
-        <h1 id="gate-welcome-title" class="gate-headline">Welcome to RExchange.</h1>
-        <p class="gate-subtitle">Your private campus exchange for SRM students.</p>
-        <p class="gate-supporting-text">Discover items, skills and opportunities shared by students within your campus community.</p>
-
-        <!-- Subtle Visual Pillars -->
-        <div class="gate-pillars-row">
-          <div class="gate-pill">
-            <span class="pill-check">✓</span> Verified Students
-          </div>
-          <div class="gate-pill">
-            <span class="pill-icon">📚</span> Campus Resources
-          </div>
-          <div class="gate-pill">
-            <span class="pill-icon">🤝</span> Student Connections
-          </div>
-        </div>
-
-        <div class="gate-actions-wrap">
-          <button type="button" id="btn-continue-srm" class="btn-gate-primary">
-            Continue with SRM →
-          </button>
-          <p class="gate-disclaimer">RExchange is currently available exclusively to SRM students.</p>
-        </div>
+      <!-- SRM Gate Header Identity -->
+      <div class="srm-gate-badge">
+        <span class="shield-icon">🛡️</span>
+        <span class="badge-mono-text">EXCLUSIVE CAMPUS ACCESS</span>
       </div>
 
-      <!-- STEP 2: SRM EMAIL VERIFICATION FORM -->
-      <div id="gate-step-email" class="gate-step-view" style="display: none;">
-        <div class="gate-step-nav">
-          <button type="button" id="btn-email-back" class="btn-gate-back">← Back</button>
-          <span class="step-indicator">Step 1 of 2</span>
+      <!-- Step 1: Welcome Screen -->
+      <div id="gate-step-welcome" class="gate-step-block">
+        <h1 id="gate-main-heading" class="gate-title">Welcome to <span class="text-gradient-green">RExchange.</span></h1>
+        <p class="gate-subtitle">Your private campus exchange for SRM students.</p>
+        <p class="gate-description">
+          RExchange is a trusted campus network where verified SRM students exchange textbooks, share technical skills, and collaborate on student projects and hackathons.
+        </p>
+
+        <div class="gate-perks-grid">
+          <div class="gate-perk-item">
+            <span class="perk-icon">✓</span>
+            <div class="perk-text">
+              <strong>100% Student Verified</strong>
+              <span>Restricted exclusively to active @srmist.edu.in accounts</span>
+            </div>
+          </div>
+          <div class="gate-perk-item">
+            <span class="perk-icon">✨</span>
+            <div class="perk-text">
+              <strong>Smart AI Match</strong>
+              <span>Instant pairing for study resources and project teammates</span>
+            </div>
+          </div>
+          <div class="gate-perk-item">
+            <span class="perk-icon">⚡</span>
+            <div class="perk-text">
+              <strong>Zero Middlemen</strong>
+              <span>Direct peer-to-peer campus meetups and exchanges</span>
+            </div>
+          </div>
         </div>
 
-        <div class="gate-form-header">
-          <div class="gate-icon-badge">🎓</div>
-          <h2 class="gate-form-heading">Verify your SRM account</h2>
-          <p class="gate-form-desc">Use your official SRM institutional email to join the campus community.</p>
-        </div>
+        <button type="button" id="btn-continue-srm" class="btn-gate-primary">
+          Verify SRM Student Access →
+        </button>
+      </div>
 
-        <form id="srm-email-form" novalidate>
-          <div class="gate-form-group">
-            <label for="srm-email-input" class="gate-label">SRM Student Email</label>
+      <!-- Step 2: Institutional Email Verification Form -->
+      <div id="gate-step-email" class="gate-step-block" style="display: none;">
+        <button type="button" id="btn-email-back" class="btn-gate-back">← Back</button>
+        
+        <h2 class="gate-step-title">Enter your SRM Email</h2>
+        <p class="gate-step-subtitle">We will send a one-time campus verification code to confirm your SRM student status.</p>
+
+        <form id="srm-email-form" class="gate-form" novalidate>
+          <div class="gate-input-group">
+            <label for="srm-email-input" class="gate-label">Institutional Email Address</label>
             <div class="gate-input-wrapper">
-              <input type="email" id="srm-email-input" class="gate-input" placeholder="yourname@srmuniv.ac.in" autocomplete="email" required>
+              <span class="gate-input-icon">✉️</span>
+              <input 
+                type="email" 
+                id="srm-email-input" 
+                class="gate-input" 
+                placeholder="your.name@srmist.edu.in" 
+                autocomplete="email"
+                required
+              >
             </div>
-            <div id="srm-email-error" class="gate-error-message" style="display: none;" role="alert">
-              Please use your official SRM student email.
-            </div>
-            <span class="gate-input-hint">Only official SRM student email addresses are accepted.</span>
+            <span id="srm-email-error" class="gate-error-text" style="display: none;">Please use your official SRM institutional email.</span>
+            <span class="gate-hint-text">Must be a valid SRM student email address ending with @srmist.edu.in</span>
           </div>
 
           <button type="submit" id="btn-verify-email" class="btn-gate-primary">
             <span id="btn-verify-email-text">Verify Email</span>
           </button>
         </form>
-
-        <p class="demo-security-notice">Demo verification • Prototype mode</p>
       </div>
 
-      <!-- STEP 3: VERIFICATION CODE STEP (DEMO MODE) -->
-      <div id="gate-step-code" class="gate-step-view" style="display: none;">
-        <div class="gate-step-nav">
-          <button type="button" id="btn-code-back" class="btn-gate-back">← Edit Email</button>
-          <span class="demo-pill-badge">Demo verification</span>
+      <!-- Step 3: Verification Code Input (Demo Simulation) -->
+      <div id="gate-step-code" class="gate-step-block" style="display: none;">
+        <button type="button" id="btn-code-back" class="btn-gate-back">← Back</button>
+
+        <h2 class="gate-step-title">Enter Verification Code</h2>
+        <p class="gate-step-subtitle">A 6-digit campus code was sent to <strong id="srm-target-email" class="text-green">student@srmist.edu.in</strong></p>
+
+        <div class="gate-demo-code-alert">
+          <div class="demo-code-info">
+            <span class="demo-pill">DEMO CODE</span>
+            <span class="demo-code-num">123456</span>
+          </div>
+          <button type="button" id="btn-autofill-code" class="btn-autofill">Autofill</button>
         </div>
 
-        <div class="gate-form-header">
-          <div class="gate-icon-badge">📩</div>
-          <h2 class="gate-form-heading">Check your SRM email</h2>
-          <p class="gate-form-desc">We've sent a verification code to your institutional email: <strong id="srm-target-email" class="text-green"></strong></p>
-        </div>
+        <form id="srm-code-form" class="gate-form" novalidate>
+          <div class="gate-input-group">
+            <label for="srm-code-input" class="gate-label">6-Digit Verification Code</label>
+            <div class="gate-input-wrapper">
+              <span class="gate-input-icon">🔑</span>
+              <input 
+                type="text" 
+                id="srm-code-input" 
+                class="gate-input gate-input-code" 
+                placeholder="123456" 
+                maxlength="6"
+                inputmode="numeric"
+                required
+              >
+            </div>
+            <span id="srm-code-error" class="gate-error-text" style="display: none;">Invalid verification code. Use demo code: 123456</span>
+          </div>
 
-        <!-- Demo Verification Box -->
-        <div class="demo-code-helper">
-          <span class="demo-helper-title">⚡ Demo Mode Activated</span>
-          <p class="demo-helper-desc">For testing this frontend prototype, use demo code: <button type="button" id="btn-autofill-code" class="code-copy-chip">123456 (Click to auto-fill)</button></p>
-        </div>
+          <button type="submit" id="btn-verify-code" class="btn-gate-primary">
+            <span id="btn-verify-code-text">Verify Code</span>
+          </button>
+        </form>
 
-        <form id="srm-code-form" novalidate>
-          <div class="gate-form-group">
-            <label for="srm-code-input" class="gate-label">Enter verification code</label>
-            <input type="text" id="srm-code-input" class="gate-input gate-code-input" placeholder="6-digit code" maxlength="6" autocomplete="one-time-code" required>
-            <div id="srm-code-error" class="gate-error-message" style="display: none;" role="alert">
-              Invalid verification code. Use demo code: 123456
+        <div class="gate-resend-row">
+          <span class="gate-hint-text">Didn't receive code?</span>
+          <button type="button" id="btn-resend-code" class="btn-gate-link">Resend Demo Code</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Verification Success Screen -->
+      <div id="gate-step-success" class="gate-step-block" style="display: none;">
+        <div class="gate-success-icon-wrap">
+          <span class="success-check-icon">✓</span>
+        </div>
+        
+        <h2 class="gate-step-title">SRM Verification Complete</h2>
+        <p class="gate-step-subtitle">Welcome to the private SRM student exchange community!</p>
+
+        <div class="gate-verified-card">
+          <div class="verified-card-top">
+            <div class="verified-avatar-badge">SRM</div>
+            <div class="verified-card-info">
+              <span class="verified-status-tag">✓ ACTIVE MEMBER</span>
+              <span class="verified-campus-name">SRM Institute of Science and Technology</span>
             </div>
           </div>
-
-          <div class="gate-dual-actions">
-            <button type="submit" id="btn-verify-code" class="btn-gate-primary">
-              <span id="btn-verify-code-text">Verify Code</span>
-            </button>
-            <button type="button" id="btn-resend-code" class="btn-gate-secondary">
-              Resend Code
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- STEP 4: SUCCESS VERIFIED STATE -->
-      <div id="gate-step-success" class="gate-step-view" style="display: none;">
-        <div class="gate-success-icon-wrap">
-          <div class="gate-success-checkmark">✓</div>
+          <p class="verified-card-body">You now have full access to create listings, message verified classmates, save study materials, and access AI Match.</p>
         </div>
 
-        <h2 class="gate-success-title">✓ SRM Student Verified</h2>
-        <p class="gate-success-sub">Welcome to the campus.</p>
-        <p class="gate-success-note">You now have verified access to browse, trade items, share skills, and post opportunities within SRM.</p>
-
-        <button type="button" id="btn-enter-rexchange" class="btn-gate-primary btn-gate-success">
+        <button type="button" id="btn-enter-rexchange" class="btn-gate-primary">
           Enter RExchange →
         </button>
       </div>
@@ -144,7 +175,9 @@
     </div>
   </div>
 
-  <!-- Sticky Navbar (Stitch Design Reference) -->
+  <!-- =========================================================================
+       Sticky Navbar (Single-Page Interactive OS Header)
+       ========================================================================= -->
   <nav class="navbar">
     <div class="nav-container">
       <a href="#" class="brand-logo">
@@ -152,12 +185,43 @@
       </a>
       <div class="nav-links">
         <a href="#explore" class="nav-link active">Explore</a>
-        <a href="#inbox" class="nav-link" id="nav-inbox-link">Inbox <span id="inbox-unread-badge" class="inbox-nav-badge" style="display: none;">2</span></a>
+        <a href="#ai-match" class="nav-link" id="nav-ai-match-link"><span style="color:var(--accent-green);">✨</span> AI Match</a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-saved-link">Saved <span id="saved-count-badge" class="saved-nav-badge" style="display: none;">0</span></a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-inbox-link">Inbox <span id="inbox-unread-badge" class="inbox-nav-badge" style="display: none;">2</span></a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-profile-link">Profile</a>
+        <a href="#activity" class="nav-link" id="nav-activity-link">Activity</a>
         <a href="#categories" class="nav-link">Categories</a>
         <a href="#pulse" class="nav-link">Campus Pulse</a>
         <a href="#how-it-works" class="nav-link">How It Works</a>
       </div>
       <div class="nav-actions">
+        <!-- Notification Bell & Floating Dropdown -->
+        <div class="notif-wrapper" id="notif-wrapper">
+          <button type="button" id="notif-bell-btn" class="nav-btn-notif" aria-label="Notifications" title="View Notifications" aria-expanded="false">
+            <span class="bell-icon">🔔</span>
+            <span id="notif-badge" class="notif-badge" style="display: none;">3</span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div id="notif-dropdown" class="notif-dropdown-panel" style="display: none;" role="menu" aria-labelledby="notif-bell-btn">
+            <div class="notif-dropdown-header">
+              <div class="notif-header-title-row">
+                <span class="notif-title-text">Notifications</span>
+                <span id="notif-unread-count-tag" class="notif-unread-tag">3 New</span>
+              </div>
+              <button type="button" id="btn-mark-all-read" class="btn-notif-action-text">Mark all as read</button>
+            </div>
+
+            <div id="notif-dropdown-list" class="notif-dropdown-list" role="list">
+              <!-- Populated dynamically by JS -->
+            </div>
+
+            <div class="notif-dropdown-footer">
+              <a href="#activity" id="btn-view-all-notifs" class="btn-notif-view-all">View all activity →</a>
+            </div>
+          </div>
+        </div>
+
         <!-- SRM Verified Status Badge in Navbar -->
         <div id="nav-srm-badge" class="nav-srm-verified-badge" style="display: none;" title="Verified SRM Student Member">
           <span class="srm-badge-icon">✓</span> <span class="srm-badge-text">SRM Verified</span>
@@ -165,111 +229,97 @@
         <button type="button" id="btn-reset-srm-demo" class="btn-demo-reset" title="Reset SRM Access Gate to test verification flow again">
           🔒 Reset SRM Demo
         </button>
-        <a href="#explore" class="nav-btn-ghost">Explore</a>
-        <a href="#post" class="nav-btn-primary">+ Post Something</a>
+        <button type="button" id="nav-post-btn" class="nav-btn-primary">+ Post Something</button>
       </div>
     </div>
   </nav>
 
-  <!-- Hero Section (Two-Column Layout with Stitch Visual Polish) -->
+  <!-- =========================================================================
+       Homepage Hero Section
+       ========================================================================= -->
   <header class="hero-section">
     <div class="hero-container">
       
       <!-- Left Hero Column -->
       <div class="hero-content">
-        <div class="hero-badge">
+        <div class="hero-eyebrow">
           <span class="pulse-dot"></span>
-          <span>Live SRM Community Network</span>
+          <span>SRM CAMPUS PEER NETWORK</span>
         </div>
-        
-        <h1 class="hero-headline">
-          Everything your<br>
-          campus has.<br>
-          <span class="hero-headline-green">Everything your campus needs.</span>
+
+        <h1 class="hero-title">
+          Exchange Value.<br>
+          <span class="hero-title-highlight">Empower Campus.</span>
         </h1>
-        
-        <p class="hero-subtext">
-          A platform that makes it easier for students to exchange resources, services, and opportunities within their college community. Trade textbooks, electronics, and skills instantly.
+
+        <p class="hero-subtitle">
+          The private peer-to-peer exchange for verified SRM students. Trade textbooks, share skills, borrow equipment, and discover student projects.
         </p>
 
-        <!-- Hero Actions -->
-        <div class="hero-actions">
-          <a href="#explore" class="btn-hero-primary">Explore Campus</a>
-          <a href="#post" class="btn-hero-secondary">
-            <span class="btn-icon-green">+</span> Post Something
-          </a>
+        <!-- Futuristic AI Search Bar -->
+        <div class="hero-ai-search-box">
+          <div class="ai-input-wrapper">
+            <span class="ai-sparkle-icon">✨</span>
+            <input 
+              type="text" 
+              id="hero-ai-search" 
+              class="hero-ai-input" 
+              placeholder="What do you need? e.g., Python tutor, DBMS book, Arduino kit"
+              aria-label="Search campus exchange with AI"
+            >
+            <button type="button" id="hero-search-btn" class="hero-search-btn" aria-label="Run search">
+              <span>Find Matches</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+
+          <!-- Suggested Prompt Chips -->
+          <div class="prompt-chips-row">
+            <span class="prompt-label">Try:</span>
+            <button type="button" class="prompt-chip" data-query="Python tutor">🐍 Python tutor</button>
+            <button type="button" class="prompt-chip" data-query="DBMS textbook">📖 DBMS book</button>
+            <button type="button" class="prompt-chip" data-query="Hackathon teammate">🚀 Hackathon team</button>
+            <button type="button" class="prompt-chip" data-query="Arduino kit">⚡ Arduino kit</button>
+          </div>
         </div>
 
-        <!-- AI-Powered Quick Search Component -->
-        <div class="hero-search-wrapper">
-          <div class="hero-search-box">
-            <span class="hero-search-sparkle">✨</span>
-            <input type="text" id="hero-ai-search" class="hero-search-input" placeholder="Ask RExchange what you're looking for..." aria-label="AI Campus Search">
-            <button type="button" id="hero-search-btn" class="hero-search-submit">Search</button>
-          </div>
-          
-          <div class="hero-search-prompts">
-            <span class="prompts-label">Popular:</span>
-            <button type="button" class="prompt-chip" data-query="Python tutor">Python Tutor</button>
-            <button type="button" class="prompt-chip" data-query="DBMS textbook">DBMS Textbook</button>
-            <button type="button" class="prompt-chip" data-query="Hackathon">Hackathon Team</button>
-          </div>
-        </div>
       </div>
 
-      <!-- Right Hero Column: Mock App Window with Live Feed Cards -->
-      <div class="hero-visual" aria-hidden="true">
-        <div class="mock-app-window">
-          <!-- Titlebar -->
-          <div class="mock-window-header">
-            <div class="mock-window-dots">
-              <span class="dot-red"></span>
-              <span class="dot-yellow"></span>
-              <span class="dot-green"></span>
-            </div>
-            <span class="mock-url-text">app.rexchange.edu</span>
+      <!-- Right Hero Column: Live Campus Card -->
+      <div class="hero-visual-card">
+        <div class="feature-metric-card">
+          <div class="metric-top-row">
+            <span class="live-indicator-pill">
+              <span class="live-dot"></span> 100% VERIFIED CAMPUS
+            </span>
+            <span class="metric-stat-mono">SRMIST.EDU.IN</span>
           </div>
 
-          <!-- Cards Stack -->
-          <div class="mock-cards-stack">
-            <!-- Mock Card 1 -->
-            <div class="mock-card">
-              <div class="mock-card-left">
-                <div class="mock-icon-wrap icon-item">📖</div>
-                <div class="mock-card-info">
-                  <span class="mock-card-title">Calculus Early Transcendentals</span>
-                  <span class="mock-card-desc">Excellent condition, 8th edition.</span>
-                </div>
-              </div>
-              <span class="mock-card-tag tag-green">$40 or Trade</span>
-            </div>
+          <div class="hero-card-core">
+            <div class="hero-big-number">12</div>
+            <div class="hero-big-label">Active Campus Exchanges Available Today</div>
+          </div>
 
-            <!-- Mock Card 2 (Active/Glow Highlight) -->
-            <div class="mock-card mock-card-active">
-              <div class="mock-card-left">
-                <div class="mock-icon-wrap icon-skill">💻</div>
-                <div class="mock-card-info">
-                  <div class="mock-title-with-status">
-                    <span class="mock-card-title">Calculus & Python Tutoring</span>
-                    <span class="online-indicator"></span>
-                  </div>
-                  <span class="mock-card-desc">CS Major, able to help with Python & DSA.</span>
-                </div>
-              </div>
-              <span class="mock-card-tag tag-green-solid">Exchange</span>
+          <div class="mini-activity-stream">
+            <div class="activity-row">
+              <span class="act-icon">📖</span>
+              <span class="act-text">Rahul listed <strong>DBMS 7th Ed Textbook</strong></span>
+              <span class="act-time">25m ago</span>
             </div>
+            <div class="activity-row">
+              <span class="act-icon">🐍</span>
+              <span class="act-text">Priya offered <strong>Python 1-on-1 Tutoring</strong></span>
+              <span class="act-time">45m ago</span>
+            </div>
+            <div class="activity-row">
+              <span class="act-icon">🚀</span>
+              <span class="act-text">Arjun posted <strong>Hackathon Frontend Collab</strong></span>
+              <span class="act-time">30m ago</span>
+            </div>
+          </div>
 
-            <!-- Mock Card 3 -->
-            <div class="mock-card">
-              <div class="mock-card-left">
-                <div class="mock-icon-wrap icon-ticket">🎟️</div>
-                <div class="mock-card-info">
-                  <span class="mock-card-title">Campus Hackathon Pass</span>
-                  <span class="mock-card-desc">Spare ticket, can transfer to student ID.</span>
-                </div>
-              </div>
-              <span class="mock-card-tag tag-muted">Claimed</span>
-            </div>
+          <div class="hero-card-footer">
+            <a href="#explore" class="hero-footer-link">Explore all listings →</a>
           </div>
         </div>
       </div>
@@ -277,25 +327,28 @@
     </div>
   </header>
 
-  <!-- Three Feature Category Cards (The Campus Exchange) -->
+  <!-- =========================================================================
+       Categories Section (Items, Skills, Opportunities)
+       ========================================================================= -->
   <section id="categories" class="categories-section">
     <div class="site-container">
-      <div class="section-title-wrap text-center">
-        <h2 class="section-heading">The Campus Exchange</h2>
-        <p class="section-subtext">Every college has unused value sitting within its student community. RExchange bridges the gap, turning dormant assets into active resources.</p>
+      <div class="section-header">
+        <div class="section-header-badge">CAMPUS PILLARS</div>
+        <h2>Everything You Need, Directly From Classmates</h2>
+        <span class="section-hint">Click any category to filter campus listings instantly</span>
       </div>
 
-      <div class="category-cards-grid">
+      <div class="feature-categories-grid">
         <!-- Card 1: Items -->
         <div class="feature-cat-card" data-category="Item" role="button" tabindex="0">
           <div class="cat-card-header">
             <div class="cat-icon-badge">
-              <span class="cat-emoji">📖</span>
+              <span class="cat-emoji">📦</span>
             </div>
             <span class="cat-count-badge" id="count-items">4 Listings</span>
           </div>
-          <h3 class="cat-card-title">Textbooks & Notes</h3>
-          <p class="cat-card-desc">Don't sell back for pennies. Trade textbooks, study guides, and lab equipment directly with peers.</p>
+          <h3 class="cat-card-title">Physical Items</h3>
+          <p class="cat-card-desc">Course textbooks, handwritten exam notes, calculators, lab hardware, electronics, and dorm essentials.</p>
           <div class="cat-card-action">
             <span>Browse Items</span>
             <span class="arrow-icon">→</span>
@@ -306,12 +359,12 @@
         <div class="feature-cat-card" data-category="Skill" role="button" tabindex="0">
           <div class="cat-card-header">
             <div class="cat-icon-badge">
-              <span class="cat-emoji">💻</span>
+              <span class="cat-emoji">🧠</span>
             </div>
             <span class="cat-count-badge" id="count-skills">4 Listings</span>
           </div>
           <h3 class="cat-card-title">Skills & Tutoring</h3>
-          <p class="cat-card-desc">Find peers who can teach programming, design, languages, or help you prep for technical interviews.</p>
+          <p class="cat-card-desc">Peer tutoring in Python, Java, DSA, UI/UX design reviews, Figma prototyping, and academic mentoring.</p>
           <div class="cat-card-action">
             <span>Browse Skills</span>
             <span class="arrow-icon">→</span>
@@ -337,7 +390,9 @@
     </div>
   </section>
 
-  <!-- Dedicated Explore Directory Section -->
+  <!-- =========================================================================
+       Explore Directory Section
+       ========================================================================= -->
   <section id="explore" class="explore-section">
     <div class="site-container">
       
@@ -398,100 +453,262 @@
     </div>
   </section>
 
-  <!-- Dedicated Inbox / Messaging Section -->
-  <section id="inbox" class="inbox-section">
+  <!-- =========================================================================
+       AI Match Center Section (Inline Interactive Neural Search)
+       ========================================================================= -->
+  <section id="ai-match" class="ai-match-section">
+    <div class="site-container">
+      
+      <!-- Page Header -->
+      <div class="ai-match-header">
+        <div class="ai-match-header-badge">
+          <span class="ai-sparkle-glow">✨</span>
+          <span>REXCHANGE AI INTELLIGENCE</span>
+        </div>
+        <h2 class="ai-match-title">Find what you need.</h2>
+        <p class="ai-match-subtitle">Tell RExchange what you're looking for and we'll find the most relevant things, skills and opportunities on your campus.</p>
+      </div>
+
+      <!-- Large Futuristic AI Search Box -->
+      <div class="ai-search-card">
+        <form id="ai-match-form" class="ai-search-form" novalidate>
+          <div class="ai-search-input-wrapper">
+            <span class="ai-search-leading-icon">✨</span>
+            <input 
+              type="text" 
+              id="ai-match-input" 
+              class="ai-match-input" 
+              placeholder="What are you looking for? (e.g., I need someone who can teach me Java OOP)" 
+              aria-label="Ask RExchange AI"
+              autocomplete="off"
+            >
+            <button type="submit" id="btn-run-ai-match" class="btn-ai-match-submit">
+              <span class="btn-text-content">Find Matches</span>
+              <span class="btn-arrow-content">→</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Suggested Prompt Chips -->
+        <div class="ai-suggestions-row">
+          <span class="ai-suggestions-label">Suggestions:</span>
+          <div class="ai-chips-list" id="ai-chips-list">
+            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find a Python tutor">Find a Python tutor</button>
+            <button type="button" class="ai-prompt-chip" data-ai-prompt="Show me free textbooks">Show me free textbooks</button>
+            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find hackathon teammates">Find hackathon teammates</button>
+            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find UI/UX help">Find UI/UX help</button>
+            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find cybersecurity opportunities">Find cybersecurity opportunities</button>
+            <button type="button" class="ai-prompt-chip" data-ai-prompt="I need OS study material">I need OS study material</button>
+          </div>
+        </div>
+
+        <!-- Recent Searches & Search History Bar -->
+        <div class="ai-history-bar" id="ai-history-bar" style="display: none;">
+          <div class="ai-history-left">
+            <span class="history-label-icon">🕒</span>
+            <span class="history-label-text">Recent searches:</span>
+            <div class="history-chips-stream" id="history-chips-stream">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+          <button type="button" id="btn-clear-ai-history" class="btn-clear-history-text" title="Clear search history">Clear</button>
+        </div>
+      </div>
+
+      <!-- AI Processing Animation State -->
+      <div id="ai-processing-state" class="ai-processing-panel" style="display: none;">
+        <div class="ai-scanner-line"></div>
+        <div class="ai-proc-core">
+          <div class="ai-proc-icon-pulse">
+            <span class="pulse-sparkle">✨</span>
+          </div>
+          <div class="ai-proc-text-col">
+            <span class="ai-proc-brand">✨ RExchange AI</span>
+            <h4 id="ai-proc-status" class="ai-proc-status-text">Understanding your request...</h4>
+          </div>
+        </div>
+        <div class="ai-loading-dots-bar">
+          <span class="dot-step dot-1 active"></span>
+          <span class="dot-step dot-2"></span>
+          <span class="dot-step dot-3"></span>
+        </div>
+      </div>
+
+      <!-- Match Results Area -->
+      <div id="ai-results-area" class="ai-results-wrapper" style="display: none;">
+        
+        <!-- Results Header & Controls -->
+        <div class="ai-results-header-bar">
+          <div class="results-title-group">
+            <h3 id="ai-results-count-title" class="results-heading">✨ We found 3 potential matches.</h3>
+            <span id="ai-query-echo" class="query-echo-tag">Query: "..."</span>
+          </div>
+
+          <div class="ai-results-controls">
+            <!-- Category Filter for Matches -->
+            <div class="ai-cat-filters" id="ai-cat-filters" role="tablist">
+              <button type="button" class="ai-cat-btn active" data-cat="all" role="tab" aria-selected="true">All</button>
+              <button type="button" class="ai-cat-btn" data-cat="Item" role="tab" aria-selected="false">Items</button>
+              <button type="button" class="ai-cat-btn" data-cat="Skill" role="tab" aria-selected="false">Skills</button>
+              <button type="button" class="ai-cat-btn" data-cat="Opportunity" role="tab" aria-selected="false">Opportunities</button>
+            </div>
+
+            <!-- Sort By Selector -->
+            <div class="ai-sort-wrapper">
+              <label for="ai-sort-select" class="sort-label">Sort:</label>
+              <select id="ai-sort-select" class="ai-sort-dropdown" aria-label="Sort match results">
+                <option value="best-match" selected>Best Match</option>
+                <option value="newest">Newest</option>
+              </select>
+            </div>
+
+            <!-- Collapse Results Button -->
+            <button type="button" id="btn-collapse-ai-results" class="btn-collapse-ai" title="Collapse match results">
+              ✕ Collapse
+            </button>
+          </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="ai-matches-grid" class="ai-matches-grid">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Empty Match State -->
+        <div id="ai-empty-matches" class="empty-state" style="display: none;">
+          <div class="empty-icon">🤖</div>
+          <h3 class="empty-title">RExchange couldn't find a strong match.</h3>
+          <p class="empty-desc">Try broadening your search keywords or explore recommended campus categories below.</p>
+          <div class="ai-empty-suggestions">
+            <span style="font-size:0.8rem; color:var(--text-muted);">Try searching:</span>
+            <div class="empty-chips-row">
+              <button type="button" class="ai-prompt-chip" data-ai-prompt="Find programming help">Find programming help</button>
+              <button type="button" class="ai-prompt-chip" data-ai-prompt="Show study materials">Show study materials</button>
+              <button type="button" class="ai-prompt-chip" data-ai-prompt="Find opportunities">Find opportunities</button>
+            </div>
+          </div>
+          <a href="#explore" class="btn-clear-search" style="text-decoration: none; display: inline-block; margin-top: 14px;">Browse All Listings</a>
+        </div>
+
+      </div>
+
+      <!-- Personalized Section: Recommended For You -->
+      <div id="ai-recommended-section" class="ai-recommended-container" style="display: none;">
+        <div class="recommended-header">
+          <div class="rec-title-wrap">
+            <span class="rec-badge">RECOMMENDED FOR YOU</span>
+            <h4 id="rec-reason-text" class="rec-heading">Because of your campus interests & activity...</h4>
+          </div>
+        </div>
+        <div id="ai-recommended-feed" class="listings-grid">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Campus Activity Center Section (Inline Telemetry)
+       ========================================================================= -->
+  <section id="activity" class="activity-section">
     <div class="site-container">
       
       <!-- Section Header -->
-      <div class="inbox-section-header">
-        <span class="section-eyebrow">STUDENT MESSAGING</span>
-        <h2 class="inbox-main-title">Inbox</h2>
-        <p class="inbox-main-subtitle">Connect with students about the things you're interested in.</p>
+      <div class="activity-section-header">
+        <div class="activity-header-left">
+          <span class="section-eyebrow">CAMPUS ACTIVITY CENTER</span>
+          <h2 class="activity-main-title">Activity</h2>
+          <p class="activity-main-subtitle">Stay up to date with what's happening around your campus.</p>
+        </div>
+        <div class="activity-header-actions">
+          <button type="button" id="btn-page-mark-all-read" class="btn-gate-secondary">Mark all as read</button>
+        </div>
       </div>
 
-      <!-- Main Inbox Card Container (Two-column desktop / responsive mobile) -->
-      <div class="inbox-container-card" id="inbox-main-card">
+      <!-- Activity Split Layout: Left Feed & Right Live Campus Stream -->
+      <div class="activity-layout-grid">
         
-        <!-- LEFT: Conversation List Panel -->
-        <div class="inbox-conversations-panel" id="inbox-convos-panel">
+        <!-- Left Column: Filterable Notification & Activity Stream -->
+        <div class="activity-feed-panel">
           
-          <!-- Search Header -->
-          <div class="inbox-search-header">
-            <div class="inbox-search-wrap">
-              <span class="inbox-search-icon">🔍</span>
-              <input type="text" id="inbox-search-input" class="inbox-search-input" placeholder="Search messages..." aria-label="Search messages">
-            </div>
+          <!-- Filter Tabs: All, Unread, Messages, Matches, Listings, Opportunities -->
+          <div class="activity-filters-bar" id="activity-filters-bar" role="tablist">
+            <button type="button" class="activity-filter-btn active" data-activity-filter="all" role="tab" aria-selected="true">All</button>
+            <button type="button" class="activity-filter-btn" data-activity-filter="unread" role="tab" aria-selected="false">Unread</button>
+            <button type="button" class="activity-filter-btn" data-activity-filter="messages" role="tab" aria-selected="false">Messages</button>
+            <button type="button" class="activity-filter-btn" data-activity-filter="matches" role="tab" aria-selected="false">Matches</button>
+            <button type="button" class="activity-filter-btn" data-activity-filter="listings" role="tab" aria-selected="false">Listings</button>
+            <button type="button" class="activity-filter-btn" data-activity-filter="opportunities" role="tab" aria-selected="false">Opportunities</button>
           </div>
 
-          <!-- Conversations Stream List -->
-          <div class="inbox-conversations-list" id="inbox-conversations-list" role="list">
-            <!-- Populated dynamically by JavaScript -->
+          <!-- Notification Feed Stream -->
+          <div id="activity-feed-list" class="activity-feed-list" role="list">
+            <!-- Populated dynamically by JS -->
           </div>
 
-          <!-- Search / Empty Fallback inside panel -->
-          <div id="inbox-search-empty" class="inbox-search-empty" style="display: none;">
-            <span class="empty-mini-icon">💬</span>
-            <p class="empty-mini-text">No conversations found.</p>
+          <!-- Empty State -->
+          <div id="activity-empty-state" class="empty-state" style="display: none;">
+            <div class="empty-icon">🔔</div>
+            <h3 class="empty-title">You're all caught up.</h3>
+            <p class="empty-desc">No new activity right now. Check back later or explore what students are sharing!</p>
+            <a href="#explore" class="btn-clear-search" style="text-decoration: none; display: inline-block;">Explore Campus</a>
           </div>
-        </div>
-
-        <!-- RIGHT: Active Conversation View Panel -->
-        <div class="inbox-chat-panel" id="inbox-chat-panel">
-          
-          <!-- Chat Header Bar -->
-          <div class="chat-header-bar">
-            <div class="chat-header-left">
-              <button type="button" id="btn-chat-back-mobile" class="btn-chat-back-mobile" aria-label="Back to conversations">←</button>
-              <div id="chat-header-avatar" class="chat-avatar">RS</div>
-              <div class="chat-header-details">
-                <div class="chat-header-name-row">
-                  <span id="chat-header-name" class="chat-student-name">Rahul Sharma</span>
-                  <span class="badge-srm-verified">✓ SRM Verified</span>
-                </div>
-                <div class="chat-header-status">
-                  <span class="online-indicator"></span>
-                  <span class="status-text">Active on campus</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Small Related Listing Card Banner -->
-          <div id="chat-related-listing-banner" class="chat-related-listing-banner">
-            <div class="chat-listing-left">
-              <span id="chat-listing-icon" class="chat-listing-icon">📖</span>
-              <div class="chat-listing-meta">
-                <span id="chat-listing-title" class="chat-listing-title">DBMS Textbook (Database System Concepts 7th Ed)</span>
-                <span class="chat-listing-sub">
-                  <span id="chat-listing-category" class="badge badge-item">Item</span>
-                  <span id="chat-listing-author-info">Posted by Rahul</span>
-                </span>
-              </div>
-            </div>
-            <button type="button" id="btn-chat-view-listing" class="btn-chat-listing-view">View Listing →</button>
-          </div>
-
-          <!-- Messages Stream Bubble Container -->
-          <div class="chat-messages-stream" id="chat-messages-stream" role="log" aria-live="polite">
-            <!-- Populated dynamically by JavaScript -->
-          </div>
-
-          <!-- Message Input Bar -->
-          <form id="chat-send-form" class="chat-input-bar">
-            <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Type a message..." autocomplete="off" required>
-            <button type="submit" id="btn-send-message" class="btn-send-message">
-              Send
-            </button>
-          </form>
 
         </div>
 
-        <!-- Global Empty Inbox State (When 0 conversations exist) -->
-        <div id="inbox-empty-global" class="inbox-empty-global" style="display: none;">
-          <div class="empty-inbox-graphic">📬</div>
-          <h3 class="empty-inbox-title">Your inbox is quiet.</h3>
-          <p class="empty-inbox-desc">Message a student when you find something you need.</p>
-          <a href="#explore" class="btn-gate-primary" style="max-width: 220px; text-decoration: none; margin: 0 auto;">Explore Campus</a>
+        <!-- Right Column: Live Campus Activity Stream (Mock telemetry) -->
+        <div class="campus-live-panel">
+          <div class="live-panel-header">
+            <div class="live-status-row">
+              <span class="live-pulse-dot"></span>
+              <span class="live-title-text">Campus Activity</span>
+            </div>
+            <span class="live-tag-mono">LIVE FEED</span>
+          </div>
+
+          <div class="campus-live-cards-stream" id="campus-live-stream">
+            <!-- Staggered realistic campus event cards -->
+            <div class="live-activity-card">
+              <span class="live-card-icon">🐍</span>
+              <div class="live-card-body">
+                <span class="live-card-text">Someone just posted a <strong>Python tutoring</strong> listing.</span>
+                <span class="live-card-time">2 mins ago • Computer Science</span>
+              </div>
+            </div>
+
+            <div class="live-activity-card">
+              <span class="live-card-icon">📖</span>
+              <div class="live-card-body">
+                <span class="live-card-text">3 students saved <strong>DBMS textbook</strong>.</span>
+                <span class="live-card-time">8 mins ago • 2nd Year CSE</span>
+              </div>
+            </div>
+
+            <div class="live-activity-card">
+              <span class="live-card-icon">🚀</span>
+              <div class="live-card-body">
+                <span class="live-card-text">A new <strong>hackathon opportunity</strong> was added.</span>
+                <span class="live-card-time">14 mins ago • Developer Society</span>
+              </div>
+            </div>
+
+            <div class="live-activity-card">
+              <span class="live-card-icon">✨</span>
+              <div class="live-card-body">
+                <span class="live-card-text">RExchange found <strong>2 new potential matches</strong> for study groups.</span>
+                <span class="live-card-time">22 mins ago • AI Match</span>
+              </div>
+            </div>
+
+            <div class="live-activity-card">
+              <span class="live-card-icon">⚡</span>
+              <div class="live-card-body">
+                <span class="live-card-text">David Kim offered an <strong>Arduino Starter Kit</strong>.</span>
+                <span class="live-card-time">35 mins ago • Electronics</span>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -499,93 +716,9 @@
     </div>
   </section>
 
-  <!-- Post a Listing Section -->
-  <section id="post" class="post-section">
-    <div class="site-container">
-      <div class="post-card-container">
-        <div class="section-header">
-          <div class="section-header-badge">POST A LISTING</div>
-          <h2>Share Value on Campus</h2>
-          <span class="section-hint">Offer an item, teach a skill, or post an open student opportunity</span>
-        </div>
-
-        <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
-
-        <form id="listing-form" novalidate>
-          <div class="post-form-grid">
-            <div class="form-group">
-              <label for="title">Title <span class="required">*</span></label>
-              <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook, Python Tutoring, Hackathon Teammate" required>
-            </div>
-
-            <div class="form-group">
-              <label for="category">Category <span class="required">*</span></label>
-              <div class="select-wrapper">
-                <select id="category" name="category" required>
-                  <option value="">Select a category...</option>
-                  <option value="Item">Item</option>
-                  <option value="Skill">Skill</option>
-                  <option value="Opportunity">Opportunity</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="label-with-action">
-              <label for="description">Description <span class="required">*</span></label>
-              <button type="button" id="ai-assist-btn" class="btn-ai-assist" title="Generate polished title, description, and category from your rough notes">
-                <span class="ai-sparkle">✨</span> <span id="ai-btn-text">AI Assist</span>
-              </button>
-            </div>
-            <textarea id="description" name="description" rows="3" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
-            <span id="ai-feedback-msg" class="ai-feedback-msg" style="display: none;"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="contact">Contact Info <span class="required">*</span></label>
-            <input type="text" id="contact" name="contact" placeholder="e.g. student@campus.edu / @discord_handle" required>
-          </div>
-
-          <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
-        </form>
-
-        <!-- AI Suggestions Box -->
-        <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
-          <div class="ai-suggestion-header">
-            <div class="ai-suggestion-badge">
-              <span class="sparkle-icon">✨</span> AI Generated Suggestions
-            </div>
-            <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
-          </div>
-          
-          <div class="ai-suggestion-content">
-            <div class="ai-preview-item">
-              <span class="ai-preview-label">Suggested Title</span>
-              <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
-            </div>
-            
-            <div class="ai-preview-item">
-              <span class="ai-preview-label">Suggested Category</span>
-              <div><span id="ai-suggested-category" class="badge"></span></div>
-            </div>
-            
-            <div class="ai-preview-item">
-              <span class="ai-preview-label">Polished Description</span>
-              <p id="ai-suggested-description" class="ai-preview-text"></p>
-            </div>
-          </div>
-
-          <div class="ai-suggestion-actions">
-            <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use This</button>
-            <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Ignore</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works Section (High-Velocity Exchange with Live Stats) -->
+  <!-- =========================================================================
+       How It Works Section & Campus Pulse (High-Velocity Exchange)
+       ========================================================================= -->
   <section id="how-it-works" class="how-it-works-section">
     <div class="site-container">
       <div class="section-title-wrap">
@@ -622,15 +755,15 @@
           </div>
 
           <div id="pulse" class="pulse-stats-row">
-            <div class="pulse-stat-pill">
+            <div class="pulse-stat-pill" title="Books and study materials are currently the most active item type.">
               <span class="stat-value text-green" id="pulse-new-listings">12</span>
               <span class="stat-label">Items & Listings</span>
             </div>
-            <div class="pulse-stat-pill">
+            <div class="pulse-stat-pill" title="Python, Java OOP, and UI/UX reviews are the top requested skills.">
               <span class="stat-value text-green" id="pulse-skills-shared">4</span>
               <span class="stat-label">Skills Shared</span>
             </div>
-            <div class="pulse-stat-pill">
+            <div class="pulse-stat-pill" title="Hackathon teams and campus coding workshops currently open for collaboration.">
               <span class="stat-value text-green" id="pulse-opportunities">4</span>
               <span class="stat-label">Active Opportunities</span>
             </div>
@@ -643,7 +776,358 @@
     </div>
   </section>
 
-  <!-- Detailed Listing View Modal -->
+  <!-- =========================================================================
+       DRAWER 1: Saved Listings Right Slide-Out Drawer
+       ========================================================================= -->
+  <div id="saved" class="drawer-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="saved-drawer-title">
+    <div class="drawer-panel drawer-panel-saved">
+      
+      <div class="drawer-header">
+        <div class="drawer-header-left">
+          <span class="drawer-eyebrow">SAVED LISTINGS</span>
+          <h2 id="saved-drawer-title" class="drawer-title">Saved for later</h2>
+          <span class="drawer-subtitle">Keep track of things you're interested in.</span>
+        </div>
+        <button type="button" id="saved-close-btn" class="drawer-close-btn" aria-label="Close saved listings">✕</button>
+      </div>
+
+      <!-- Category Filter Bar for Saved -->
+      <div class="saved-filters-wrapper">
+        <div class="saved-filter-bar" id="saved-filter-bar" role="tablist">
+          <button type="button" class="saved-filter-btn active" data-saved-filter="All" role="tab" aria-selected="true">ALL</button>
+          <button type="button" class="saved-filter-btn" data-saved-filter="Item" role="tab" aria-selected="false">ITEMS</button>
+          <button type="button" class="saved-filter-btn" data-saved-filter="Skill" role="tab" aria-selected="false">SKILLS</button>
+          <button type="button" class="saved-filter-btn" data-saved-filter="Opportunity" role="tab" aria-selected="false">OPPORTUNITIES</button>
+        </div>
+        <div class="feed-count-tag" id="saved-count-tag">0 Saved</div>
+      </div>
+
+      <div class="drawer-scroll-body">
+        <!-- Empty State for Saved Listings -->
+        <div id="saved-empty-state" class="empty-state" style="display: none;">
+          <div class="empty-icon">🔖</div>
+          <h3 class="empty-title">Nothing saved yet.</h3>
+          <p class="empty-desc">Save listings you're interested in and find them here later.</p>
+          <a href="#explore" class="btn-clear-search" style="text-decoration: none; display: inline-block;">Explore Campus</a>
+        </div>
+
+        <!-- Saved Listings Grid (reuses listing-card-modern design) -->
+        <div id="saved-listings-feed" class="listings-grid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       DRAWER 2: Inbox & Messaging Right Slide-Out Drawer
+       ========================================================================= -->
+  <div id="inbox" class="drawer-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="inbox-drawer-title">
+    <div class="drawer-panel drawer-panel-inbox">
+      
+      <div class="drawer-header">
+        <div class="drawer-header-left">
+          <span class="drawer-eyebrow">CAMPUS MESSAGING</span>
+          <h2 id="inbox-drawer-title" class="drawer-title">Inbox</h2>
+          <span class="drawer-subtitle">Chat directly with verified SRM student peers.</span>
+        </div>
+        <button type="button" id="inbox-close-btn" class="drawer-close-btn" aria-label="Close inbox">✕</button>
+      </div>
+
+      <div class="drawer-scroll-body drawer-body-flush">
+        <div class="inbox-card-container" id="inbox-main-card">
+          
+          <!-- Left Column: Conversations List -->
+          <div class="inbox-conversations-panel" id="inbox-convos-panel">
+            <div class="inbox-panel-header">
+              <span class="inbox-header-title">Direct Messages</span>
+            </div>
+
+            <!-- Inbox Search Bar -->
+            <div class="inbox-search-wrap">
+              <span class="inbox-search-icon">🔍</span>
+              <input type="text" id="inbox-search-input" class="inbox-search-input" placeholder="Search conversations...">
+            </div>
+
+            <!-- Conversations List -->
+            <div id="inbox-conversations-list" class="inbox-convos-list"></div>
+
+            <!-- Empty Search State for Inbox -->
+            <div id="inbox-search-empty" class="inbox-empty-search" style="display: none;">
+              <span>No conversations match your search.</span>
+            </div>
+          </div>
+
+          <!-- Right Column: Active Conversation Chat Stream -->
+          <div class="inbox-chat-panel" id="inbox-chat-panel">
+            
+            <!-- Chat Header -->
+            <div class="chat-header">
+              <div class="chat-header-user">
+                <button type="button" id="btn-chat-back-mobile" class="btn-chat-back-mobile" title="Back to conversations">←</button>
+                <div class="chat-header-avatar" id="chat-header-avatar">RS</div>
+                <div class="chat-header-meta">
+                  <span class="chat-header-name" id="chat-header-name">Rahul Sharma</span>
+                  <span class="chat-header-status"><span class="status-dot"></span> Online • SRM Verified</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Related Listing Top Bar -->
+            <div class="chat-related-listing-banner" id="chat-related-listing-banner">
+              <div class="related-listing-left">
+                <span class="listing-banner-icon" id="chat-listing-icon">📖</span>
+                <div class="listing-banner-info">
+                  <span class="listing-banner-title" id="chat-listing-title">DBMS Textbook (Database System Concepts 7th Ed)</span>
+                  <span class="listing-banner-meta">
+                    <span id="chat-listing-category" class="badge badge-item">Item</span>
+                    <span id="chat-listing-author-info">Posted by Rahul Sharma</span>
+                  </span>
+                </div>
+              </div>
+              <button type="button" id="btn-chat-view-listing" class="btn-chat-view-listing">View Listing</button>
+            </div>
+
+            <!-- Message Stream -->
+            <div id="chat-messages-stream" class="chat-messages-stream"></div>
+
+            <!-- Send Message Form -->
+            <form id="chat-send-form" class="chat-send-form">
+              <input type="text" id="chat-message-input" class="chat-message-input" placeholder="Type a message to your classmate..." autocomplete="off">
+              <button type="submit" id="btn-chat-send" class="btn-chat-send" aria-label="Send message">
+                <span>Send</span> <span>➤</span>
+              </button>
+            </form>
+
+          </div>
+
+          <!-- Empty Global State (No Conversations) -->
+          <div id="inbox-empty-global" class="inbox-empty-global" style="display: none;">
+            <div class="empty-icon">💬</div>
+            <h3 class="empty-title">No conversations yet.</h3>
+            <p class="empty-desc">Message a student from any listing in the Explore section to start an exchange conversation.</p>
+            <a href="#explore" class="btn-clear-search" style="text-decoration: none; display: inline-block;">Browse Campus Listings</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       DRAWER 3: Student Profile & Verified Identity Right Slide-Out Drawer
+       ========================================================================= -->
+  <div id="profile" class="drawer-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="profile-drawer-title">
+    <div class="drawer-panel drawer-panel-profile">
+      
+      <div class="drawer-header">
+        <div class="drawer-header-left">
+          <span class="drawer-eyebrow">VERIFIED CAMPUS IDENTITY</span>
+          <h2 id="profile-drawer-title" class="drawer-title">Student Profile</h2>
+          <span class="drawer-subtitle">Your private verified credentials on SRM exchange.</span>
+        </div>
+        <button type="button" id="profile-close-btn" class="drawer-close-btn" aria-label="Close profile">✕</button>
+      </div>
+
+      <div class="drawer-scroll-body">
+        <div class="profile-card-container">
+          
+          <!-- Identity Banner Card -->
+          <div class="profile-identity-card">
+            <div class="profile-card-top-row">
+              <div class="profile-avatar-wrap">
+                <div class="profile-avatar-large" id="profile-avatar">AS</div>
+                <span class="avatar-online-ring" title="Verified active student"></span>
+              </div>
+              <div class="profile-identity-meta">
+                <div class="profile-name-row">
+                  <h3 class="profile-full-name" id="profile-name">Aryan Sharma</h3>
+                  <span class="badge-srm-verified profile-verified-badge" id="profile-verified-badge">✓ SRM Verified</span>
+                </div>
+                <span class="profile-campus-tag">SRM Student Member</span>
+                <span class="profile-dept-year-text" id="profile-dept-year">3rd Year • Computer Science & Engineering</span>
+                <span class="profile-email-badge" id="profile-email-display">aryan.s@srmist.edu.in</span>
+              </div>
+            </div>
+
+            <!-- Profile Bio -->
+            <p class="profile-bio-text" id="profile-bio">
+              Passionate about full-stack web development, AI student tools, and UI prototyping. Active in campus hackathons and open to trading study resources!
+            </p>
+
+            <!-- Skills & Expertise Chips -->
+            <div class="profile-skills-section">
+              <span class="profile-subhead-label">SKILLS & EXPERTISE</span>
+              <div class="profile-skills-chips-row" id="profile-skills-chips">
+                <span class="profile-skill-chip">Java</span>
+                <span class="profile-skill-chip">Python</span>
+                <span class="profile-skill-chip">UI/UX</span>
+                <span class="profile-skill-chip">Figma</span>
+                <span class="profile-skill-chip">React</span>
+                <span class="profile-skill-chip">Cybersecurity</span>
+              </div>
+            </div>
+
+            <!-- Profile Actions -->
+            <div class="profile-actions-row">
+              <button type="button" id="btn-edit-profile" class="btn-profile-edit">
+                ✏️ Edit Profile
+              </button>
+              <div id="btn-verify-status-badge" class="badge-srm-verified" style="font-size:0.76rem; padding: 6px 12px;">
+                ✓ Official Institutional ID
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Profile Stats Row -->
+          <div class="profile-metrics-row">
+            <div class="profile-stat-box">
+              <span class="stat-number-mono text-green" id="profile-stat-listings">0</span>
+              <span class="stat-desc-label">My Listings</span>
+            </div>
+            <div class="profile-stat-box">
+              <span class="stat-number-mono text-green" id="profile-stat-skills">0</span>
+              <span class="stat-desc-label">Skills Shared</span>
+            </div>
+            <div class="profile-stat-box">
+              <span class="stat-number-mono text-green" id="profile-stat-saved">0</span>
+              <span class="stat-desc-label">Saved</span>
+            </div>
+            <div class="profile-stat-box">
+              <span class="stat-number-mono text-green" id="profile-stat-trust">100%</span>
+              <span class="stat-desc-label">Campus Trust</span>
+            </div>
+          </div>
+
+          <!-- Profile Content Tabs -->
+          <div class="profile-tabs-wrapper">
+            <div class="profile-tabs-bar" id="profile-tabs-bar" role="tablist">
+              <button type="button" class="profile-tab-btn active" data-profile-tab="my-listings" role="tab" aria-selected="true">
+                My Listings (<span id="tab-count-my-listings">0</span>)
+              </button>
+              <button type="button" class="profile-tab-btn" data-profile-tab="saved" role="tab" aria-selected="false">
+                Saved (<span id="tab-count-saved">0</span>)
+              </button>
+              <button type="button" class="profile-tab-btn" data-profile-tab="skills" role="tab" aria-selected="false">
+                Skills (<span id="tab-count-skills">0</span>)
+              </button>
+              <button type="button" class="profile-tab-btn" data-profile-tab="opportunities" role="tab" aria-selected="false">
+                Opportunities (<span id="tab-count-opps">0</span>)
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Feed Grid (reuses listing-card-modern) -->
+          <div id="profile-tab-feed" class="listings-grid"></div>
+
+          <!-- Empty Tab State -->
+          <div id="profile-tab-empty" class="empty-state" style="display: none;">
+            <div class="empty-icon" id="profile-empty-icon">📦</div>
+            <h3 class="empty-title" id="profile-empty-title">No listings here yet.</h3>
+            <p class="empty-desc" id="profile-empty-desc">Share a resource, tutor a peer, or save items from the campus exchange.</p>
+            <button type="button" id="profile-empty-btn" class="btn-clear-search">+ Post Something</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: Post a Listing Centered Modal
+       ========================================================================= -->
+  <div id="post" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="post-modal-heading">
+    <div class="modal-card post-modal-card">
+      
+      <div class="modal-header-line">
+        <div class="modal-header-left">
+          <div class="section-header-badge">POST A LISTING</div>
+          <h2 id="post-modal-heading" class="modal-heading">Share Value on Campus</h2>
+          <span class="modal-subtext">Offer an item, teach a skill, or post an open student opportunity</span>
+        </div>
+        <button type="button" id="post-close-btn" class="modal-close-btn" aria-label="Close post form">✕</button>
+      </div>
+
+      <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
+
+      <form id="listing-form" novalidate>
+        <div class="post-form-grid">
+          <div class="form-group">
+            <label for="title">Title <span class="required">*</span></label>
+            <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook, Python Tutoring, Hackathon Teammate" required>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="category" name="category" required>
+                <option value="">Select a category...</option>
+                <option value="Item">Item</option>
+                <option value="Skill">Skill</option>
+                <option value="Opportunity">Opportunity</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-action">
+            <label for="description">Description <span class="required">*</span></label>
+            <button type="button" id="ai-assist-btn" class="btn-ai-assist" title="Generate polished title, description, and category from your rough notes">
+              <span class="ai-sparkle">✨</span> <span id="ai-btn-text">AI Assist</span>
+            </button>
+          </div>
+          <textarea id="description" name="description" rows="3" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
+          <span id="ai-feedback-msg" class="ai-feedback-msg" style="display: none;"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="contact">Contact Info <span class="required">*</span></label>
+          <input type="text" id="contact" name="contact" placeholder="e.g. student@srmist.edu.in / @discord_handle" required>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
+      </form>
+
+      <!-- AI Suggestions Box -->
+      <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
+        <div class="ai-suggestion-header">
+          <div class="ai-suggestion-badge">
+            <span class="sparkle-icon">✨</span> AI Generated Suggestions
+          </div>
+          <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
+        </div>
+        
+        <div class="ai-suggestion-content">
+          <div class="ai-preview-item">
+            <span class="ai-preview-label">Suggested Title</span>
+            <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
+          </div>
+          
+          <div class="ai-preview-item">
+            <span class="ai-preview-label">Suggested Category</span>
+            <div><span id="ai-suggested-category" class="badge"></span></div>
+          </div>
+          
+          <div class="ai-preview-item">
+            <span class="ai-preview-label">Polished Description</span>
+            <p id="ai-suggested-description" class="ai-preview-text"></p>
+          </div>
+        </div>
+
+        <div class="ai-suggestion-actions">
+          <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use This</button>
+          <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Ignore</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: Detailed Listing View Modal
+       ========================================================================= -->
   <div id="listing-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
       
@@ -666,197 +1150,144 @@
         <!-- Student Profile Row with Department & Year -->
         <div class="modal-author-profile">
           <div id="modal-avatar" class="author-avatar-large">RS</div>
-          <div class="author-meta-large">
-            <div class="author-name-row">
-              <span id="modal-author-name" class="author-name-text">Rahul Sharma</span>
-              <span class="author-srm-tag">✓ Verified Student</span>
+          <div class="modal-author-info">
+            <div class="author-title-row">
+              <span id="modal-author-name" class="modal-author-name">Rahul Sharma</span>
             </div>
-            <div class="author-sub-meta">
-              <span id="modal-student-dept" class="student-dept-text">2nd Year CSE • SRM Institute</span>
-              <span class="meta-dot">•</span>
-              <span id="modal-posted-time" class="author-time-text">Posted 25 mins ago</span>
-            </div>
+            <span id="modal-student-dept" class="modal-student-dept">2nd Year CSE • Computer Science & Engineering</span>
+            <span id="modal-posted-time" class="modal-posted-time">Posted 25 mins ago</span>
           </div>
         </div>
 
-        <!-- ✨ AI Match Section -->
-        <div class="modal-ai-match-card">
+        <!-- AI Match Highlight Callout -->
+        <div class="modal-ai-match-box">
           <div class="ai-match-header">
-            <div class="ai-match-title-group">
-              <span class="ai-sparkle">✨</span>
-              <span class="ai-match-label">AI Match Analysis</span>
-            </div>
-            <span id="modal-ai-match-score" class="ai-match-percentage">94% Match</span>
+            <span class="sparkle-icon">✨</span>
+            <span class="ai-match-title">RExchange AI Match</span>
+            <span id="modal-ai-match-score" class="ai-match-score-pill">94% Match</span>
           </div>
-          <p id="modal-ai-match-reason" class="ai-match-reason">
-            Matches your interests in DBMS and computer science coursework.
+          <p id="modal-ai-match-reason" class="ai-match-desc">
+            Matches your academic department in CSE and coursework focus in Database Management Systems.
           </p>
         </div>
 
-        <div class="modal-body-section">
-          <span class="section-micro-label">Description</span>
-          <p id="modal-desc" class="modal-description-text"></p>
-
-          <span class="section-micro-label">Tags</span>
-          <div id="modal-tags" class="modal-tags-list"></div>
-
-          <!-- Student Contact & Meetup Box -->
-          <div class="modal-contact-box">
-            <span class="contact-box-label">Verified SRM Contact & Meetup</span>
-            <div class="contact-box-body">
-              <span id="modal-contact" class="contact-box-text">rahul.sharma@srmuniv.ac.in</span>
-              <button type="button" id="modal-copy-btn" class="btn-copy-contact">Copy</button>
-            </div>
-          </div>
+        <!-- Listing Full Description -->
+        <div class="modal-desc-section">
+          <h3 class="modal-subhead">DESCRIPTION</h3>
+          <p id="modal-desc" class="modal-desc-text"></p>
         </div>
 
-        <!-- Action Buttons: [ Message Student ], [ Save ], [ Share ], [ Close ] -->
-        <div class="modal-footer-actions">
-          <button type="button" id="modal-msg-btn" class="btn-modal-msg">
-            <span class="btn-icon">💬</span> Message Student
+        <!-- Tags -->
+        <div class="modal-tags-section">
+          <h3 class="modal-subhead">CAMPUS TAGS</h3>
+          <div id="modal-tags" class="card-tags-row"></div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="modal-contact-section">
+          <div class="contact-header">
+            <h3 class="modal-subhead">STUDENT CONTACT INFO</h3>
+            <button type="button" id="modal-copy-btn" class="btn-copy-contact" title="Copy Contact Info">📋 Copy</button>
+          </div>
+          <div id="modal-contact" class="modal-contact-box"></div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions-bar">
+          <button type="button" id="modal-save-btn" class="btn-modal-save" title="Save this listing">
+            <span id="modal-save-text">Save</span>
           </button>
-          <button type="button" id="modal-save-btn" class="btn-modal-save">
-            <span class="save-icon">🔖</span> <span id="modal-save-text">Save</span>
-          </button>
-          <button type="button" id="modal-share-btn" class="btn-modal-share" title="Share listing link">
-            <span class="share-icon">🔗</span> Share
-          </button>
+          <button type="button" id="modal-share-btn" class="btn-modal-share" title="Share listing">🔗 Share</button>
+          <button type="button" id="modal-msg-btn" class="btn-modal-msg">💬 Message Student</button>
           <button type="button" id="modal-close-action-btn" class="btn-modal-close">Close</button>
         </div>
 
-        <!-- "You may also like" Related Listings -->
+        <!-- Related Listings Section -->
         <div class="modal-related-section">
-          <h3 class="related-section-title">You may also like</h3>
-          <p class="related-section-sub">Similar offerings shared by SRM peers in this category</p>
-          <div id="modal-related-listings" class="related-listings-grid"></div>
+          <h3 class="modal-subhead">MORE IN THIS CATEGORY</h3>
+          <div id="modal-related-listings" class="modal-related-grid"></div>
         </div>
+
       </div>
 
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast-notification" style="display: none;"></div>
+  <!-- =========================================================================
+       MODAL 3: Profile Edit Modal
+       ========================================================================= -->
+  <div id="profile-edit-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="edit-profile-heading">
+    <div class="modal-card profile-edit-card">
+      <div class="modal-header-line">
+        <h2 id="edit-profile-heading" class="modal-heading">Edit Student Profile</h2>
+        <button type="button" id="btn-close-edit-modal" class="modal-close-btn" aria-label="Close edit profile">✕</button>
+      </div>
 
-  <!-- Modern Startup Footer -->
-  <footer class="app-footer">
-    <div class="site-container">
-      <div class="footer-layout">
-        <div class="footer-brand-side">
-          <div class="footer-brand"><span class="logo-accent">RE</span><span>xchange</span></div>
-          <p class="footer-copy">© 2026 RExchange. Built for SRM students, by students.</p>
+      <form id="profile-edit-form" class="profile-edit-form" novalidate>
+        <div class="post-form-grid">
+          <div class="form-group">
+            <label for="edit-profile-name">Full Name <span class="required">*</span></label>
+            <input type="text" id="edit-profile-name" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-profile-year">Academic Year <span class="required">*</span></label>
+            <input type="text" id="edit-profile-year" placeholder="e.g. 3rd Year" required>
+          </div>
         </div>
-        <div class="footer-links-side">
-          <a href="#explore">Terms of Service</a>
-          <a href="#explore">Privacy Policy</a>
-          <a href="#post">Contact Support</a>
-          <a href="#categories">Campus Ambassadors</a>
+
+        <div class="form-group">
+          <label for="edit-profile-dept">Department / Major <span class="required">*</span></label>
+          <input type="text" id="edit-profile-dept" placeholder="e.g. Computer Science & Engineering" required>
         </div>
+
+        <div class="form-group">
+          <label for="edit-profile-bio">Campus Bio</label>
+          <textarea id="edit-profile-bio" rows="2" placeholder="Tell your campus peers about your interests, project focus, and what you're open to trading..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-profile-skills">Skills (comma-separated)</label>
+          <input type="text" id="edit-profile-skills" placeholder="e.g. Java, Python, UI/UX, Figma, React, Cybersecurity">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-profile-email">Verified Institutional Email (Locked)</label>
+          <input type="email" id="edit-profile-email" readonly disabled style="opacity: 0.6; cursor: not-allowed;">
+          <span class="gate-hint-text">Official @srmist.edu.in verification is tied to this account.</span>
+        </div>
+
+        <div class="profile-edit-actions">
+          <button type="button" id="btn-cancel-edit-profile" class="btn-gate-secondary">Cancel</button>
+          <button type="submit" id="btn-save-profile" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: SRM Verification Required Protection Modal
+       ========================================================================= -->
+  <div id="srm-protection-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="protection-heading">
+    <div class="modal-card srm-protection-card">
+      <div class="gate-success-icon-wrap" style="background: rgba(0, 255, 133, 0.1); border: 1px solid var(--accent-green-border);">
+        <span style="font-size: 2rem;">🛡️</span>
+      </div>
+      <h2 id="protection-heading" class="modal-heading" style="text-align: center; margin-top: 14px;">SRM verification required</h2>
+      <p class="gate-subtitle" style="text-align: center; margin-bottom: 20px;">
+        To protect campus safety and prevent spam, posting listings and messaging peers is restricted exclusively to verified SRM students.
+      </p>
+
+      <div class="profile-edit-actions" style="justify-content: center; gap: 12px;">
+        <button type="button" id="btn-protection-cancel" class="btn-gate-secondary">Cancel</button>
+        <button type="button" id="btn-protection-verify-now" class="btn-gate-primary" style="margin-top: 0;">Verify Now →</button>
       </div>
     </div>
-  </footer>
+  </div>
 
-  <!-- Stitch Three.js 3D Constellation Mesh Background Script -->
-  <script>
-  (function() {
-    const container = document.getElementById('threejs-container-ANIMATION_9');
-    if (!container || typeof THREE === 'undefined') return;
+  <!-- Toast Notification Popover -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    container.appendChild(renderer.domElement);
-
-    const points = [];
-    const nodeCount = 10;
-
-    // Create Nodes in Stitch Neon Green (#00FF85)
-    const geometry = new THREE.SphereGeometry(0.06, 16, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00FF85 });
-
-    for (let i = 0; i < nodeCount; i++) {
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(
-        (Math.random() - 0.5) * 8,
-        (Math.random() - 0.5) * 5,
-        (Math.random() - 0.5) * 3
-      );
-      mesh.userData = {
-        velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.004,
-          (Math.random() - 0.5) * 0.004,
-          (Math.random() - 0.5) * 0.004
-        )
-      };
-      scene.add(mesh);
-      points.push(mesh);
-    }
-
-    // Dynamic Connections Line Segments
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x00FF85,
-      transparent: true,
-      opacity: 0.18
-    });
-
-    const lineGeometry = new THREE.BufferGeometry();
-    const linePositions = new Float32Array(nodeCount * nodeCount * 6);
-    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-    scene.add(lines);
-
-    camera.position.z = 5;
-
-    function animate() {
-      requestAnimationFrame(animate);
-
-      let lineIdx = 0;
-      points.forEach((p, i) => {
-        p.position.add(p.userData.velocity);
-
-        // Gentle bounding box bounce
-        if (Math.abs(p.position.x) > 4) p.userData.velocity.x *= -1;
-        if (Math.abs(p.position.y) > 2.5) p.userData.velocity.y *= -1;
-
-        // Proximity connections
-        for (let j = i + 1; j < points.length; j++) {
-          const p2 = points[j];
-          const dist = p.position.distanceTo(p2.position);
-          if (dist < 3.2) {
-            linePositions[lineIdx++] = p.position.x;
-            linePositions[lineIdx++] = p.position.y;
-            linePositions[lineIdx++] = p.position.z;
-            linePositions[lineIdx++] = p2.position.x;
-            linePositions[lineIdx++] = p2.position.y;
-            linePositions[lineIdx++] = p2.position.z;
-          }
-        }
-      });
-
-      for (let k = lineIdx; k < linePositions.length; k++) {
-        linePositions[k] = 0;
-      }
-
-      lineGeometry.attributes.position.needsUpdate = true;
-      renderer.render(scene, camera);
-    }
-
-    window.addEventListener('resize', () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
-
-    animate();
-  })();
-  </script>
-
+  <!-- Main JavaScript Application -->
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // ==========================================================================
-// RExchange — Core Application Logic, SRM Gate, Detailed Modal & Inbox Messaging
+// RExchange — Core Application Logic (Single-Page Interactive Campus OS)
 // ==========================================================================
 
 // 12 Rich Demo Listings for SRM Campus Community
@@ -14,7 +14,7 @@ const INITIAL_LISTINGS = [
     department: 'Computer Science & Engineering',
     year: '2nd Year CSE',
     avatar: 'RS',
-    contact: 'rahul.sharma@srmuniv.ac.in / Discord @rahul_cse',
+    contact: 'rahul.sharma@srmist.edu.in / Discord @rahul_cse',
     tags: ['#textbook', '#dbms', '#cs205', '#free', '#trade'],
     availability: 'Available',
     isFree: true,
@@ -32,7 +32,7 @@ const INITIAL_LISTINGS = [
     department: 'Software Engineering',
     year: '3rd Year SE',
     avatar: 'RT',
-    contact: 'rachel.t@srmuniv.ac.in',
+    contact: 'rachel.t@srmist.edu.in',
     tags: ['#notes', '#os', '#cs301', '#free'],
     availability: 'Available',
     isFree: true,
@@ -50,7 +50,7 @@ const INITIAL_LISTINGS = [
     department: 'Mathematics & Computing',
     year: '2nd Year Math',
     avatar: 'JM',
-    contact: 'jordan.m@srmuniv.ac.in / @jordan_math',
+    contact: 'jordan.m@srmist.edu.in / @jordan_math',
     tags: ['#calculator', '#ti84', '#math', '#engineering'],
     availability: 'Available',
     isFree: false,
@@ -68,7 +68,7 @@ const INITIAL_LISTINGS = [
     department: 'Electronics & Communication',
     year: '3rd Year ECE',
     avatar: 'DK',
-    contact: 'david.k@srmuniv.ac.in',
+    contact: 'david.k@srmist.edu.in',
     tags: ['#arduino', '#hardware', '#robotics', '#electronics', '#trade'],
     availability: 'Available',
     isFree: false,
@@ -88,7 +88,7 @@ const INITIAL_LISTINGS = [
     department: 'Computer Science',
     year: '3rd Year CSE',
     avatar: 'PN',
-    contact: 'priya.nair@srmuniv.ac.in',
+    contact: 'priya.nair@srmist.edu.in',
     tags: ['#python', '#dsa', '#tutoring', '#peerhelp'],
     availability: 'Available',
     isFree: true,
@@ -106,7 +106,7 @@ const INITIAL_LISTINGS = [
     department: 'Information Technology',
     year: '4th Year IT',
     avatar: 'LP',
-    contact: 'liam.p@srmuniv.ac.in / @liam_dev',
+    contact: 'liam.p@srmist.edu.in / @liam_dev',
     tags: ['#java', '#oop', '#mentoring', '#free'],
     availability: 'Available',
     isFree: true,
@@ -124,7 +124,7 @@ const INITIAL_LISTINGS = [
     department: 'Human-Centered Design',
     year: '4th Year Design',
     avatar: 'CV',
-    contact: 'chloe.design@srmuniv.ac.in',
+    contact: 'chloe.design@srmist.edu.in',
     tags: ['#uiux', '#design', '#portfolio', '#wireframing'],
     availability: 'Available',
     isFree: false,
@@ -142,7 +142,7 @@ const INITIAL_LISTINGS = [
     department: 'Product Design & UI/UX',
     year: '3rd Year Design',
     avatar: 'MS',
-    contact: 'meera.shah@srmuniv.ac.in',
+    contact: 'meera.shah@srmist.edu.in',
     tags: ['#figma', '#components', '#autolayout', '#design'],
     availability: 'Available',
     isFree: false,
@@ -162,7 +162,7 @@ const INITIAL_LISTINGS = [
     department: 'Computer Science',
     year: '3rd Year CSE',
     avatar: 'AK',
-    contact: 'arjun.k@srmuniv.ac.in / @arjun_dev',
+    contact: 'arjun.k@srmist.edu.in / @arjun_dev',
     tags: ['#hackathon', '#react', '#frontend', '#ai', '#team'],
     availability: 'Available',
     isFree: true,
@@ -180,7 +180,7 @@ const INITIAL_LISTINGS = [
     department: 'Campus Developer Society',
     year: 'Student Organization',
     avatar: 'DC',
-    contact: 'devclub@srmuniv.ac.in',
+    contact: 'devclub@srmist.edu.in',
     tags: ['#workshop', '#opensource', '#github', '#free', '#event'],
     availability: 'Available',
     isFree: true,
@@ -198,7 +198,7 @@ const INITIAL_LISTINGS = [
     department: 'Data Science & AI',
     year: '2nd Year AI',
     avatar: 'AS',
-    contact: 'aiden.s@srmuniv.ac.in',
+    contact: 'aiden.s@srmist.edu.in',
     tags: ['#project', '#machinelearning', '#datascience', '#collab'],
     availability: 'Available',
     isFree: true,
@@ -216,7 +216,7 @@ const INITIAL_LISTINGS = [
     department: 'SRM Fine Arts & Media',
     year: 'Campus Council',
     avatar: 'CA',
-    contact: 'arts.society@srmuniv.ac.in',
+    contact: 'arts.society@srmist.edu.in',
     tags: ['#competition', '#graphicdesign', '#prizes', '#campus'],
     availability: 'Available',
     isFree: true,
@@ -294,21 +294,164 @@ const INITIAL_CONVERSATIONS = [
   }
 ];
 
-// Application State
-const state = {
-  listings: [...INITIAL_LISTINGS],
-  conversations: loadStoredConversations(),
-  activeConversationId: 'convo-1',
-  inboxSearchQuery: '',
-  activeFilter: 'All', // 'All', 'Item', 'Skill', 'Opportunity'
-  sortBy: 'newest',    // 'newest', 'relevant'
-  filterType: 'all',   // 'all', 'free', 'available'
-  searchQuery: '',
-  savedIds: new Set(),
-  currentAiSuggestion: null,
-  activeModalListing: null,
-  currentSrmEmail: ''
+// Initial Demo Notifications
+const INITIAL_NOTIFICATIONS = [
+  {
+    id: 'notif-1',
+    type: 'matches',
+    icon: '✨',
+    title: 'AI Match Found',
+    desc: 'RExchange found a 94% match for your DBMS coursework search.',
+    time: '15 mins ago',
+    unread: true,
+    targetId: 'listing-item-1',
+    actionType: 'open-listing'
+  },
+  {
+    id: 'notif-2',
+    type: 'messages',
+    icon: '💬',
+    title: 'New Message',
+    desc: 'Rahul Sharma replied to your DBMS Textbook conversation.',
+    time: '25 mins ago',
+    unread: true,
+    targetId: 'convo-1',
+    actionType: 'open-inbox'
+  },
+  {
+    id: 'notif-3',
+    type: 'opportunities',
+    icon: '🚀',
+    title: 'New Opportunity',
+    desc: 'A new Hackathon Team Looking for Frontend Developer was posted.',
+    time: '1 hour ago',
+    unread: true,
+    targetId: 'listing-opp-1',
+    actionType: 'open-listing'
+  },
+  {
+    id: 'notif-4',
+    type: 'listings',
+    icon: '🔖',
+    title: 'Listing Saved',
+    desc: 'Priya Nair saved your campus listing.',
+    time: '2 hours ago',
+    unread: false,
+    targetId: 'listing-skill-1',
+    actionType: 'open-listing'
+  },
+  {
+    id: 'notif-5',
+    type: 'listings',
+    icon: '✓',
+    title: 'SRM Verified',
+    desc: 'Your official @srmist.edu.in student verification is active.',
+    time: '1 day ago',
+    unread: false,
+    targetId: 'profile',
+    actionType: 'open-profile'
+  }
+];
+
+const DEFAULT_PROFILE = {
+  name: 'Aryan Sharma',
+  avatar: 'AS',
+  department: 'Computer Science & Engineering',
+  year: '3rd Year',
+  email: 'aryan.s@srmist.edu.in',
+  bio: 'Passionate about full-stack web development, AI student tools, and UI prototyping. Active in campus hackathons and open to trading study resources!',
+  skills: ['Java', 'Python', 'UI/UX', 'Figma', 'React', 'Cybersecurity']
 };
+
+function loadStoredSearchHistory() {
+  try {
+    const raw = localStorage.getItem('rexchange_ai_history');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.slice(0, 5);
+    }
+  } catch (err) {
+    console.error('Failed to parse AI history from localStorage', err);
+  }
+  return ['Python tutor', 'DBMS textbook', 'Hackathon teammates'];
+}
+
+function saveStoredSearchHistory(history) {
+  try {
+    localStorage.setItem('rexchange_ai_history', JSON.stringify(history.slice(0, 5)));
+  } catch (err) {
+    console.error('Failed to save AI history to localStorage', err);
+  }
+}
+
+function loadStoredNotifications() {
+  try {
+    const raw = localStorage.getItem('rexchange_notifications');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to parse notifications from localStorage', err);
+  }
+  return JSON.parse(JSON.stringify(INITIAL_NOTIFICATIONS));
+}
+
+function saveStoredNotifications() {
+  try {
+    localStorage.setItem('rexchange_notifications', JSON.stringify(state.notifications));
+  } catch (err) {
+    console.error('Failed to save notifications to localStorage', err);
+  }
+}
+
+function loadStoredProfile() {
+  try {
+    const raw = localStorage.getItem('rexchange_student_profile');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.name) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to parse student profile from localStorage', err);
+  }
+  return { ...DEFAULT_PROFILE };
+}
+
+function saveStoredProfile() {
+  try {
+    localStorage.setItem('rexchange_student_profile', JSON.stringify(state.profile));
+  } catch (err) {
+    console.error('Failed to save student profile to localStorage', err);
+  }
+}
+
+function loadStoredSavedIds() {
+  try {
+    const raw = localStorage.getItem('rexchange_saved_ids');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return new Set(parsed);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to parse saved IDs from localStorage', err);
+  }
+  return new Set();
+}
+
+function saveStoredSavedIds() {
+  try {
+    localStorage.setItem('rexchange_saved_ids', JSON.stringify(Array.from(state.savedIds)));
+  } catch (err) {
+    console.error('Failed to save saved IDs to localStorage', err);
+  }
+}
 
 function loadStoredConversations() {
   try {
@@ -332,6 +475,32 @@ function saveConversationsToStorage() {
     console.error('Failed to save conversations to localStorage', err);
   }
 }
+
+// Application State
+const state = {
+  listings: [...INITIAL_LISTINGS],
+  conversations: loadStoredConversations(),
+  savedIds: loadStoredSavedIds(),
+  profile: loadStoredProfile(),
+  notifications: loadStoredNotifications(),
+  aiSearchHistory: loadStoredSearchHistory(),
+  aiCurrentQuery: '',
+  aiCurrentMatches: [],
+  aiActiveCategoryFilter: 'all',
+  aiSortBy: 'best-match',
+  activeActivityFilter: 'all',
+  activeProfileTab: 'my-listings',
+  activeSavedFilter: 'All',
+  activeConversationId: 'convo-1',
+  inboxSearchQuery: '',
+  activeFilter: 'All',
+  sortBy: 'newest',
+  filterType: 'all',
+  searchQuery: '',
+  currentAiSuggestion: null,
+  activeModalListing: null,
+  currentSrmEmail: ''
+};
 
 // SRM Access Gate Elements
 const srmAccessGate = document.getElementById('srm-access-gate');
@@ -362,6 +531,66 @@ const btnEnterRexchange = document.getElementById('btn-enter-rexchange');
 const navSrmBadge = document.getElementById('nav-srm-badge');
 const btnResetSrmDemo = document.getElementById('btn-reset-srm-demo');
 const inboxUnreadBadge = document.getElementById('inbox-unread-badge');
+const savedCountBadge = document.getElementById('saved-count-badge');
+const navPostBtn = document.getElementById('nav-post-btn');
+
+// Navigation links
+const navSavedLink = document.getElementById('nav-saved-link');
+const navInboxLink = document.getElementById('nav-inbox-link');
+const navProfileLink = document.getElementById('nav-profile-link');
+const navAiMatchLink = document.getElementById('nav-ai-match-link');
+
+// Drawers & Modals (Single-Page Overlays)
+const savedDrawer = document.getElementById('saved');
+const savedCloseBtn = document.getElementById('saved-close-btn');
+
+const inboxDrawer = document.getElementById('inbox');
+const inboxCloseBtn = document.getElementById('inbox-close-btn');
+
+const profileDrawer = document.getElementById('profile');
+const profileCloseBtn = document.getElementById('profile-close-btn');
+
+const postModal = document.getElementById('post');
+const postCloseBtn = document.getElementById('post-close-btn');
+
+// AI Match Center Elements
+const aiMatchForm = document.getElementById('ai-match-form');
+const aiMatchInput = document.getElementById('ai-match-input');
+const btnRunAiMatch = document.getElementById('btn-run-ai-match');
+const aiChipsList = document.getElementById('ai-chips-list');
+const aiHistoryBar = document.getElementById('ai-history-bar');
+const historyChipsStream = document.getElementById('history-chips-stream');
+const btnClearAiHistory = document.getElementById('btn-clear-ai-history');
+
+const aiProcessingState = document.getElementById('ai-processing-state');
+const aiProcStatus = document.getElementById('ai-proc-status');
+const aiResultsArea = document.getElementById('ai-results-area');
+const aiResultsCountTitle = document.getElementById('ai-results-count-title');
+const aiQueryEcho = document.getElementById('ai-query-echo');
+const aiCatFilterButtons = document.querySelectorAll('#ai-cat-filters .ai-cat-btn');
+const aiSortSelect = document.getElementById('ai-sort-select');
+const aiMatchesGrid = document.getElementById('ai-matches-grid');
+const aiEmptyMatches = document.getElementById('ai-empty-matches');
+
+const aiRecommendedSection = document.getElementById('ai-recommended-section');
+const recReasonText = document.getElementById('rec-reason-text');
+const aiRecommendedFeed = document.getElementById('ai-recommended-feed');
+
+// Notification Elements
+const notifWrapper = document.getElementById('notif-wrapper');
+const notifBellBtn = document.getElementById('notif-bell-btn');
+const notifBadge = document.getElementById('notif-badge');
+const notifDropdown = document.getElementById('notif-dropdown');
+const notifUnreadCountTag = document.getElementById('notif-unread-count-tag');
+const btnMarkAllRead = document.getElementById('btn-mark-all-read');
+const notifDropdownList = document.getElementById('notif-dropdown-list');
+const btnViewAllNotifs = document.getElementById('btn-view-all-notifs');
+
+// Activity Page Elements
+const btnPageMarkAllRead = document.getElementById('btn-page-mark-all-read');
+const activityFilterButtons = document.querySelectorAll('#activity-filters-bar .activity-filter-btn');
+const activityFeedList = document.getElementById('activity-feed-list');
+const activityEmptyState = document.getElementById('activity-empty-state');
 
 // Main App DOM Elements
 const form = document.getElementById('listing-form');
@@ -380,6 +609,57 @@ const clearSearchBtn = document.getElementById('clear-search-btn');
 const filterButtons = document.querySelectorAll('#filter-bar .filter-btn');
 const secFilterButtons = document.querySelectorAll('.sec-filter-btn');
 const listingCountTag = document.getElementById('listing-count-tag');
+
+// Saved Section DOM Elements
+const savedFilterButtons = document.querySelectorAll('#saved-filter-bar .saved-filter-btn');
+const savedCountTag = document.getElementById('saved-count-tag');
+const savedEmptyState = document.getElementById('saved-empty-state');
+const savedListingsFeed = document.getElementById('saved-listings-feed');
+
+// Profile Section DOM Elements
+const profileAvatar = document.getElementById('profile-avatar');
+const profileName = document.getElementById('profile-name');
+const profileDeptYear = document.getElementById('profile-dept-year');
+const profileEmailDisplay = document.getElementById('profile-email-display');
+const profileBio = document.getElementById('profile-bio');
+const profileSkillsChips = document.getElementById('profile-skills-chips');
+const profileVerifiedBadge = document.getElementById('profile-verified-badge');
+const btnEditProfile = document.getElementById('btn-edit-profile');
+const btnVerifyStatusBadge = document.getElementById('btn-verify-status-badge');
+
+const profileStatListings = document.getElementById('profile-stat-listings');
+const profileStatSkills = document.getElementById('profile-stat-skills');
+const profileStatSaved = document.getElementById('profile-stat-saved');
+const profileStatTrust = document.getElementById('profile-stat-trust');
+
+const profileTabsBar = document.getElementById('profile-tabs-bar');
+const profileTabButtons = document.querySelectorAll('#profile-tabs-bar .profile-tab-btn');
+const tabCountMyListings = document.getElementById('tab-count-my-listings');
+const tabCountSaved = document.getElementById('tab-count-saved');
+const tabCountSkills = document.getElementById('tab-count-skills');
+const tabCountOpps = document.getElementById('tab-count-opps');
+const profileTabFeed = document.getElementById('profile-tab-feed');
+const profileTabEmpty = document.getElementById('profile-tab-empty');
+const profileEmptyTitle = document.getElementById('profile-empty-title');
+const profileEmptyDesc = document.getElementById('profile-empty-desc');
+const profileEmptyBtn = document.getElementById('profile-empty-btn');
+
+// Profile Edit Modal Elements
+const profileEditModal = document.getElementById('profile-edit-modal');
+const profileEditForm = document.getElementById('profile-edit-form');
+const editProfileName = document.getElementById('edit-profile-name');
+const editProfileYear = document.getElementById('edit-profile-year');
+const editProfileDept = document.getElementById('edit-profile-dept');
+const editProfileBio = document.getElementById('edit-profile-bio');
+const editProfileSkills = document.getElementById('edit-profile-skills');
+const editProfileEmail = document.getElementById('edit-profile-email');
+const btnCloseEditModal = document.getElementById('btn-close-edit-modal');
+const btnCancelEditProfile = document.getElementById('btn-cancel-edit-profile');
+
+// SRM Verification Protection Modal Elements
+const srmProtectionModal = document.getElementById('srm-protection-modal');
+const btnProtectionVerifyNow = document.getElementById('btn-protection-verify-now');
+const btnProtectionCancel = document.getElementById('btn-protection-cancel');
 
 // Category Card Count Badges
 const countItemsBadge = document.getElementById('count-items');
@@ -468,17 +748,17 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// Show Toast Notification
+let toastTimer = null;
 function showToast(message) {
   if (!toast) return;
-  toast.textContent = message;
+  if (toastTimer) clearTimeout(toastTimer);
+  toast.innerHTML = `<span style="display:flex; align-items:center; gap:8px;">${escapeHtml(message)} <button type="button" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.9rem;" onclick="this.parentElement.parentElement.style.display='none';">✕</button></span>`;
   toast.style.display = 'block';
-  setTimeout(() => {
+  toastTimer = setTimeout(() => {
     toast.style.display = 'none';
-  }, 2500);
+  }, 2800);
 }
 
-// Format relative timestamp
 function formatTimestamp(date) {
   const now = new Date();
   const diffMs = now - new Date(date);
@@ -506,7 +786,6 @@ function formatCurrentTime() {
   return `${hours}:${minutes} ${ampm}`;
 }
 
-// Category Badge Color Helper
 function getBadgeClass(category) {
   switch (category) {
     case 'Item': return 'badge-item';
@@ -517,7 +796,821 @@ function getBadgeClass(category) {
 }
 
 // ==========================================================================
-// SRM Student Verification / Access Gate Flow Logic
+// SINGLE-PAGE OVERLAY MANAGEMENT (Drawers & Modals)
+// ==========================================================================
+
+function openDrawer(drawerEl) {
+  if (!drawerEl) return;
+  drawerEl.style.display = 'flex';
+  void drawerEl.offsetWidth;
+  drawerEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer(drawerEl) {
+  if (!drawerEl) return;
+  drawerEl.classList.remove('open');
+  setTimeout(() => {
+    drawerEl.style.display = 'none';
+    if (!document.querySelector('.drawer-overlay.open') && !document.querySelector('.modal-backdrop[style*="display: flex"]')) {
+      document.body.style.overflow = 'auto';
+    }
+  }, 280);
+}
+
+// Saved Drawer
+function openSavedDrawer() {
+  renderSavedListings();
+  openDrawer(savedDrawer);
+}
+function closeSavedDrawer() {
+  closeDrawer(savedDrawer);
+}
+
+// Inbox Drawer
+function openInboxDrawer() {
+  renderInboxConversations();
+  renderActiveChat();
+  openDrawer(inboxDrawer);
+}
+function closeInboxDrawer() {
+  closeDrawer(inboxDrawer);
+}
+
+// Profile Drawer
+function openProfileDrawer() {
+  renderProfile();
+  openDrawer(profileDrawer);
+}
+function closeProfileDrawer() {
+  closeDrawer(profileDrawer);
+}
+
+// Post Listing Modal
+function openPostModal() {
+  if (!requireSRMVerification('posting a listing')) return;
+  if (postModal) {
+    postModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    if (titleInput) titleInput.focus();
+  }
+}
+function closePostModal() {
+  if (postModal) {
+    postModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+}
+
+// Attach overlay backdrop click dismissers
+[savedDrawer, inboxDrawer, profileDrawer].forEach((drawer) => {
+  if (drawer) {
+    drawer.addEventListener('click', (e) => {
+      if (e.target === drawer) closeDrawer(drawer);
+    });
+  }
+});
+
+if (savedCloseBtn) savedCloseBtn.addEventListener('click', closeSavedDrawer);
+if (inboxCloseBtn) inboxCloseBtn.addEventListener('click', closeInboxDrawer);
+if (profileCloseBtn) profileCloseBtn.addEventListener('click', closeProfileDrawer);
+
+if (postModal) {
+  postModal.addEventListener('click', (e) => {
+    if (e.target === postModal) closePostModal();
+  });
+}
+if (postCloseBtn) postCloseBtn.addEventListener('click', closePostModal);
+
+// Navbar Button Listeners
+if (navSavedLink) navSavedLink.addEventListener('click', (e) => { e.preventDefault(); openSavedDrawer(); });
+if (navInboxLink) navInboxLink.addEventListener('click', (e) => { e.preventDefault(); openInboxDrawer(); });
+if (navProfileLink) navProfileLink.addEventListener('click', (e) => { e.preventDefault(); openProfileDrawer(); });
+if (navPostBtn) navPostBtn.addEventListener('click', openPostModal);
+if (profileEmptyBtn) profileEmptyBtn.addEventListener('click', openPostModal);
+
+// Keyboard Escape Key dismisser
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (listingModal && listingModal.style.display === 'flex') closeListingModal();
+    if (postModal && postModal.style.display === 'flex') closePostModal();
+    if (profileEditModal && profileEditModal.style.display === 'flex') closeProfileEditModal();
+    if (srmProtectionModal && srmProtectionModal.style.display === 'flex') {
+      srmProtectionModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+    if (savedDrawer && savedDrawer.classList.contains('open')) closeSavedDrawer();
+    if (inboxDrawer && inboxDrawer.classList.contains('open')) closeInboxDrawer();
+    if (profileDrawer && profileDrawer.classList.contains('open')) closeProfileDrawer();
+    if (notifDropdown) notifDropdown.style.display = 'none';
+  }
+});
+
+// ==========================================================================
+// RExchange AI Matching Engine (Deterministic Relevance Scoring)
+// ==========================================================================
+
+function findMatches(query, listings) {
+  if (!query || !query.trim()) return [];
+
+  const rawQuery = query.trim().toLowerCase();
+  const rawTokens = rawQuery
+    .replace(/[^\w\s#]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 1 && !['the', 'and', 'for', 'with', 'from', 'need', 'want', 'find', 'show', 'someone', 'looking', 'who', 'can', 'help', 'me', 'i'].includes(w));
+
+  function getWordForms(word) {
+    const forms = [word];
+    if (word.endsWith('s') && word.length > 3) forms.push(word.slice(0, -1));
+    if (word.endsWith('es') && word.length > 4) forms.push(word.slice(0, -2));
+    if (word.endsWith('ing') && word.length > 5) forms.push(word.slice(0, -3));
+    if (word.endsWith('ed') && word.length > 4) forms.push(word.slice(0, -2));
+    return forms;
+  }
+
+  const isSeekingSkill = /\b(tutor|tutoring|teach|mentor|learn|explain|review|guidance|help|design|code)\b/i.test(rawQuery);
+  const isSeekingItem = /\b(textbook|book|notes|calculator|arduino|kit|hardware|materials?|buy|trade|giveaway|sheets)\b/i.test(rawQuery);
+  const isSeekingOpp = /\b(hackathon|team|teammates?|collaborat|project|workshop|event|competition|startup)\b/i.test(rawQuery);
+
+  const scoredResults = listings.map((listing) => {
+    let rawScore = 0;
+    const matchingReasons = [];
+
+    const lTitle = (listing.title || '').toLowerCase();
+    const lDesc = (listing.description || '').toLowerCase();
+    const lCat = (listing.category || '').toLowerCase();
+    const lTags = (listing.tags || []).map((t) => t.toLowerCase().replace(/^#/, ''));
+    const lStudent = (listing.studentName || '').toLowerCase();
+    const lDept = (listing.department || '').toLowerCase();
+
+    // 1. Direct Keyword Matching in Title
+    const matchedTokensInTitle = [];
+    rawTokens.forEach((token) => {
+      const forms = getWordForms(token);
+      if (forms.some((f) => lTitle.includes(f) || lTitle.split(/\s+/).some((w) => f.includes(w)))) {
+        matchedTokensInTitle.push(token);
+      }
+    });
+
+    if (matchedTokensInTitle.length > 0) {
+      rawScore += matchedTokensInTitle.length * 32;
+      matchedTokensInTitle.forEach((tm) => {
+        matchingReasons.push(`"${tm.toUpperCase()}" appears in listing title`);
+      });
+    }
+
+    // 2. Tag Matching
+    const matchedTokensInTags = [];
+    rawTokens.forEach((token) => {
+      const forms = getWordForms(token);
+      if (lTags.some((tag) => forms.some((f) => tag.includes(f) || f.includes(tag)))) {
+        matchedTokensInTags.push(token);
+      }
+    });
+
+    if (matchedTokensInTags.length > 0) {
+      rawScore += matchedTokensInTags.length * 26;
+      matchedTokensInTags.forEach((tm) => {
+        if (!matchingReasons.some((r) => r.toLowerCase().includes(tm))) {
+          matchingReasons.push(`Tag #${tm} matches your request`);
+        }
+      });
+    }
+
+    // 3. Category Alignment
+    if (isSeekingSkill && listing.category === 'Skill') {
+      rawScore += 26;
+      matchingReasons.push('Skill category matches your request');
+    } else if (isSeekingItem && listing.category === 'Item') {
+      rawScore += 26;
+      matchingReasons.push('Item category matches your request');
+    } else if (isSeekingOpp && listing.category === 'Opportunity') {
+      rawScore += 26;
+      matchingReasons.push('Opportunity category matches your request');
+    }
+
+    // 4. Description Content
+    const matchedTokensInDesc = [];
+    rawTokens.forEach((token) => {
+      const forms = getWordForms(token);
+      if (!matchedTokensInTitle.includes(token) && forms.some((f) => lDesc.includes(f))) {
+        matchedTokensInDesc.push(token);
+      }
+    });
+
+    if (matchedTokensInDesc.length > 0) {
+      rawScore += matchedTokensInDesc.length * 15;
+      matchingReasons.push(`Description mentions "${matchedTokensInDesc.slice(0, 2).join('", "')}"`);
+    }
+
+    // 5. Academic Field / Department relevance
+    const deptMatches = rawTokens.filter((token) => lDept.includes(token) || lStudent.includes(token));
+    if (deptMatches.length > 0) {
+      rawScore += 14;
+      matchingReasons.push(`Offered by verified ${listing.department} student`);
+    }
+
+    let calculatedPercentage = 0;
+    if (rawScore > 0) {
+      calculatedPercentage = Math.min(98, Math.max(65, Math.round(55 + rawScore * 0.55)));
+    }
+
+    return {
+      listing,
+      score: calculatedPercentage,
+      rawScore,
+      reasons: matchingReasons.length > 0 ? matchingReasons.slice(0, 3) : [`Matches campus exchange criteria for ${listing.category} listings`],
+      reason: matchingReasons.length > 0 ? `Strong match because this listing ${matchingReasons.slice(0, 2).join(' and ')}.` : `General match based on campus exchange relevance in ${listing.category}s.`
+    };
+  });
+
+  return scoredResults
+    .filter((r) => r.rawScore > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+const findAIMatches = findMatches;
+window.findMatches = findMatches;
+window.findAIMatches = findMatches;
+
+// Score Count-Up Animation
+function animateMatchScores() {
+  const scoreElements = document.querySelectorAll('.ai-score-number');
+  scoreElements.forEach((el) => {
+    const target = parseInt(el.getAttribute('data-target-score'), 10) || 90;
+    let current = 0;
+    const duration = 400; // ms
+    const stepTime = 20;
+    const totalSteps = duration / stepTime;
+    const increment = target / totalSteps;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      el.textContent = Math.round(current) + '%';
+    }, stepTime);
+  });
+}
+
+// AI Match Center UI Handlers
+function renderSearchHistory() {
+  if (!historyChipsStream || !aiHistoryBar) return;
+
+  if (state.aiSearchHistory.length === 0) {
+    aiHistoryBar.style.display = 'none';
+    return;
+  }
+
+  aiHistoryBar.style.display = 'flex';
+  historyChipsStream.innerHTML = state.aiSearchHistory
+    .map((query) => `<button type="button" class="history-chip-item" data-query="${escapeHtml(query)}">${escapeHtml(query)}</button>`)
+    .join('');
+
+  historyChipsStream.querySelectorAll('.history-chip-item').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const q = chip.getAttribute('data-query');
+      if (aiMatchInput) aiMatchInput.value = q;
+      if (heroAiSearch) heroAiSearch.value = q;
+      runAiMatch(q);
+    });
+  });
+}
+
+function addToSearchHistory(query) {
+  if (!query) return;
+  const clean = query.trim();
+  state.aiSearchHistory = [clean, ...state.aiSearchHistory.filter((q) => q.toLowerCase() !== clean.toLowerCase())].slice(0, 5);
+  saveStoredSearchHistory(state.aiSearchHistory);
+  renderSearchHistory();
+}
+
+function clearSearchHistory() {
+  state.aiSearchHistory = [];
+  saveStoredSearchHistory([]);
+  renderSearchHistory();
+  showToast('✓ AI search history cleared');
+}
+
+if (btnClearAiHistory) {
+  btnClearAiHistory.addEventListener('click', clearSearchHistory);
+}
+
+// Prompt suggestions click
+if (aiChipsList) {
+  aiChipsList.querySelectorAll('.ai-prompt-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const prompt = chip.getAttribute('data-ai-prompt');
+      if (aiMatchInput) aiMatchInput.value = prompt;
+      if (heroAiSearch) heroAiSearch.value = prompt;
+      runAiMatch(prompt);
+    });
+  });
+}
+
+// Collapse Results Handler
+const btnCollapseAiResults = document.getElementById('btn-collapse-ai-results');
+if (btnCollapseAiResults) {
+  btnCollapseAiResults.addEventListener('click', () => {
+    if (aiResultsArea) {
+      aiResultsArea.style.display = 'none';
+      showToast('✓ AI match results collapsed');
+      const searchCard = document.querySelector('.ai-search-card');
+      if (searchCard) searchCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+}
+
+aiCatFilterButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const cat = btn.getAttribute('data-cat') || 'all';
+    state.aiActiveCategoryFilter = cat;
+
+    aiCatFilterButtons.forEach((b) => {
+      const isActive = (b.getAttribute('data-cat') || 'all') === cat;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    renderAiMatchResults();
+  });
+});
+
+if (aiSortSelect) {
+  aiSortSelect.addEventListener('change', (e) => {
+    state.aiSortBy = e.target.value;
+    renderAiMatchResults();
+  });
+}
+
+function renderAiMatchResults() {
+  if (!aiMatchesGrid) return;
+
+  let results = [...state.aiCurrentMatches];
+  const cat = state.aiActiveCategoryFilter;
+
+  if (cat !== 'all') {
+    results = results.filter((r) => r.listing.category === cat);
+  }
+
+  if (state.aiSortBy === 'best-match') {
+    results.sort((a, b) => b.score - a.score);
+  } else if (state.aiSortBy === 'newest') {
+    results.sort((a, b) => new Date(b.listing.createdAt) - new Date(a.listing.createdAt));
+  }
+
+  if (aiResultsCountTitle) {
+    aiResultsCountTitle.textContent = `✨ We found ${results.length} potential match${results.length === 1 ? '' : 'es'}.`;
+  }
+  if (aiQueryEcho) {
+    aiQueryEcho.textContent = `Query: "${state.aiCurrentQuery}"`;
+  }
+
+  if (results.length === 0) {
+    if (aiEmptyMatches) aiEmptyMatches.style.display = 'block';
+    aiMatchesGrid.innerHTML = '';
+    return;
+  }
+
+  if (aiEmptyMatches) aiEmptyMatches.style.display = 'none';
+
+  aiMatchesGrid.innerHTML = results
+    .map((res) => {
+      const l = res.listing;
+      const safeId = escapeHtml(l.id);
+      const safeTitle = escapeHtml(l.title);
+      const safeDescription = escapeHtml(l.description);
+      const safeCategory = escapeHtml(l.category);
+      const safeAuthor = escapeHtml(l.studentName || 'SRM Student');
+      const safeAvatar = escapeHtml(l.avatar || safeAuthor.slice(0, 2).toUpperCase());
+      const safeAvail = escapeHtml(l.availability || 'Available');
+      const badgeClass = getBadgeClass(l.category);
+      const formattedTime = formatTimestamp(l.createdAt);
+      const isSaved = state.savedIds.has(l.id);
+
+      const tagsHtml = (l.tags || ['#srm', `#${l.category.toLowerCase()}`])
+        .map((tag) => `<span class="tag-pill">${escapeHtml(tag)}</span>`)
+        .join('');
+
+      const reasonsListHtml = (res.reasons || [res.reason])
+        .map((r) => `<div class="ai-reason-bullet"><span class="ai-reason-check">✓</span> <span>${escapeHtml(r)}</span></div>`)
+        .join('');
+
+      return `
+        <article class="ai-match-card" data-id="${safeId}">
+          <div class="card-top-row">
+            <div class="card-badges-left">
+              <span class="ai-score-badge">✨ <span class="ai-score-number" data-target-score="${res.score}">0%</span> MATCH</span>
+              <span class="badge ${badgeClass}">${safeCategory}</span>
+              <span class="badge-srm-verified">✓ SRM Verified</span>
+            </div>
+            <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
+              ${isSaved ? '🔖' : '☆'}
+            </button>
+          </div>
+
+          <h3 class="card-listing-title">${safeTitle}</h3>
+          <p class="card-listing-desc">${safeDescription}</p>
+
+          <div class="ai-match-reason-box">
+            <span class="ai-reason-label">✨ WHY THIS MATCHES</span>
+            <div class="ai-reason-list">
+              ${reasonsListHtml}
+            </div>
+          </div>
+
+          <div class="card-tags-row">
+            ${tagsHtml}
+          </div>
+
+          <div class="card-author-footer">
+            <div class="author-profile-left">
+              <div class="author-avatar">${safeAvatar}</div>
+              <div class="author-details">
+                <span class="author-name">${safeAuthor}</span>
+                <span class="author-time">${formattedTime} • 🟢 ${safeAvail}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-match-actions-row">
+            <button type="button" class="btn-ai-action-view" data-id="${safeId}">View Listing →</button>
+            <button type="button" class="btn-ai-action-msg" data-id="${safeId}">Message</button>
+          </div>
+        </article>
+      `;
+    })
+    .join('');
+
+  attachAiCardListeners();
+  animateMatchScores();
+}
+
+function attachAiCardListeners() {
+  if (!aiMatchesGrid) return;
+
+  aiMatchesGrid.querySelectorAll('.btn-card-save').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-id');
+      toggleSaveListing(id);
+      renderAiMatchResults();
+    });
+  });
+
+  aiMatchesGrid.querySelectorAll('.btn-ai-action-view').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-id');
+      openListingModal(id);
+    });
+  });
+
+  aiMatchesGrid.querySelectorAll('.btn-ai-action-msg').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-id');
+      const listing = state.listings.find((l) => l.id === id);
+      if (listing) {
+        if (!requireSRMVerification('messaging')) return;
+        openOrCreateConversationForListing(listing);
+      }
+    });
+  });
+
+  aiMatchesGrid.querySelectorAll('.ai-match-card').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-card-save') || e.target.closest('.btn-ai-action-view') || e.target.closest('.btn-ai-action-msg')) return;
+      const id = card.getAttribute('data-id');
+      openListingModal(id);
+    });
+  });
+}
+
+function runAiMatch(query) {
+  if (!query || !query.trim()) return;
+
+  const cleanQuery = query.trim();
+  state.aiCurrentQuery = cleanQuery;
+  addToSearchHistory(cleanQuery);
+
+  if (aiResultsArea) aiResultsArea.style.display = 'none';
+  if (aiProcessingState) aiProcessingState.style.display = 'block';
+
+  const dot1 = document.querySelector('.dot-step.dot-1');
+  const dot2 = document.querySelector('.dot-step.dot-2');
+  const dot3 = document.querySelector('.dot-step.dot-3');
+
+  if (aiProcStatus) aiProcStatus.textContent = 'Understanding your request...';
+  if (dot1) dot1.classList.add('active');
+  if (dot2) dot2.classList.remove('active');
+  if (dot3) dot3.classList.remove('active');
+
+  setTimeout(() => {
+    if (aiProcStatus) aiProcStatus.textContent = 'Searching campus listings...';
+    if (dot2) dot2.classList.add('active');
+  }, 350);
+
+  setTimeout(() => {
+    if (aiProcStatus) aiProcStatus.textContent = 'Finding the best matches...';
+    if (dot3) dot3.classList.add('active');
+  }, 700);
+
+  setTimeout(() => {
+    const matches = findMatches(cleanQuery, state.listings);
+    state.aiCurrentMatches = matches;
+
+    if (aiProcessingState) aiProcessingState.style.display = 'none';
+    if (aiResultsArea) aiResultsArea.style.display = 'block';
+
+    renderAiMatchResults();
+    renderPersonalizedRecommendations();
+
+    // Prevent duplicate spam for identical repeated searches
+    const queryKey = cleanQuery.toLowerCase();
+    if (matches.length > 0 && state.lastNotifiedAiQuery !== queryKey) {
+      state.lastNotifiedAiQuery = queryKey;
+      createNotification({
+        type: 'matches',
+        icon: '✨',
+        title: 'New AI Match',
+        desc: `RExchange found ${matches.length} strong match${matches.length === 1 ? '' : 'es'} for "${cleanQuery.slice(0, 24)}".`,
+        targetId: matches[0].listing.id,
+        actionType: 'open-listing'
+      });
+    }
+
+    if (aiResultsArea) {
+      aiResultsArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 1000);
+}
+
+function renderPersonalizedRecommendations() {
+  if (!aiRecommendedSection || !aiRecommendedFeed) return;
+
+  const savedListings = state.listings.filter((l) => state.savedIds.has(l.id));
+  const hasHistory = state.aiSearchHistory.length > 0;
+
+  if (savedListings.length === 0 && !hasHistory) {
+    aiRecommendedSection.style.display = 'none';
+    return;
+  }
+
+  aiRecommendedSection.style.display = 'block';
+
+  let recs = [];
+  if (savedListings.length > 0) {
+    const savedCategories = Array.from(new Set(savedListings.map((l) => l.category)));
+    recs = state.listings.filter((l) => !state.savedIds.has(l.id) && savedCategories.includes(l.category)).slice(0, 3);
+    if (recReasonText) recReasonText.textContent = `Because you saved ${savedListings.length} campus listing${savedListings.length === 1 ? '' : 's'} in ${savedCategories.join(', ')}...`;
+  } else {
+    recs = state.listings.slice(0, 3);
+    if (recReasonText) recReasonText.textContent = `Popular peer resources matching your recent campus searches...`;
+  }
+
+  if (recs.length > 0) {
+    aiRecommendedFeed.innerHTML = recs.map(createListingCardHTML).join('');
+    attachCardListeners(aiRecommendedFeed);
+  } else {
+    aiRecommendedSection.style.display = 'none';
+  }
+}
+
+if (aiMatchForm) {
+  aiMatchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (aiMatchInput) {
+      const q = aiMatchInput.value.trim();
+      if (q) runAiMatch(q);
+    }
+  });
+}
+
+// ==========================================================================
+// Notifications & Campus Activity System
+// ==========================================================================
+
+function createNotification({ type, icon, title, desc, targetId, actionType }) {
+  const newNotif = {
+    id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+    type: type || 'listings',
+    icon: icon || '🔔',
+    title: title || 'Campus Update',
+    desc: desc || '',
+    time: 'Just now',
+    unread: true,
+    targetId: targetId || null,
+    actionType: actionType || 'open-explore'
+  };
+
+  state.notifications.unshift(newNotif);
+  saveStoredNotifications();
+  renderNotifications();
+}
+
+function updateNotificationBadge() {
+  const unreadCount = state.notifications.filter((n) => n.unread === true).length;
+
+  if (notifBadge) {
+    if (unreadCount > 0) {
+      notifBadge.textContent = unreadCount;
+      notifBadge.style.display = 'inline-flex';
+    } else {
+      notifBadge.style.display = 'none';
+    }
+  }
+
+  if (notifUnreadCountTag) {
+    notifUnreadCountTag.textContent = unreadCount > 0 ? `${unreadCount} New` : 'All Read';
+  }
+}
+
+function renderNotifications() {
+  updateNotificationBadge();
+  renderDropdownNotifications();
+  renderActivityFeed();
+}
+
+function renderDropdownNotifications() {
+  if (!notifDropdownList) return;
+
+  if (state.notifications.length === 0) {
+    notifDropdownList.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.84rem;">
+        <span>🔔 No notifications</span>
+      </div>
+    `;
+    return;
+  }
+
+  notifDropdownList.innerHTML = state.notifications
+    .slice(0, 6)
+    .map((n) => {
+      return `
+        <div class="notif-item ${n.unread ? 'unread' : ''}" data-id="${escapeHtml(n.id)}" role="menuitem" tabindex="0">
+          <div class="notif-item-icon">${escapeHtml(n.icon)}</div>
+          <div class="notif-item-content">
+            <div class="notif-item-title">
+              <span>${escapeHtml(n.title)}</span>
+              <span class="notif-item-time">${escapeHtml(n.time)}</span>
+            </div>
+            <p class="notif-item-desc">${escapeHtml(n.desc)}</p>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  notifDropdownList.querySelectorAll('.notif-item').forEach((item) => {
+    item.addEventListener('click', () => {
+      const id = item.getAttribute('data-id');
+      handleNotificationClick(id);
+    });
+  });
+}
+
+function renderActivityFeed() {
+  if (!activityFeedList) return;
+
+  let filtered = state.notifications;
+  const f = state.activeActivityFilter;
+
+  if (f === 'unread') {
+    filtered = state.notifications.filter((n) => n.unread === true);
+  } else if (f !== 'all') {
+    filtered = state.notifications.filter((n) => n.type === f);
+  }
+
+  if (filtered.length === 0) {
+    if (activityEmptyState) activityEmptyState.style.display = 'block';
+    activityFeedList.innerHTML = '';
+  } else {
+    if (activityEmptyState) activityEmptyState.style.display = 'none';
+    activityFeedList.innerHTML = filtered
+      .map((n) => {
+        return `
+          <div class="activity-card-item ${n.unread ? 'unread' : ''}" data-id="${escapeHtml(n.id)}" role="listitem">
+            <div class="activity-card-icon">${escapeHtml(n.icon)}</div>
+            <div class="activity-card-content">
+              <div class="activity-card-header">
+                <span class="activity-card-title">${escapeHtml(n.title)}</span>
+                <span class="activity-card-time">${escapeHtml(n.time)}</span>
+              </div>
+              <p class="activity-card-desc">${escapeHtml(n.desc)}</p>
+              <div class="activity-card-actions">
+                <button type="button" class="btn-card-action-mini btn-notif-open" data-id="${escapeHtml(n.id)}">Open →</button>
+                <button type="button" class="btn-card-dismiss btn-notif-delete" data-id="${escapeHtml(n.id)}" title="Dismiss notification">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+
+    activityFeedList.querySelectorAll('.btn-notif-open').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        handleNotificationClick(id);
+      });
+    });
+
+    activityFeedList.querySelectorAll('.btn-notif-delete').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        deleteNotification(id);
+      });
+    });
+
+    activityFeedList.querySelectorAll('.activity-card-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const id = item.getAttribute('data-id');
+        handleNotificationClick(id);
+      });
+    });
+  }
+}
+
+function handleNotificationClick(notifId) {
+  const notif = state.notifications.find((n) => n.id === notifId);
+  if (!notif) return;
+
+  if (notif.unread) {
+    notif.unread = false;
+    saveStoredNotifications();
+    renderNotifications();
+  }
+
+  if (notifDropdown) notifDropdown.style.display = 'none';
+
+  if (notif.actionType === 'open-inbox') {
+    const convoId = notif.targetId;
+    if (convoId) selectConversation(convoId);
+    openInboxDrawer();
+  } else if (notif.actionType === 'open-listing') {
+    if (notif.targetId) openListingModal(notif.targetId);
+  } else if (notif.actionType === 'open-profile') {
+    openProfileDrawer();
+  } else {
+    const aiMatch = document.getElementById('ai-match');
+    if (aiMatch) aiMatch.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function deleteNotification(notifId) {
+  state.notifications = state.notifications.filter((n) => n.id !== notifId);
+  saveStoredNotifications();
+  renderNotifications();
+  showToast('✓ Notification dismissed');
+}
+
+function markAllNotificationsAsRead() {
+  state.notifications.forEach((n) => (n.unread = false));
+  saveStoredNotifications();
+  renderNotifications();
+  showToast('✓ All notifications marked as read');
+}
+
+if (btnMarkAllRead) btnMarkAllRead.addEventListener('click', markAllNotificationsAsRead);
+if (btnPageMarkAllRead) btnPageMarkAllRead.addEventListener('click', markAllNotificationsAsRead);
+
+if (notifBellBtn && notifDropdown) {
+  notifBellBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = notifDropdown.style.display === 'flex';
+    notifDropdown.style.display = isVisible ? 'none' : 'flex';
+    notifBellBtn.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (notifDropdown && !notifDropdown.contains(e.target) && !notifBellBtn.contains(e.target)) {
+      notifDropdown.style.display = 'none';
+      if (notifBellBtn) notifBellBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+activityFilterButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const f = btn.getAttribute('data-activity-filter') || 'all';
+    state.activeActivityFilter = f;
+
+    activityFilterButtons.forEach((b) => {
+      const isActive = (b.getAttribute('data-activity-filter') || 'all') === f;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    renderActivityFeed();
+  });
+});
+
+// ==========================================================================
+// SRM Student Verification (@srmist.edu.in validation only)
 // ==========================================================================
 
 function switchGateStep(activeStepElement) {
@@ -532,14 +1625,30 @@ function switchGateStep(activeStepElement) {
 function isValidSrmEmail(email) {
   if (!email) return false;
   const cleanEmail = email.trim().toLowerCase();
-  const srmRegex = /^[a-zA-Z0-9._%+-]+@srmuniv\.ac\.in$/;
+  const srmRegex = /^[a-zA-Z0-9._%+-]+@srmist\.edu\.in$/i;
   return srmRegex.test(cleanEmail);
 }
 
-function initSRMVerification() {
-  const isVerified = localStorage.getItem('isSRMVerified') === 'true';
+function isSRMVerified() {
+  return localStorage.getItem('isSRMVerified') === 'true';
+}
 
-  if (isVerified) {
+function requireSRMVerification(featureName = 'this feature') {
+  if (isSRMVerified()) return true;
+
+  if (srmProtectionModal) {
+    srmProtectionModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  } else {
+    initSRMVerification();
+  }
+  return false;
+}
+
+function initSRMVerification() {
+  const verified = isSRMVerified();
+
+  if (verified) {
     if (srmAccessGate) srmAccessGate.style.display = 'none';
     if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
     document.body.style.overflow = 'auto';
@@ -549,6 +1658,8 @@ function initSRMVerification() {
     document.body.style.overflow = 'hidden';
     switchGateStep(gateStepWelcome);
   }
+
+  renderProfile();
 }
 
 if (btnContinueSrm) {
@@ -575,7 +1686,7 @@ if (srmEmailForm) {
 
     if (!isValidSrmEmail(rawEmail)) {
       if (srmEmailError) {
-        srmEmailError.textContent = 'Please use your official SRM student email.';
+        srmEmailError.textContent = 'Please use your official SRM institutional email.';
         srmEmailError.style.display = 'block';
       }
       srmEmailInput.focus();
@@ -584,6 +1695,8 @@ if (srmEmailForm) {
 
     if (srmEmailError) srmEmailError.style.display = 'none';
     state.currentSrmEmail = rawEmail.toLowerCase();
+    state.profile.email = state.currentSrmEmail;
+    saveStoredProfile();
 
     if (btnVerifyEmail) btnVerifyEmail.disabled = true;
     if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Checking Domain...';
@@ -663,7 +1776,32 @@ if (btnEnterRexchange) {
     if (srmAccessGate) srmAccessGate.style.display = 'none';
     if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
     document.body.style.overflow = 'auto';
+    renderProfile();
+    createNotification({
+      type: 'listings',
+      icon: '✓',
+      title: 'SRM Verified',
+      desc: 'Your official @srmist.edu.in student verification is active. Welcome to RExchange!',
+      targetId: 'profile',
+      actionType: 'open-profile'
+    });
     showToast('🎓 Welcome to RExchange, verified SRM student!');
+  });
+}
+
+if (btnProtectionVerifyNow) {
+  btnProtectionVerifyNow.addEventListener('click', () => {
+    if (srmProtectionModal) srmProtectionModal.style.display = 'none';
+    if (srmAccessGate) srmAccessGate.style.display = 'flex';
+    switchGateStep(gateStepEmail);
+    if (srmEmailInput) srmEmailInput.focus();
+  });
+}
+
+if (btnProtectionCancel) {
+  btnProtectionCancel.addEventListener('click', () => {
+    if (srmProtectionModal) srmProtectionModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
   });
 }
 
@@ -680,7 +1818,7 @@ if (btnResetSrmDemo) {
 window.resetSRMVerification = resetSRMVerification;
 
 // ==========================================================================
-// Metrics & Data Sync
+// Metrics & Badges Data Sync
 // ==========================================================================
 
 function updateAllMetrics() {
@@ -699,6 +1837,9 @@ function updateAllMetrics() {
   if (pulsePotentialMatches) pulsePotentialMatches.textContent = '0';
 
   updateInboxUnreadBadge();
+  updateSavedBadge();
+  updateNotificationBadge();
+  renderProfileStats();
 }
 
 function updateInboxUnreadBadge() {
@@ -709,6 +1850,17 @@ function updateInboxUnreadBadge() {
     inboxUnreadBadge.style.display = 'inline-flex';
   } else {
     inboxUnreadBadge.style.display = 'none';
+  }
+}
+
+function updateSavedBadge() {
+  if (!savedCountBadge) return;
+  const count = state.savedIds.size;
+  if (count > 0) {
+    savedCountBadge.textContent = count;
+    savedCountBadge.style.display = 'inline-flex';
+  } else {
+    savedCountBadge.style.display = 'none';
   }
 }
 
@@ -724,8 +1876,58 @@ function setActiveFilter(filterName) {
   renderListings();
 }
 
+function createListingCardHTML(listing) {
+  const safeId = escapeHtml(listing.id);
+  const safeTitle = escapeHtml(listing.title);
+  const safeDescription = escapeHtml(listing.description);
+  const safeCategory = escapeHtml(listing.category);
+  const safeAuthor = escapeHtml(listing.studentName || 'SRM Student');
+  const safeAvatar = escapeHtml(listing.avatar || safeAuthor.slice(0, 2).toUpperCase());
+  const safeAvail = escapeHtml(listing.availability || 'Available');
+  const badgeClass = getBadgeClass(listing.category);
+  const formattedTime = formatTimestamp(listing.createdAt);
+  const isSaved = state.savedIds.has(listing.id);
+
+  const tagsHtml = (listing.tags || ['#srm', `#${listing.category.toLowerCase()}`])
+    .map((tag) => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
+    .join('');
+
+  return `
+    <article class="listing-card-modern" data-id="${safeId}">
+      <div class="card-top-row">
+        <div class="card-badges-left">
+          <span class="badge ${badgeClass}">${safeCategory}</span>
+          <span class="badge-avail">🟢 ${safeAvail}</span>
+          <span class="badge-srm-verified">✓ SRM Verified</span>
+        </div>
+        <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
+          ${isSaved ? '🔖' : '☆'}
+        </button>
+      </div>
+
+      <h3 class="card-listing-title">${safeTitle}</h3>
+      <p class="card-listing-desc">${safeDescription}</p>
+
+      <div class="card-tags-row">
+        ${tagsHtml}
+      </div>
+
+      <div class="card-author-footer">
+        <div class="author-profile-left">
+          <div class="author-avatar">${safeAvatar}</div>
+          <div class="author-details">
+            <span class="author-name">${safeAuthor} <span class="badge-srm-verified" style="font-size:0.64rem; padding: 1px 4px; margin-left: 3px;">✓ SRM Verified</span></span>
+            <span class="author-time">${formattedTime}</span>
+          </div>
+        </div>
+        <button type="button" class="btn-card-view" data-id="${safeId}">View →</button>
+      </div>
+    </article>
+  `;
+}
+
 // ==========================================================================
-// Listing Feed Rendering & Filtering
+// Explore Listing Feed Rendering & Filtering
 // ==========================================================================
 
 function renderListings() {
@@ -786,64 +1988,47 @@ function renderListings() {
   if (emptyState) emptyState.style.display = 'none';
 
   if (listingsFeed) {
-    listingsFeed.innerHTML = filtered
-      .map((listing) => {
-        const safeId = escapeHtml(listing.id);
-        const safeTitle = escapeHtml(listing.title);
-        const safeDescription = escapeHtml(listing.description);
-        const safeCategory = escapeHtml(listing.category);
-        const safeAuthor = escapeHtml(listing.studentName || 'SRM Student');
-        const safeAvatar = escapeHtml(listing.avatar || safeAuthor.slice(0, 2).toUpperCase());
-        const safeAvail = escapeHtml(listing.availability || 'Available');
-        const badgeClass = getBadgeClass(listing.category);
-        const formattedTime = formatTimestamp(listing.createdAt);
-        const isSaved = state.savedIds.has(listing.id);
-
-        const tagsHtml = (listing.tags || ['#srm', `#${listing.category.toLowerCase()}`])
-          .map((tag) => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
-          .join('');
-
-        return `
-          <article class="listing-card-modern" data-id="${safeId}">
-            <div class="card-top-row">
-              <div class="card-badges-left">
-                <span class="badge ${badgeClass}">${safeCategory}</span>
-                <span class="badge-avail">🟢 ${safeAvail}</span>
-                <span class="badge-srm-verified">✓ SRM</span>
-              </div>
-              <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
-                ${isSaved ? '🔖' : '☆'}
-              </button>
-            </div>
-
-            <h3 class="card-listing-title">${safeTitle}</h3>
-            <p class="card-listing-desc">${safeDescription}</p>
-
-            <div class="card-tags-row">
-              ${tagsHtml}
-            </div>
-
-            <div class="card-author-footer">
-              <div class="author-profile-left">
-                <div class="author-avatar">${safeAvatar}</div>
-                <div class="author-details">
-                  <span class="author-name">${safeAuthor}</span>
-                  <span class="author-time">${formattedTime}</span>
-                </div>
-              </div>
-              <button type="button" class="btn-card-view" data-id="${safeId}">View →</button>
-            </div>
-          </article>
-        `;
-      })
-      .join('');
-
-    attachCardListeners();
+    listingsFeed.innerHTML = filtered.map(createListingCardHTML).join('');
+    attachCardListeners(listingsFeed);
   }
 }
 
-function attachCardListeners() {
-  document.querySelectorAll('.btn-card-save').forEach((btn) => {
+// ==========================================================================
+// Saved for Later Section Rendering & Filtering
+// ==========================================================================
+
+function renderSavedListings() {
+  if (!savedListingsFeed) return;
+
+  const savedList = state.listings.filter((l) => state.savedIds.has(l.id));
+
+  let filteredSaved = savedList;
+  if (state.activeSavedFilter !== 'All') {
+    filteredSaved = savedList.filter((l) => l.category === state.activeSavedFilter);
+  }
+
+  if (savedCountTag) {
+    savedCountTag.textContent = `${filteredSaved.length} Saved`;
+  }
+
+  if (filteredSaved.length === 0) {
+    if (savedEmptyState) savedEmptyState.style.display = 'block';
+    savedListingsFeed.innerHTML = '';
+  } else {
+    if (savedEmptyState) savedEmptyState.style.display = 'none';
+    savedListingsFeed.innerHTML = filteredSaved.map(createListingCardHTML).join('');
+    attachCardListeners(savedListingsFeed);
+  }
+
+  updateSavedBadge();
+  renderProfileStats();
+  renderPersonalizedRecommendations();
+}
+
+function attachCardListeners(container) {
+  if (!container) return;
+
+  container.querySelectorAll('.btn-card-save').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const listingId = btn.getAttribute('data-id');
@@ -851,7 +2036,7 @@ function attachCardListeners() {
     });
   });
 
-  document.querySelectorAll('.btn-card-view').forEach((btn) => {
+  container.querySelectorAll('.btn-card-view').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const listingId = btn.getAttribute('data-id');
@@ -859,7 +2044,7 @@ function attachCardListeners() {
     });
   });
 
-  document.querySelectorAll('.listing-card-modern').forEach((card) => {
+  container.querySelectorAll('.listing-card-modern').forEach((card) => {
     card.addEventListener('click', (e) => {
       if (e.target.closest('.tag-pill') || e.target.closest('.btn-card-save')) return;
       const listingId = card.getAttribute('data-id');
@@ -867,7 +2052,7 @@ function attachCardListeners() {
     });
   });
 
-  document.querySelectorAll('.tag-pill').forEach((pill) => {
+  container.querySelectorAll('.tag-pill').forEach((pill) => {
     pill.addEventListener('click', (e) => {
       e.stopPropagation();
       const tagText = pill.getAttribute('data-tag').replace(/^#/, '');
@@ -882,13 +2067,26 @@ function attachCardListeners() {
 }
 
 function toggleSaveListing(listingId) {
+  const listing = state.listings.find((l) => l.id === listingId);
+  const title = listing ? listing.title : 'Listing';
+
   if (state.savedIds.has(listingId)) {
     state.savedIds.delete(listingId);
-    showToast('Removed from saved.');
+    showToast('Removed from saved');
   } else {
     state.savedIds.add(listingId);
-    showToast('🔖 Saved listing to your bookmarks!');
+    createNotification({
+      type: 'listings',
+      icon: '🔖',
+      title: 'Listing Saved',
+      desc: `Saved "${title}" to your bookmarked listings.`,
+      targetId: listingId,
+      actionType: 'open-listing'
+    });
+    showToast('Saved to your listings');
   }
+
+  saveStoredSavedIds();
 
   if (state.activeModalListing && state.activeModalListing.id === listingId) {
     const isSaved = state.savedIds.has(listingId);
@@ -897,6 +2095,229 @@ function toggleSaveListing(listingId) {
   }
 
   renderListings();
+  renderSavedListings();
+  renderProfileTabContent();
+  renderPersonalizedRecommendations();
+}
+
+// Saved Filter Buttons Listener
+savedFilterButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const filterCat = btn.getAttribute('data-saved-filter') || 'All';
+    state.activeSavedFilter = filterCat;
+
+    savedFilterButtons.forEach((b) => {
+      const isActive = (b.getAttribute('data-saved-filter') || 'All') === filterCat;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    renderSavedListings();
+  });
+});
+
+// ==========================================================================
+// Student Profile & SRM Verified Identity Section
+// ==========================================================================
+
+function getMyListings() {
+  const pName = (state.profile.name || '').toLowerCase();
+  const pAvatar = (state.profile.avatar || '').toUpperCase();
+  return state.listings.filter((l) => {
+    const lName = (l.studentName || '').toLowerCase();
+    const lAvatar = (l.avatar || '').toUpperCase();
+    return lName === pName || lName.includes('you') || lAvatar === pAvatar || l.id.startsWith('my-listing-');
+  });
+}
+
+function renderProfile() {
+  if (!profileName) return;
+
+  const verified = isSRMVerified();
+
+  if (profileAvatar) profileAvatar.textContent = state.profile.avatar || 'AS';
+  if (profileName) profileName.textContent = state.profile.name;
+  if (profileDeptYear) profileDeptYear.textContent = `${state.profile.year} • ${state.profile.department}`;
+  if (profileEmailDisplay) profileEmailDisplay.textContent = state.profile.email;
+  if (profileBio) profileBio.textContent = state.profile.bio;
+
+  if (profileVerifiedBadge) {
+    if (verified) {
+      profileVerifiedBadge.textContent = '✓ SRM Verified';
+      profileVerifiedBadge.style.display = 'inline-flex';
+    } else {
+      profileVerifiedBadge.textContent = 'Unverified (Click to verify)';
+      profileVerifiedBadge.style.cursor = 'pointer';
+      profileVerifiedBadge.onclick = () => requireSRMVerification('verification');
+    }
+  }
+
+  if (profileSkillsChips) {
+    const skills = state.profile.skills || ['Java', 'Python', 'UI/UX', 'Figma'];
+    profileSkillsChips.innerHTML = skills
+      .map((skill) => `<span class="profile-skill-chip">${escapeHtml(skill)}</span>`)
+      .join('');
+  }
+
+  renderProfileStats();
+  renderProfileTabContent();
+}
+
+function renderProfileStats() {
+  const myListings = getMyListings();
+  const mySkills = myListings.filter((l) => l.category === 'Skill');
+  const savedCount = state.savedIds.size;
+  const myOpps = myListings.filter((l) => l.category === 'Opportunity');
+
+  if (profileStatListings) profileStatListings.textContent = myListings.length;
+  if (profileStatSkills) profileStatSkills.textContent = mySkills.length;
+  if (profileStatSaved) profileStatSaved.textContent = savedCount;
+
+  if (tabCountMyListings) tabCountMyListings.textContent = myListings.length;
+  if (tabCountSaved) tabCountSaved.textContent = savedCount;
+  if (tabCountSkills) tabCountSkills.textContent = mySkills.length;
+  if (tabCountOpps) tabCountOpps.textContent = myOpps.length;
+}
+
+function renderProfileTabContent() {
+  if (!profileTabFeed) return;
+
+  let itemsToRender = [];
+  const tab = state.activeProfileTab;
+
+  if (tab === 'my-listings') {
+    itemsToRender = getMyListings();
+  } else if (tab === 'saved') {
+    itemsToRender = state.listings.filter((l) => state.savedIds.has(l.id));
+  } else if (tab === 'skills') {
+    itemsToRender = getMyListings().filter((l) => l.category === 'Skill');
+    if (itemsToRender.length === 0) {
+      itemsToRender = state.listings.filter((l) => l.category === 'Skill');
+    }
+  } else if (tab === 'opportunities') {
+    itemsToRender = getMyListings().filter((l) => l.category === 'Opportunity');
+  }
+
+  if (itemsToRender.length === 0) {
+    if (profileTabEmpty) {
+      profileTabEmpty.style.display = 'block';
+      if (profileEmptyTitle) {
+        profileEmptyTitle.textContent = tab === 'saved' ? 'Nothing saved yet.' : 'No listings in this tab.';
+      }
+      if (profileEmptyDesc) {
+        profileEmptyDesc.textContent = tab === 'saved' 
+          ? 'Save campus listings you are interested in and find them here later.'
+          : 'Share an item, offer a skill, or post an open opportunity on campus.';
+      }
+      if (profileEmptyBtn) {
+        profileEmptyBtn.onclick = () => {
+          closeProfileDrawer();
+          if (tab === 'saved') {
+            const explore = document.getElementById('explore');
+            if (explore) explore.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            openPostModal();
+          }
+        };
+      }
+    }
+    profileTabFeed.innerHTML = '';
+  } else {
+    if (profileTabEmpty) profileTabEmpty.style.display = 'none';
+    profileTabFeed.innerHTML = itemsToRender.map(createListingCardHTML).join('');
+    attachCardListeners(profileTabFeed);
+  }
+}
+
+// Profile Tab Switching
+profileTabButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const tabName = btn.getAttribute('data-profile-tab') || 'my-listings';
+    state.activeProfileTab = tabName;
+
+    profileTabButtons.forEach((b) => {
+      const isActive = (b.getAttribute('data-profile-tab') || 'my-listings') === tabName;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    renderProfileTabContent();
+  });
+});
+
+// Profile Editing Modal Handlers
+if (btnEditProfile) {
+  btnEditProfile.addEventListener('click', () => {
+    if (editProfileName) editProfileName.value = state.profile.name;
+    if (editProfileYear) editProfileYear.value = state.profile.year;
+    if (editProfileDept) editProfileDept.value = state.profile.department;
+    if (editProfileBio) editProfileBio.value = state.profile.bio;
+    if (editProfileSkills) editProfileSkills.value = (state.profile.skills || []).join(', ');
+    if (editProfileEmail) editProfileEmail.value = state.profile.email;
+
+    if (profileEditModal) {
+      profileEditModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      if (editProfileName) editProfileName.focus();
+    }
+  });
+}
+
+function closeProfileEditModal() {
+  if (profileEditModal) {
+    profileEditModal.style.display = 'none';
+    if (!document.querySelector('.drawer-overlay.open')) {
+      document.body.style.overflow = 'auto';
+    }
+  }
+}
+
+if (btnCloseEditModal) btnCloseEditModal.addEventListener('click', closeProfileEditModal);
+if (btnCancelEditProfile) btnCancelEditProfile.addEventListener('click', closeProfileEditModal);
+
+if (profileEditModal) {
+  profileEditModal.addEventListener('click', (e) => {
+    if (e.target === profileEditModal) closeProfileEditModal();
+  });
+}
+
+if (profileEditForm) {
+  profileEditForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = (editProfileName.value || '').trim() || 'Aryan Sharma';
+    const year = (editProfileYear.value || '').trim() || '3rd Year';
+    const department = (editProfileDept.value || '').trim() || 'Computer Science';
+    const bio = (editProfileBio.value || '').trim();
+    const skillsRaw = editProfileSkills.value || '';
+    const skills = skillsRaw
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const initials = name
+      .split(' ')
+      .filter(Boolean)
+      .map((w) => w[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || 'AS';
+
+    state.profile = {
+      ...state.profile,
+      name,
+      avatar: initials,
+      year,
+      department,
+      bio,
+      skills: skills.length > 0 ? skills : ['Java', 'Python', 'UI/UX', 'Figma']
+    };
+
+    saveStoredProfile();
+    closeProfileEditModal();
+    renderProfile();
+    showToast('✓ Profile updated successfully!');
+  });
 }
 
 // Open Detailed Listing Modal
@@ -932,7 +2353,7 @@ function openListingModal(listingId) {
     modalAvatar.textContent = listing.avatar || authorName.slice(0, 2).toUpperCase();
   }
   if (modalAuthorName) {
-    modalAuthorName.textContent = authorName;
+    modalAuthorName.innerHTML = `${authorName} <span class="badge-srm-verified" style="font-size:0.68rem; margin-left: 4px;">✓ SRM Verified</span>`;
   }
   if (modalStudentDept) {
     modalStudentDept.textContent = `${authorYear} • ${authorDept}`;
@@ -1018,9 +2439,7 @@ function openListingModal(listingId) {
 function closeListingModal() {
   if (listingModal) {
     listingModal.style.display = 'none';
-    if (!localStorage.getItem('isSRMVerified')) {
-      document.body.style.overflow = 'hidden';
-    } else {
+    if (!document.querySelector('.drawer-overlay.open')) {
       document.body.style.overflow = 'auto';
     }
     state.activeModalListing = null;
@@ -1036,9 +2455,10 @@ if (listingModal) {
   });
 }
 
-// Modal Message Student Button (Connects directly to Inbox)
+// Modal Message Student Button (Directly opens Inbox Drawer!)
 if (modalMsgBtn) {
   modalMsgBtn.addEventListener('click', () => {
+    if (!requireSRMVerification('messaging')) return;
     if (!state.activeModalListing) return;
     const listing = state.activeModalListing;
     closeListingModal();
@@ -1062,9 +2482,7 @@ if (modalShareBtn) {
         await navigator.share(shareData);
         showToast('🔗 Shared successfully!');
         return;
-      } catch (err) {
-        // Fallback to clipboard
-      }
+      } catch (err) {}
     }
 
     if (navigator.clipboard) {
@@ -1098,7 +2516,6 @@ if (modalSaveBtn) {
 function openOrCreateConversationForListing(listing) {
   const studentName = listing.studentName || 'Rahul Sharma';
   
-  // Find if a conversation already exists with this student and listing
   let existingConvo = state.conversations.find((c) => 
     c.studentName.toLowerCase() === studentName.toLowerCase() ||
     c.listingId === listing.id
@@ -1131,10 +2548,7 @@ function openOrCreateConversationForListing(listing) {
   renderInboxConversations();
   renderActiveChat();
 
-  const inboxSection = document.getElementById('inbox');
-  if (inboxSection) {
-    inboxSection.scrollIntoView({ behavior: 'smooth' });
-  }
+  openInboxDrawer();
 
   if (inboxMainCard) {
     inboxMainCard.classList.add('mobile-chat-open');
@@ -1237,7 +2651,6 @@ function renderActiveChat() {
   const activeConvo = state.conversations.find((c) => c.id === state.activeConversationId) || state.conversations[0];
   if (!activeConvo) return;
 
-  // Header Details
   if (chatHeaderAvatar) {
     chatHeaderAvatar.textContent = activeConvo.avatar || activeConvo.studentName.slice(0, 2).toUpperCase();
   }
@@ -1245,7 +2658,6 @@ function renderActiveChat() {
     chatHeaderName.textContent = activeConvo.studentName;
   }
 
-  // Related Listing Banner
   if (chatListingIcon) {
     chatListingIcon.textContent = activeConvo.icon || '📖';
   }
@@ -1260,11 +2672,11 @@ function renderActiveChat() {
     chatListingAuthorInfo.textContent = `Posted by ${activeConvo.studentName}`;
   }
 
-  // Click View Listing in Banner
   if (btnChatViewListing) {
     btnChatViewListing.onclick = () => {
       const listing = state.listings.find((l) => l.id === activeConvo.listingId || l.title === activeConvo.listingTitle);
       if (listing) {
+        closeInboxDrawer();
         openListingModal(listing.id);
       } else {
         showToast('ℹ️ Listing preview displayed above.');
@@ -1272,7 +2684,6 @@ function renderActiveChat() {
     };
   }
 
-  // Message Bubbles
   if (chatMessagesStream) {
     const messages = activeConvo.messages || [];
     chatMessagesStream.innerHTML = messages
@@ -1291,10 +2702,11 @@ function renderActiveChat() {
   }
 }
 
-// Send Message Event Handler
 if (chatSendForm && chatMessageInput) {
   chatSendForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    if (!requireSRMVerification('sending messages')) return;
+
     const rawText = chatMessageInput.value.trim();
     if (!rawText) return;
 
@@ -1311,18 +2723,25 @@ if (chatSendForm && chatMessageInput) {
     activeConvo.unread = false;
     saveConversationsToStorage();
 
+    createNotification({
+      type: 'messages',
+      icon: '💬',
+      title: 'Message Sent',
+      desc: `Sent to ${activeConvo.studentName}: "${rawText.slice(0, 30)}..."`,
+      targetId: activeConvo.id,
+      actionType: 'open-inbox'
+    });
+
     chatMessageInput.value = '';
     renderActiveChat();
     renderInboxConversations();
 
-    // Auto-scroll to newest message
     if (chatMessagesStream) {
       chatMessagesStream.scrollTop = chatMessagesStream.scrollHeight;
     }
   });
 }
 
-// Inbox Search Filter Input
 if (inboxSearchInput) {
   inboxSearchInput.addEventListener('input', (e) => {
     state.inboxSearchQuery = e.target.value;
@@ -1330,7 +2749,6 @@ if (inboxSearchInput) {
   });
 }
 
-// Mobile Chat Back Button
 if (btnChatBackMobile) {
   btnChatBackMobile.addEventListener('click', () => {
     if (inboxMainCard) {
@@ -1339,7 +2757,7 @@ if (btnChatBackMobile) {
   });
 }
 
-// Primary Category Filter Buttons Listener
+// Explore Category Filter Buttons Listener
 filterButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     const filterName = btn.getAttribute('data-filter');
@@ -1372,7 +2790,6 @@ secFilterButtons.forEach((btn) => {
   });
 });
 
-// Clear Search Button
 if (clearSearchBtn) {
   clearSearchBtn.addEventListener('click', () => {
     state.searchQuery = '';
@@ -1412,7 +2829,7 @@ if (searchClearBtn) {
   });
 }
 
-// Category Feature Cards click handler
+// Category Cards click -> Smooth scroll to Explore and activate filter
 categoryFeatureCards.forEach((card) => {
   card.addEventListener('click', () => {
     const cat = card.getAttribute('data-category');
@@ -1433,32 +2850,19 @@ categoryFeatureCards.forEach((card) => {
   });
 });
 
-// Hero Search Bar & Prompt Chips Handler
 function executeHeroSearch(queryText) {
   if (!queryText) return;
 
-  state.searchQuery = queryText;
-  if (searchInput) {
-    searchInput.value = queryText;
-    if (searchClearBtn) searchClearBtn.style.display = 'flex';
+  if (aiMatchInput) {
+    aiMatchInput.value = queryText;
+  }
+  
+  const aiMatchSection = document.getElementById('ai-match');
+  if (aiMatchSection) {
+    aiMatchSection.scrollIntoView({ behavior: 'smooth' });
   }
 
-  if (/python tutor|guitar lesson|tutoring|figma|java/i.test(queryText)) {
-    setActiveFilter('Skill');
-  } else if (/textbook|book|fridge|calculator|notes|arduino/i.test(queryText)) {
-    setActiveFilter('Item');
-  } else if (/hackathon|teammate|project|competition/i.test(queryText)) {
-    setActiveFilter('Opportunity');
-  } else {
-    setActiveFilter('All');
-  }
-
-  renderListings();
-
-  const exploreSection = document.getElementById('explore');
-  if (exploreSection) {
-    exploreSection.scrollIntoView({ behavior: 'smooth' });
-  }
+  runAiMatch(queryText);
 }
 
 if (heroSearchBtn && heroAiSearch) {
@@ -1484,9 +2888,13 @@ promptChips.forEach((chip) => {
 
 if (exploreAiBtn) {
   exploreAiBtn.addEventListener('click', () => {
-    if (searchInput) {
-      searchInput.focus();
-      showToast('✨ Type what you need to search SRM listings');
+    const aiMatchSection = document.getElementById('ai-match');
+    if (aiMatchSection) {
+      aiMatchSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (aiMatchInput) {
+      setTimeout(() => aiMatchInput.focus(), 350);
+      showToast('✨ What are you looking for on campus?');
     }
   });
 }
@@ -1497,9 +2905,7 @@ function generateFallbackAiSuggestion(roughText) {
   const textLower = textClean.toLowerCase();
 
   const isOpportunity = /\b(hackathon|teammate|team member|join (our|my|a) team|looking for (a |an )?(partner|teammate|developer|dev|designer|collaborator|co-founder)|collaborat(e|or|ion)|startup|roommate|club recruiting|hiring|internship|workshop|competition)\b/i.test(textLower);
-
   const isSkill = /\b(tutor(ing)?|teach(ing)?|lessons?|coach(ing)?|mentor(ing)?|can explain|help you (learn|study|code)|willing to teach|offer(ing)? (peer )?(tutoring|lessons|coaching))\b/i.test(textLower);
-
   const isItem = /\b(textbook|book|notes|flashcards|calculator|laptop|macbook|ipad|tablet|monitor|desk|chair|lamp|fridge|bike|bicycle|scooter|hoodie|jacket|clothes|shoes|ticket|pass|charger|headphones|backpack|bed|mattress|furniture|arduino|sensor|give(ing)? away|don't need|have an? (old|used|extra|spare)|selling|for sale|trade (it )?(for|with) (a |an )?(book|textbook|item|calculator))\b/i.test(textLower);
 
   let category = 'Item';
@@ -1537,7 +2943,6 @@ function generateFallbackAiSuggestion(roughText) {
 
   const tradeMatch = textLower.match(/\btrade (?:it )?(?:for|with) (?:a |an )?([^,.\n]+?)(?=\s+(?:or|and|for free|give|to)\b|[.,;]|$)/i);
   let tradeTarget = tradeMatch ? tradeMatch[1].trim() : null;
-
   const isGiveaway = /\b(give (it )?away|giving away|free|free to good home|don't need)\b/i.test(textLower);
 
   let title = '';
@@ -1634,12 +3039,6 @@ if (aiApplyBtn) {
     categorySelect.value = category;
     descriptionInput.value = description;
 
-    [titleInput, categorySelect, descriptionInput].forEach((el) => {
-      el.classList.remove('field-flash');
-      void el.offsetWidth;
-      el.classList.add('field-flash');
-    });
-
     hideAiSuggestions();
     contactInput.focus();
   });
@@ -1648,7 +3047,6 @@ if (aiApplyBtn) {
 if (aiIgnoreBtn) aiIgnoreBtn.addEventListener('click', hideAiSuggestions);
 if (aiDismissBtn) aiDismissBtn.addEventListener('click', hideAiSuggestions);
 
-// Form Validation & Submission
 function validateForm(title, category, description, contact) {
   if (!title) return 'Please enter a title for your listing.';
   if (!category) return 'Please select a category (Item, Skill, or Opportunity).';
@@ -1660,6 +3058,10 @@ function validateForm(title, category, description, contact) {
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
+  if (!requireSRMVerification('posting a listing')) {
+    return;
+  }
+
   const title = titleInput.value.trim();
   const category = categorySelect.value;
   const description = descriptionInput.value.trim();
@@ -1669,7 +3071,6 @@ form.addEventListener('submit', (e) => {
   if (error) {
     errorMessage.textContent = error;
     errorMessage.style.display = 'block';
-    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     return;
   }
 
@@ -1681,14 +3082,14 @@ form.addEventListener('submit', (e) => {
   if (/\bfree\b/i.test(description + ' ' + title)) autoTags.push('#free');
 
   const newListing = {
-    id: `listing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `my-listing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     title,
     category,
     description,
-    studentName: 'You (SRM Student)',
-    department: 'SRM Institute Student',
-    year: 'Active Member',
-    avatar: 'YOU',
+    studentName: state.profile.name || 'Aryan Sharma',
+    department: state.profile.department || 'Computer Science',
+    year: state.profile.year || '3rd Year',
+    avatar: state.profile.avatar || 'AS',
     contact,
     tags: autoTags,
     availability: 'Available',
@@ -1707,8 +3108,19 @@ form.addEventListener('submit', (e) => {
     renderListings();
   }
 
+  createNotification({
+    type: 'listings',
+    icon: '🎉',
+    title: 'Listing Published',
+    desc: `Your listing "${title}" is now live on SRM campus exchange!`,
+    targetId: newListing.id,
+    actionType: 'open-listing'
+  });
+
+  renderProfile();
   hideAiSuggestions();
   form.reset();
+  closePostModal();
   showToast('🎉 Your listing is live on SRM campus!');
 
   const exploreSection = document.getElementById('explore');
@@ -1720,5 +3132,9 @@ form.addEventListener('submit', (e) => {
 // Initialize on Load
 initSRMVerification();
 renderListings();
+renderSavedListings();
+renderProfile();
+renderNotifications();
 renderInboxConversations();
 renderActiveChat();
+renderSearchHistory();
