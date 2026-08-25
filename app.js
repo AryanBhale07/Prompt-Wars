@@ -1212,8 +1212,11 @@ function renderAiMatchResults() {
       const safeTitle = escapeHtml(l.title);
       const safeDescription = escapeHtml(l.description);
       const safeCategory = escapeHtml(l.category);
-      const safeAuthor = escapeHtml(l.studentName || 'SRM Student');
-      const safeAvatar = escapeHtml(l.avatar || safeAuthor.slice(0, 2).toUpperCase());
+      const safeAuthor = escapeHtml(l.studentName || 'Rahul Sharma');
+      const safeDept = escapeHtml(l.year || l.department || 'SRM Student');
+      const studentInfo = getStudentInfo(safeAuthor);
+      const safeAvatar = escapeHtml(studentInfo.initials);
+      const safeGrad = studentInfo.grad;
       const safeAvail = escapeHtml(l.availability || 'Available');
       const badgeClass = getBadgeClass(l.category);
       const formattedTime = formatTimestamp(l.createdAt);
@@ -1256,9 +1259,12 @@ function renderAiMatchResults() {
 
           <div class="card-author-footer">
             <div class="author-profile-left">
-              <div class="author-avatar">${safeAvatar}</div>
+              <div class="student-avatar-wrap" data-student-name="${safeAuthor}" data-student-dept="${safeDept}">
+                <div class="author-avatar ${safeGrad}">${safeAvatar}</div>
+                <span class="avatar-verified-tick" title="Verified SRM Student">✓</span>
+              </div>
               <div class="author-details">
-                <span class="author-name">${safeAuthor}</span>
+                <span class="author-name" data-student-name="${safeAuthor}">${safeAuthor} <span class="badge-srm-verified" style="font-size:0.64rem; padding:1px 3px;">✓ SRM Verified</span></span>
                 <span class="author-time">${formattedTime} • 🟢 ${safeAvail}</span>
               </div>
             </div>
@@ -2112,7 +2118,7 @@ function toggleSaveListing(listingId) {
 
   if (state.savedIds.has(listingId)) {
     state.savedIds.delete(listingId);
-    showToast('Removed from saved');
+    showToast('✓ Removed from saved');
   } else {
     state.savedIds.add(listingId);
     createNotification({
@@ -2123,7 +2129,7 @@ function toggleSaveListing(listingId) {
       targetId: listingId,
       actionType: 'open-listing'
     });
-    showToast('Saved to your listings');
+    showToast('✓ Listing saved');
   }
 
   saveStoredSavedIds();
@@ -2840,13 +2846,16 @@ function renderInboxConversations() {
         const lastMsgText = lastMsgObj ? escapeHtml(lastMsgObj.text) : 'No messages yet';
         const lastMsgTime = lastMsgObj ? escapeHtml(lastMsgObj.time) : '';
         const safeName = escapeHtml(convo.studentName);
-        const safeAvatar = escapeHtml(convo.avatar || safeName.slice(0, 2).toUpperCase());
+        const studentInfo = getStudentInfo(convo.studentName);
+        const safeAvatar = escapeHtml(studentInfo.initials);
+        const safeGrad = studentInfo.grad;
         const safeTitle = escapeHtml(convo.listingTitle || 'Campus Listing');
 
         return `
           <div class="convo-item ${isActive ? 'active' : ''} ${convo.unread ? 'unread' : ''}" data-id="${escapeHtml(convo.id)}" role="button" tabindex="0">
             <div class="convo-avatar-wrap">
-              <div class="convo-avatar">${safeAvatar}</div>
+              <div class="convo-avatar ${safeGrad}">${safeAvatar}</div>
+              <span class="avatar-verified-tick" style="width:14px; height:14px; font-size:0.55rem; bottom:-2px; right:-2px;">✓</span>
             </div>
             <div class="convo-info-col">
               <div class="convo-header-line">
@@ -2893,8 +2902,10 @@ function renderActiveChat() {
   const activeConvo = state.conversations.find((c) => c.id === state.activeConversationId) || state.conversations[0];
   if (!activeConvo) return;
 
+  const studentInfo = getStudentInfo(activeConvo.studentName);
   if (chatHeaderAvatar) {
-    chatHeaderAvatar.textContent = activeConvo.avatar || activeConvo.studentName.slice(0, 2).toUpperCase();
+    chatHeaderAvatar.textContent = studentInfo.initials;
+    chatHeaderAvatar.className = `chat-header-avatar ${studentInfo.grad}`;
   }
   if (chatHeaderName) {
     chatHeaderName.textContent = activeConvo.studentName;
@@ -2977,6 +2988,7 @@ if (chatSendForm && chatMessageInput) {
     chatMessageInput.value = '';
     renderActiveChat();
     renderInboxConversations();
+    showToast('✓ Message sent');
 
     if (chatMessagesStream) {
       chatMessagesStream.scrollTop = chatMessagesStream.scrollHeight;
