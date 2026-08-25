@@ -153,7 +153,7 @@
             </div>
             <div class="cat-header-right">
               <span class="cat-badge-label">ITEMS</span>
-              <span class="cat-count-badge" id="count-items">3 Listings</span>
+              <span class="cat-count-badge" id="count-items">4 Listings</span>
             </div>
           </div>
           <h3 class="cat-card-title">Items</h3>
@@ -172,7 +172,7 @@
             </div>
             <div class="cat-header-right">
               <span class="cat-badge-label">SKILLS</span>
-              <span class="cat-count-badge" id="count-skills">2 Listings</span>
+              <span class="cat-count-badge" id="count-skills">4 Listings</span>
             </div>
           </div>
           <h3 class="cat-card-title">Skills</h3>
@@ -191,7 +191,7 @@
             </div>
             <div class="cat-header-right">
               <span class="cat-badge-label">OPPORTUNITIES</span>
-              <span class="cat-count-badge" id="count-opportunities">1 Listing</span>
+              <span class="cat-count-badge" id="count-opportunities">4 Listings</span>
             </div>
           </div>
           <h3 class="cat-card-title">Opportunities</h3>
@@ -239,130 +239,149 @@
     </div>
   </section>
 
-  <!-- Interactive Platform Engine: Post Form & Trending Feed -->
-  <section id="explore" class="main-app-section">
+  <!-- Dedicated Explore Experience Section -->
+  <section id="explore" class="explore-section">
     <div class="site-container">
-      <div class="app-layout-grid">
-        
-        <!-- Post a Listing Section -->
-        <div id="post" class="form-column">
-          <section class="form-section">
-            <div class="section-header">
-              <div class="section-header-badge">Campus Exchange</div>
-              <h2>Post a Listing</h2>
-              <span class="section-hint">Share an item, skill, or opportunity with your campus</span>
-            </div>
+      
+      <!-- Page Header -->
+      <div class="explore-header">
+        <span class="section-eyebrow">Campus Discovery Directory</span>
+        <h2 class="explore-title">Discover your campus.</h2>
+        <p class="explore-subtitle">Find useful things, talented people and opportunities shared by students.</p>
+      </div>
 
-            <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
+      <!-- Large Search Bar + AI Assist Button -->
+      <div class="explore-search-wrapper">
+        <div class="explore-search-box">
+          <span class="search-icon-text">🔍</span>
+          <input type="text" id="search-input" class="explore-search-input" placeholder="Search items, skills and opportunities..." aria-label="Search items, skills and opportunities">
+          <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;" aria-label="Clear search">✕</button>
+          <button type="button" id="explore-ai-btn" class="btn-explore-ai" title="AI Search Assistant">
+            <span class="ai-sparkle">✨</span> Ask RExchange AI
+          </button>
+        </div>
+      </div>
 
-            <form id="listing-form" novalidate>
-              <div class="form-group">
-                <label for="title">Title <span class="required">*</span></label>
-                <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook, Python Tutoring, Hackathon Teammate" required>
-              </div>
-
-              <div class="form-group">
-                <label for="category">Category <span class="required">*</span></label>
-                <div class="select-wrapper">
-                  <select id="category" name="category" required>
-                    <option value="">Select a category...</option>
-                    <option value="Item">Item</option>
-                    <option value="Skill">Skill</option>
-                    <option value="Opportunity">Opportunity</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="label-with-action">
-                  <label for="description">Description <span class="required">*</span></label>
-                  <button type="button" id="ai-assist-btn" class="btn-ai-assist" title="Generate polished title, description, and category from your rough notes">
-                    <span class="ai-sparkle">✨</span> <span id="ai-btn-text">AI Assist</span>
-                  </button>
-                </div>
-                <textarea id="description" name="description" rows="4" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
-                <span id="ai-feedback-msg" class="ai-feedback-msg" style="display: none;"></span>
-              </div>
-
-              <div class="form-group">
-                <label for="contact">Contact Info <span class="required">*</span></label>
-                <input type="text" id="contact" name="contact" placeholder="e.g. student@campus.edu / @discord_handle" required>
-              </div>
-
-              <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
-            </form>
-
-            <!-- AI Suggestions Box -->
-            <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
-              <div class="ai-suggestion-header">
-                <div class="ai-suggestion-badge">
-                  <span class="sparkle-icon">✨</span> AI Generated Suggestions
-                </div>
-                <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
-              </div>
-              
-              <div class="ai-suggestion-content">
-                <div class="ai-preview-item">
-                  <span class="ai-preview-label">Suggested Title</span>
-                  <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
-                </div>
-                
-                <div class="ai-preview-item">
-                  <span class="ai-preview-label">Suggested Category</span>
-                  <div><span id="ai-suggested-category" class="badge"></span></div>
-                </div>
-                
-                <div class="ai-preview-item">
-                  <span class="ai-preview-label">Polished Description</span>
-                  <p id="ai-suggested-description" class="ai-preview-text"></p>
-                </div>
-              </div>
-
-              <div class="ai-suggestion-actions">
-                <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use This</button>
-                <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Ignore</button>
-              </div>
-            </div>
-          </section>
+      <!-- Category Filter Bar (ALL, ITEMS, SKILLS, OPPORTUNITIES) -->
+      <div class="explore-filters-container">
+        <div class="category-filters-row" id="filter-bar" role="tablist" aria-label="Filter listings by category">
+          <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">ALL</button>
+          <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">ITEMS</button>
+          <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">SKILLS</button>
+          <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">OPPORTUNITIES</button>
         </div>
 
-        <!-- Trending Listings Feed Section -->
-        <div class="feed-column">
-          <section class="feed-section">
-            <div class="section-header feed-header">
-              <div>
-                <h2>🔥 Trending on Campus</h2>
-                <span class="section-hint">Live listings posted by students across your university</span>
-              </div>
-              <div class="feed-count-tag" id="listing-count-tag">6 Active Listings</div>
-            </div>
+        <!-- Secondary Filters (Newest, Most Relevant, Free, Available) -->
+        <div class="secondary-filters-row">
+          <div class="sec-filters-left">
+            <span class="sec-filter-label">Sort:</span>
+            <button type="button" class="sec-filter-btn active" data-sort="newest">Newest</button>
+            <button type="button" class="sec-filter-btn" data-sort="relevant">Most Relevant</button>
+            <span class="sec-filter-divider">|</span>
+            <span class="sec-filter-label">Filter:</span>
+            <button type="button" class="sec-filter-btn" data-filter-type="free">Free</button>
+            <button type="button" class="sec-filter-btn" data-filter-type="available">Available</button>
+          </div>
+          <div class="feed-count-tag" id="listing-count-tag">12 Listings</div>
+        </div>
+      </div>
 
-            <!-- Search Box (Strictly bounded icon) -->
-            <div class="search-box">
-              <span class="search-icon-text">🔍</span>
-              <input type="text" id="search-input" class="search-input" placeholder="Search by title, subject, or description..." aria-label="Search listings by title or description">
-              <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;" aria-label="Clear search">✕</button>
-            </div>
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-icon">📦</div>
+        <h3 id="empty-title" class="empty-title">No matches found</h3>
+        <p id="empty-desc" class="empty-desc">Try searching for textbooks, tutoring, events or opportunities.</p>
+        <button type="button" id="clear-search-btn" class="btn-clear-search">Clear Search</button>
+      </div>
 
-            <!-- Category Filter Bar -->
-            <div id="filter-bar" class="filter-bar" role="tablist" aria-label="Filter listings by category">
-              <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">All</button>
-              <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">Item</button>
-              <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">Skill</button>
-              <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">Opportunity</button>
-            </div>
+      <!-- Responsive Listing Grid (3 col desktop, 2 col tablet, 1 col mobile) -->
+      <div id="listings-feed" class="listings-grid"></div>
 
-            <div id="empty-state" class="empty-state" style="display: none;">
-              <div class="empty-icon">📦</div>
-              <p id="empty-title" class="empty-title">No listings found</p>
-              <p id="empty-desc" class="empty-desc">Try clearing your search query or selecting a different category filter.</p>
-            </div>
+    </div>
+  </section>
 
-            <!-- Listings Feed (rendered dynamically by app.js) -->
-            <div id="listings-feed" class="listings-feed"></div>
-          </section>
+  <!-- Post a Listing Section -->
+  <section id="post" class="post-section">
+    <div class="site-container">
+      <div class="post-card-container">
+        <div class="section-header">
+          <div class="section-header-badge">Share Value</div>
+          <h2>Post Something on Campus</h2>
+          <span class="section-hint">Offer an item, teach a skill, or post an open student opportunity</span>
         </div>
 
+        <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
+
+        <form id="listing-form" novalidate>
+          <div class="post-form-grid">
+            <div class="form-group">
+              <label for="title">Title <span class="required">*</span></label>
+              <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook, Python Tutoring, Hackathon Teammate" required>
+            </div>
+
+            <div class="form-group">
+              <label for="category">Category <span class="required">*</span></label>
+              <div class="select-wrapper">
+                <select id="category" name="category" required>
+                  <option value="">Select a category...</option>
+                  <option value="Item">Item</option>
+                  <option value="Skill">Skill</option>
+                  <option value="Opportunity">Opportunity</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-with-action">
+              <label for="description">Description <span class="required">*</span></label>
+              <button type="button" id="ai-assist-btn" class="btn-ai-assist" title="Generate polished title, description, and category from your rough notes">
+                <span class="ai-sparkle">✨</span> <span id="ai-btn-text">AI Assist</span>
+              </button>
+            </div>
+            <textarea id="description" name="description" rows="3" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
+            <span id="ai-feedback-msg" class="ai-feedback-msg" style="display: none;"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="contact">Contact Info <span class="required">*</span></label>
+            <input type="text" id="contact" name="contact" placeholder="e.g. student@campus.edu / @discord_handle" required>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
+        </form>
+
+        <!-- AI Suggestions Box -->
+        <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
+          <div class="ai-suggestion-header">
+            <div class="ai-suggestion-badge">
+              <span class="sparkle-icon">✨</span> AI Generated Suggestions
+            </div>
+            <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
+          </div>
+          
+          <div class="ai-suggestion-content">
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Suggested Title</span>
+              <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
+            </div>
+            
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Suggested Category</span>
+              <div><span id="ai-suggested-category" class="badge"></span></div>
+            </div>
+            
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Polished Description</span>
+              <p id="ai-suggested-description" class="ai-preview-text"></p>
+            </div>
+          </div>
+
+          <div class="ai-suggestion-actions">
+            <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use This</button>
+            <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Ignore</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -431,6 +450,53 @@
       </div>
     </div>
   </section>
+
+  <!-- Listing Detail View Modal -->
+  <div id="listing-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-top-bar">
+        <div class="modal-badges-group">
+          <span id="modal-category-badge" class="badge badge-item">Item</span>
+          <span id="modal-avail-badge" class="badge-avail">🟢 Available</span>
+        </div>
+        <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close details">✕</button>
+      </div>
+
+      <h2 id="modal-title" class="modal-listing-title">Listing Title</h2>
+
+      <div class="modal-author-profile">
+        <div id="modal-avatar" class="author-avatar-large">AC</div>
+        <div class="author-meta-large">
+          <span id="modal-author-name" class="author-name-text">Alex Chen</span>
+          <span id="modal-posted-time" class="author-time-text">Posted 25 mins ago</span>
+        </div>
+      </div>
+
+      <div class="modal-body-section">
+        <p id="modal-desc" class="modal-description-text"></p>
+
+        <div id="modal-tags" class="modal-tags-list"></div>
+
+        <div class="modal-contact-box">
+          <span class="contact-box-label">Student Contact & Meetup</span>
+          <div class="contact-box-body">
+            <span id="modal-contact" class="contact-box-text">alex.chen@campus.edu</span>
+            <button type="button" id="modal-copy-btn" class="btn-copy-contact">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-actions">
+        <button type="button" id="modal-save-btn" class="btn-modal-save">
+          <span class="save-icon">🔖</span> <span id="modal-save-text">Save Listing</span>
+        </button>
+        <button type="button" id="modal-close-action-btn" class="btn-modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-notification" style="display: none;"></div>
 
   <!-- Modern Startup Footer -->
   <footer class="app-footer">
