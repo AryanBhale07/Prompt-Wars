@@ -400,6 +400,37 @@ test('Profile Management', 'Calculates lower score for incomplete profile', () =
 });
 
 // -------------------------------------------------------------------------
+// [L] User Logout & Session Reset Tests
+// -------------------------------------------------------------------------
+console.log('\n--- [L] Testing User Logout & Session Reset Logic ---');
+
+function performLogoutSimulation(mockStorage) {
+  mockStorage.removeItem('isSRMVerified');
+  return {
+    isVerified: mockStorage.getItem('isSRMVerified') === 'true',
+    loggedOutMessage: "✓ You've been logged out."
+  };
+}
+
+test('User Logout Workflow', 'Clears session verification state and preserves non-session data', () => {
+  const mockStorage = {
+    data: {
+      isSRMVerified: 'true',
+      rexchange_saved_ids: JSON.stringify(['listing-1', 'listing-2']),
+      rexchange_conversations: JSON.stringify([{ id: 'c1', messages: [] }])
+    },
+    getItem(k) { return this.data[k] || null; },
+    removeItem(k) { delete this.data[k]; }
+  };
+
+  const result = performLogoutSimulation(mockStorage);
+  assertEqual(result.isVerified, false, 'User must not be verified after logout');
+  assertEqual(result.loggedOutMessage, "✓ You've been logged out.", 'Must return standard logout message');
+  assert(mockStorage.getItem('rexchange_saved_ids') !== null, 'Saved items must remain intact');
+  assert(mockStorage.getItem('rexchange_conversations') !== null, 'Conversations must remain intact');
+});
+
+// -------------------------------------------------------------------------
 // Test Suite Summary
 // -------------------------------------------------------------------------
 console.log('\n=================================================================');

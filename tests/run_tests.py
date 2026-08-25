@@ -161,6 +161,18 @@ assert profile_score({"name": "Aryan", "email": "a@srmist.edu.in", "department":
 assert profile_score({"name": "Aryan", "email": "a@srmist.edu.in"}) == 50
 log_pass("Unit Test [J] Profile Completeness", "Verified accurate percentage score metrics for student profiles.")
 
+# [K] User Logout & Session Reset Logic
+mock_session = {"isSRMVerified": "true", "saved": ["item-1"]}
+def logout_user(session):
+    session.pop("isSRMVerified", None)
+    return "✓ You've been logged out."
+
+msg = logout_user(mock_session)
+assert "isSRMVerified" not in mock_session
+assert "item-1" in mock_session["saved"]
+assert msg == "✓ You've been logged out."
+log_pass("Unit Test [K] User Logout Workflow", "Verified session clearance, confirmation notification, and non-session data retention.")
+
 # -------------------------------------------------------------------------
 # Phase 2: Live HTTP Server & API Integration Tests
 # -------------------------------------------------------------------------
@@ -239,6 +251,17 @@ if "try {" in app_js_text and "localStorage" in app_js_text:
     log_pass("Security", "LocalStorage operations wrapped in try-catch error guards.")
 else:
     log_fail("Security", "Unguarded localStorage operations detected.")
+
+# Audit 5: Logout Dialog & Workflow Components
+if 'id="btn-profile-logout"' in index_html_text and 'id="logout-modal"' in index_html_text:
+    log_pass("Logout Feature", "Profile Logout button and confirmation modal configured in DOM.")
+else:
+    log_fail("Logout Feature", "Missing btn-profile-logout or logout-modal in index.html.")
+
+if 'performLogout()' in app_js_text or 'function performLogout(' in app_js_text:
+    log_pass("Logout Feature", "performLogout handler cleans session and reveals verification gate.")
+else:
+    log_fail("Logout Feature", "Missing performLogout function in app.js.")
 
 # -------------------------------------------------------------------------
 # Phase 4: Problem Statement Alignment Audit

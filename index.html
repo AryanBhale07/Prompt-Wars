@@ -1066,6 +1066,9 @@
               <button type="button" id="btn-edit-profile" class="btn-profile-edit">
                 ✏️ Edit Profile
               </button>
+              <button type="button" id="btn-profile-logout" class="btn-profile-logout" title="Log out of RExchange">
+                🚪 Log Out
+              </button>
               <div id="btn-verify-status-badge" class="badge-srm-verified" style="font-size:0.76rem; padding: 6px 12px;">
                 ✓ Official Institutional ID
               </div>
@@ -1431,6 +1434,21 @@
       <div class="profile-edit-actions" style="justify-content: center; gap: 12px;">
         <button type="button" id="btn-protection-cancel" class="btn-gate-secondary">Cancel</button>
         <button type="button" id="btn-protection-verify-now" class="btn-gate-primary" style="margin-top: 0;">Verify Now →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 5: Logout Confirmation Modal
+       ========================================================================= -->
+  <div id="logout-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title">
+    <div class="modal-card logout-modal-card" style="max-width: 420px; text-align: center; padding: 28px 24px;">
+      <div class="modal-icon-badge" style="font-size: 2.2rem; margin-bottom: 12px;">🚪</div>
+      <h3 id="logout-modal-title" style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Log out of RExchange?</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 22px; line-height: 1.5;">Your current session will be cleared.</p>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" id="btn-cancel-logout" class="btn-gate-secondary" style="padding: 10px 20px; font-weight: 700;">Cancel</button>
+        <button type="button" id="btn-confirm-logout" class="btn-danger-action" style="padding: 10px 22px; background: #dc2626; color: #ffffff; border: none; border-radius: var(--radius-sm); font-weight: 800; cursor: pointer; transition: all var(--transition-fast);">Log Out</button>
       </div>
     </div>
   </div>

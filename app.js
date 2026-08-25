@@ -685,6 +685,12 @@ const editProfileEmail = document.getElementById('edit-profile-email');
 const btnCloseEditModal = document.getElementById('btn-close-edit-modal');
 const btnCancelEditProfile = document.getElementById('btn-cancel-edit-profile');
 
+// Profile Logout Elements
+const btnProfileLogout = document.getElementById('btn-profile-logout');
+const logoutModal = document.getElementById('logout-modal');
+const btnCancelLogout = document.getElementById('btn-cancel-logout');
+const btnConfirmLogout = document.getElementById('btn-confirm-logout');
+
 // SRM Verification Protection Modal Elements
 const srmProtectionModal = document.getElementById('srm-protection-modal');
 const btnProtectionVerifyNow = document.getElementById('btn-protection-verify-now');
@@ -1053,6 +1059,23 @@ if (btnViewAllNotifs) {
     switchView('activity');
   });
 }
+
+// Global Escape Key Dismiss Listener for Modals & Drawers
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (logoutModal && logoutModal.style.display === 'flex') {
+      closeLogoutModal();
+    } else if (profileEditModal && profileEditModal.style.display === 'flex') {
+      closeProfileEditModal();
+    } else if (listingModal && listingModal.style.display === 'flex') {
+      closeListingModal();
+    } else if (postModal && postModal.style.display === 'flex') {
+      closePostModal();
+    } else {
+      closeAllDrawers();
+    }
+  }
+});
 
 // Category Cards on Home
 categoryFeatureCards.forEach((card) => {
@@ -2044,6 +2067,57 @@ if (btnResetSrmDemo) {
 }
 
 window.resetSRMVerification = resetSRMVerification;
+
+// ==========================================================================
+// User Logout Confirmation Workflow
+// ==========================================================================
+
+function openLogoutModal() {
+  if (logoutModal) {
+    logoutModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeLogoutModal() {
+  if (logoutModal) {
+    logoutModal.style.display = 'none';
+    if (!document.querySelector('.drawer-overlay.open') && !document.querySelector('.modal-backdrop[style*="display: flex"]')) {
+      document.body.style.overflow = 'auto';
+    }
+  }
+}
+
+function performLogout() {
+  closeLogoutModal();
+  closeAllDrawers();
+
+  // Clear ONLY the current user's local session/verification state
+  localStorage.removeItem('isSRMVerified');
+
+  // Return the user to the existing SRM verification screen
+  initSRMVerification();
+
+  showToast("✓ You've been logged out.");
+}
+
+if (btnProfileLogout) {
+  btnProfileLogout.addEventListener('click', openLogoutModal);
+}
+
+if (btnCancelLogout) {
+  btnCancelLogout.addEventListener('click', closeLogoutModal);
+}
+
+if (btnConfirmLogout) {
+  btnConfirmLogout.addEventListener('click', performLogout);
+}
+
+if (logoutModal) {
+  logoutModal.addEventListener('click', (e) => {
+    if (e.target === logoutModal) closeLogoutModal();
+  });
+}
 
 // ==========================================================================
 // Metrics & Badges Data Sync
