@@ -3719,7 +3719,8 @@ function initPulseAnimation() {
     const startTime = performance.now();
     function update(now) {
       const progress = Math.min((now - startTime) / duration, 1);
-      const current = Math.floor(progress * target);
+      const easeProgress = 1 - Math.pow(1 - progress, 3); // smooth cubic ease out
+      const current = Math.floor(easeProgress * target);
       el.textContent = current;
       if (progress < 1) {
         requestAnimationFrame(update);
@@ -3749,6 +3750,47 @@ function initPulseAnimation() {
   }
 }
 
+// ==========================================================================
+// Rotating AI Search Placeholders (Subtle Interactive Preview)
+// ==========================================================================
+const ROTATING_AI_PLACEHOLDERS = [
+  'Find a Python tutor...',
+  'Need a DBMS textbook...',
+  'Looking for hackathon teammates...',
+  'Find someone who can teach UI/UX...',
+  'Looking for a cybersecurity opportunity...',
+  'What do you need? e.g., Arduino kit, OS notes'
+];
+
+let currentPlaceholderIdx = 0;
+let placeholderIntervalId = null;
+
+function initRotatingPlaceholders() {
+  const heroInput = document.getElementById('hero-ai-search');
+  const aiInput = document.getElementById('ai-match-input');
+
+  const targets = [heroInput, aiInput].filter(Boolean);
+  if (!targets.length) return;
+
+  function cyclePlaceholder() {
+    currentPlaceholderIdx = (currentPlaceholderIdx + 1) % ROTATING_AI_PLACEHOLDERS.length;
+    const nextText = ROTATING_AI_PLACEHOLDERS[currentPlaceholderIdx];
+
+    targets.forEach((input) => {
+      if (input && document.activeElement !== input && !input.value.trim()) {
+        input.style.opacity = '0.35';
+        setTimeout(() => {
+          input.setAttribute('placeholder', nextText);
+          input.style.opacity = '1';
+        }, 220);
+      }
+    });
+  }
+
+  if (placeholderIntervalId) clearInterval(placeholderIntervalId);
+  placeholderIntervalId = setInterval(cyclePlaceholder, 3800);
+}
+
 // Global Keyboard Escape Key Handler for all Modals and Drawers
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -3776,4 +3818,6 @@ renderStudentRecommendations();
 setupStudentHoverCards();
 initScrollReveal();
 initPulseAnimation();
+initRotatingPlaceholders();
+
 

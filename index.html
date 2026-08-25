@@ -246,6 +246,38 @@
       <header class="hero-section">
         <div class="hero-container">
           
+          <!-- Subtle Floating Campus Activity Badges (Non-intrusive ambient telemetry) -->
+          <div class="hero-floating-badges-wrap" aria-hidden="true">
+            <div class="hero-floating-badge badge-pos-top-left" style="animation-delay: 0s;">
+              <span class="float-badge-icon">📚</span>
+              <div class="float-badge-content">
+                <span class="float-badge-title">New textbook shared</span>
+                <span class="float-badge-sub">2nd Year CSE</span>
+              </div>
+            </div>
+            <div class="hero-floating-badge badge-pos-top-right" style="animation-delay: 1.4s;">
+              <span class="float-badge-icon">🧠</span>
+              <div class="float-badge-content">
+                <span class="float-badge-title">Python tutoring available</span>
+                <span class="float-badge-sub">Verified Peer Tutor</span>
+              </div>
+            </div>
+            <div class="hero-floating-badge badge-pos-bottom-left" style="animation-delay: 2.6s;">
+              <span class="float-badge-icon">🚀</span>
+              <div class="float-badge-content">
+                <span class="float-badge-title">Hackathon opportunity posted</span>
+                <span class="float-badge-sub">Dev Society</span>
+              </div>
+            </div>
+            <div class="hero-floating-badge badge-pos-bottom-right" style="animation-delay: 3.8s;">
+              <span class="float-badge-icon">✨</span>
+              <div class="float-badge-content">
+                <span class="float-badge-title">AI found a 94% match</span>
+                <span class="float-badge-sub">Study Group</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Left Hero Column -->
           <div class="hero-content">
             <div class="hero-eyebrow">
@@ -429,36 +461,54 @@
       <section id="how-it-works" class="how-it-works-section reveal-on-scroll">
         <div class="site-container">
           <div class="section-title-wrap">
-            <h2 class="section-heading">High-Velocity Exchange</h2>
-            <p class="section-subtext">A streamlined process designed for student life.</p>
+            <span class="section-eyebrow">HIGH-VELOCITY EXCHANGE</span>
+            <h2 class="section-heading">How Campus Exchange Works</h2>
+            <p class="section-subtext">A streamlined, private peer-to-peer network designed for student life.</p>
           </div>
 
           <div class="steps-layout-grid">
-            <!-- Step 01 -->
-            <div class="step-card-modern step-card-glow">
-              <span class="step-big-num">01</span>
-              <h3 class="step-title">List & Detail</h3>
-              <p class="step-desc">Write a quick description or use AI Assist to set your exchange terms in under 30 seconds.</p>
-            </div>
+            <!-- Connecting line between steps -->
+            <div class="steps-connector-line" aria-hidden="true"></div>
 
-            <!-- Step 02 -->
-            <div class="step-card-modern">
-              <div class="step-card-top">
-                <span class="step-big-num">02</span>
-                <div class="step-connect-badge">
-                  <span>👤</span><span class="connect-dash"></span><span>👥</span>
-                </div>
+            <!-- Step 01: POST -->
+            <div class="step-card-modern reveal-on-scroll">
+              <div class="step-card-header">
+                <span class="step-big-num">01</span>
+                <span class="step-icon-badge">📝</span>
               </div>
-              <h3 class="step-title">Connect & Exchange</h3>
-              <p class="step-desc">Match with peers locally. Reach out directly with verified student contact info until you meet on campus.</p>
+              <h3 class="step-title">Post</h3>
+              <p class="step-desc">List your textbooks, tutoring skills, or project ideas in seconds with AI Quick Assist.</p>
             </div>
 
-            <!-- Step 03 with Live Stats (Campus Pulse integration) -->
-            <div class="step-card-modern step-span-2">
-              <div class="step-03-content">
+            <!-- Step 02: DISCOVER -->
+            <div class="step-card-modern reveal-on-scroll">
+              <div class="step-card-header">
+                <span class="step-big-num">02</span>
+                <span class="step-icon-badge">🔍</span>
+              </div>
+              <h3 class="step-title">Discover</h3>
+              <p class="step-desc">Browse verified campus listings or use RExchange AI to instantly find exact peer matches.</p>
+            </div>
+
+            <!-- Step 03: CONNECT -->
+            <div class="step-card-modern reveal-on-scroll">
+              <div class="step-card-header">
                 <span class="step-big-num">03</span>
-                <h3 class="step-title">Save & Thrive</h3>
-                <p class="step-desc">Keep money in your pocket and reduce campus waste. Build a reputation as a reliable community member.</p>
+                <span class="step-icon-badge">💬</span>
+              </div>
+              <h3 class="step-title">Connect</h3>
+              <p class="step-desc">Message SRM verified classmates directly to negotiate terms and arrange meetups.</p>
+            </div>
+
+            <!-- Step 04: EXCHANGE & THRIVE -->
+            <div class="step-card-modern step-span-full reveal-on-scroll">
+              <div class="step-03-content">
+                <div class="step-card-header">
+                  <span class="step-big-num">04</span>
+                  <span class="step-icon-badge">🤝</span>
+                </div>
+                <h3 class="step-title">Exchange & Thrive</h3>
+                <p class="step-desc">Meet on campus safely, trade value, save money, and build your verified campus reputation.</p>
               </div>
 
               <div id="pulse" class="pulse-stats-row">
