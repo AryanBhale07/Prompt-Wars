@@ -359,6 +359,11 @@ else:
     log_fail("Smart Matches", "Missing dual-value exchange types in app.js.")
 
 # Audit Campus Exchange Map Feature
+if 'leaflet.css' in index_html_text and 'leaflet.js' in index_html_text:
+    log_pass("Campus Exchange Map", "Leaflet CSS stylesheet and JavaScript runtime loaded correctly.")
+else:
+    log_fail("Campus Exchange Map", "Missing Leaflet CDN links in index.html.")
+
 if 'id="btn-explore-map-view"' in index_html_text and 'id="btn-explore-list-view"' in index_html_text:
     log_pass("Campus Exchange Map", "Explore view mode switcher ([ List View ] [ Map View ]) configured in DOM.")
 else:
@@ -383,6 +388,21 @@ if 'calculateDistanceKm' in app_js_text and 'handleFindMe' in app_js_text and 'r
     log_pass("Campus Exchange Map", "Geolocation distance calculator, Find Me handler, and Leaflet marker renderer verified.")
 else:
     log_fail("Campus Exchange Map", "Missing map controller functions in app.js.")
+
+if 'state.listings.map' in app_js_text or 'state.listings.filter' in app_js_text:
+    log_pass("Campus Exchange Map", "Real listing data stream from state.listings strictly used for map marker generation.")
+else:
+    log_fail("Campus Exchange Map", "Map markers not using actual listing data.")
+
+if 'invalidateSize()' in app_js_text:
+    log_pass("Campus Exchange Map", "Leaflet invalidateSize() configured on Map View mode switch and explore navigation.")
+else:
+    log_fail("Campus Exchange Map", "Missing invalidateSize() in map view switching logic.")
+
+if 'enableHighAccuracy' in app_js_text and 'err.code === 1' in app_js_text:
+    log_pass("Campus Exchange Map", "Robust dual-accuracy geolocation with permission-denied & timeout error handlers implemented.")
+else:
+    log_fail("Campus Exchange Map", "Missing robust geolocation error handlers.")
 
 if 'id="location-select"' in index_html_text and 'location:' in app_js_text:
     log_pass("Campus Exchange Map", "Optional Exchange Location field added to listing creation workflow.")

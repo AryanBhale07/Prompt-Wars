@@ -1115,6 +1115,14 @@ function switchView(viewName) {
     updateAllMetrics();
   } else if (viewName === 'explore') {
     renderListings();
+    if (currentExploreViewMode === 'map') {
+      setTimeout(() => {
+        if (campusMap) {
+          campusMap.invalidateSize();
+          renderMapMarkers();
+        }
+      }, 100);
+    }
   } else if (viewName === 'ai-match') {
     if (state.aiCurrentMatches.length > 0) {
       renderAiMatchResults();
@@ -2752,33 +2760,47 @@ function formatDistance(distKm) {
 
 function initCampusMap() {
   const mapEl = document.getElementById('campus-exchange-map');
-  if (!mapEl || typeof L === 'undefined') return;
+  if (!mapEl) return;
 
-  if (!campusMap) {
-    // Center at SRM Kattankulathur Campus
-    campusMap = L.map('campus-exchange-map', {
-      center: [SRM_CAMPUS_CENTER.lat, SRM_CAMPUS_CENTER.lng],
-      zoom: 16,
-      minZoom: 14,
-      maxZoom: 19,
-      zoomControl: true
-    });
-
-    // CartoDB Dark Matter Basemap
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }).addTo(campusMap);
-
-    mapMarkersLayer = L.layerGroup().addTo(campusMap);
-
-    setupMapControls();
+  if (typeof L === 'undefined') {
+    console.warn('[RExchange Map] Leaflet library (L) is loading...');
+    setTimeout(initCampusMap, 150);
+    return;
   }
 
+  if (!campusMap) {
+    try {
+      // Center at SRM Kattankulathur Campus
+      campusMap = L.map('campus-exchange-map', {
+        center: [SRM_CAMPUS_CENTER.lat, SRM_CAMPUS_CENTER.lng],
+        zoom: 16,
+        minZoom: 14,
+        maxZoom: 19,
+        zoomControl: true
+      });
+
+      // CartoDB Dark Matter Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+      }).addTo(campusMap);
+
+      mapMarkersLayer = L.layerGroup().addTo(campusMap);
+    } catch (e) {
+      console.warn('[RExchange Map Init]', e);
+    }
+  }
+
+  setupMapControls();
   renderMapMarkers();
+
+  if (campusMap) {
+    campusMap.invalidateSize();
+  }
 }
 
+let mapControlsBound = false;
 function setupMapControls() {
   const btnFindMe = document.getElementById('btn-find-me');
   const btnCenterCampus = document.getElementById('btn-center-campus');
@@ -2786,11 +2808,13 @@ function setupMapControls() {
   const landmarkButtons = document.querySelectorAll('.landmark-tag');
   const btnCloseInsp = document.getElementById('btn-close-insp');
 
-  if (btnFindMe) {
+  if (btnFindMe && !btnFindMe.hasAttribute('data-bound')) {
+    btnFindMe.setAttribute('data-bound', 'true');
     btnFindMe.addEventListener('click', handleFindMe);
   }
 
-  if (btnCenterCampus) {
+  if (btnCenterCampus && !btnCenterCampus.hasAttribute('data-bound')) {
+    btnCenterCampus.setAttribute('data-bound', 'true');
     btnCenterCampus.addEventListener('click', () => {
       if (campusMap) {
         campusMap.flyTo([SRM_CAMPUS_CENTER.lat, SRM_CAMPUS_CENTER.lng], 16, { duration: 1.2 });
@@ -2800,38 +2824,45 @@ function setupMapControls() {
   }
 
   mapFilterChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const filter = chip.getAttribute('data-map-filter') || 'All';
-      
-      if (filter === 'Nearby' && !userGeoLocation) {
-        showToast('📍 Please click "Find Me" first to enable proximity sorting.');
-        handleFindMe();
-        return;
-      }
+    if (!chip.hasAttribute('data-bound')) {
+      chip.setAttribute('data-bound', 'true');
+      chip.addEventListener('click', () => {
+        const filter = chip.getAttribute('data-map-filter') || 'All';
+        
+        if (filter === 'Nearby' && !userGeoLocation) {
+          showToast('📍 Please click "Find Me" first to enable proximity sorting.');
+          handleFindMe();
+          return;
+        }
 
-      currentMapFilter = filter;
-      mapFilterChips.forEach((c) => {
-        const isActive = (c.getAttribute('data-map-filter') || 'All') === filter;
-        c.classList.toggle('active', isActive);
-        c.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        currentMapFilter = filter;
+        mapFilterChips.forEach((c) => {
+          const isActive = (c.getAttribute('data-map-filter') || 'All') === filter;
+          c.classList.toggle('active', isActive);
+          c.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        renderMapMarkers();
       });
-
-      renderMapMarkers();
-    });
+    }
   });
 
   landmarkButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const landmarkKey = btn.getAttribute('data-landmark');
-      if (CAMPUS_LOCATIONS[landmarkKey] && campusMap) {
-        const loc = CAMPUS_LOCATIONS[landmarkKey];
-        campusMap.flyTo([loc.lat, loc.lng], 17, { duration: 1 });
-        showToast(`📍 Jumping to ${loc.name}`);
-      }
-    });
+    if (!btn.hasAttribute('data-bound')) {
+      btn.setAttribute('data-bound', 'true');
+      btn.addEventListener('click', () => {
+        const landmarkKey = btn.getAttribute('data-landmark');
+        if (CAMPUS_LOCATIONS[landmarkKey] && campusMap) {
+          const loc = CAMPUS_LOCATIONS[landmarkKey];
+          campusMap.flyTo([loc.lat, loc.lng], 17, { duration: 1 });
+          showToast(`📍 Jumping to ${loc.name}`);
+        }
+      });
+    }
   });
 
-  if (btnCloseInsp) {
+  if (btnCloseInsp && !btnCloseInsp.hasAttribute('data-bound')) {
+    btnCloseInsp.setAttribute('data-bound', 'true');
     btnCloseInsp.addEventListener('click', () => {
       const insp = document.getElementById('map-marker-inspector');
       if (insp) insp.style.display = 'none';
@@ -2851,63 +2882,92 @@ function handleFindMe() {
 
   if (btnFindMe) btnFindMe.classList.add('loading');
   if (btnFindMeText) btnFindMeText.textContent = 'Locating...';
+  if (noticeText) {
+    noticeText.innerHTML = `<span>⏳</span> <span class="notice-text">Acquiring current browser coordinates to compute walking distance...</span>`;
+  }
 
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      if (btnFindMe) btnFindMe.classList.remove('loading');
-      if (btnFindMeText) btnFindMeText.textContent = 'Located ✓';
+  const onGeoSuccess = (pos) => {
+    if (btnFindMe) btnFindMe.classList.remove('loading');
+    if (btnFindMeText) btnFindMeText.textContent = 'Located ✓';
 
-      userGeoLocation = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      };
+    userGeoLocation = {
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude
+    };
 
-      if (campusMap) {
-        if (userLocationMarker) {
-          campusMap.removeLayer(userLocationMarker);
-        }
-
-        const userPinHtml = `
-          <div class="user-location-pin" title="You are here"></div>
-        `;
-
-        const userIcon = L.divIcon({
-          html: userPinHtml,
-          className: 'custom-map-marker',
-          iconSize: [22, 22],
-          iconAnchor: [11, 11]
-        });
-
-        userLocationMarker = L.marker([userGeoLocation.lat, userGeoLocation.lng], { icon: userIcon })
-          .addTo(campusMap)
-          .bindPopup(`
-            <div class="map-popup-card" style="text-align:center;">
-              <strong style="color:#38bdf8; font-size:0.9rem;">🔵 You are here</strong>
-              <span style="font-size:0.75rem; color:var(--text-muted);">Current browser position used locally to show walking distances</span>
-            </div>
-          `);
-
-        campusMap.flyTo([userGeoLocation.lat, userGeoLocation.lng], 16, { duration: 1.2 });
+    if (campusMap) {
+      if (userLocationMarker) {
+        campusMap.removeLayer(userLocationMarker);
       }
 
+      const userPinHtml = `
+        <div class="user-location-pin" title="You are here"></div>
+      `;
+
+      const userIcon = L.divIcon({
+        html: userPinHtml,
+        className: 'custom-map-marker',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+      });
+
+      userLocationMarker = L.marker([userGeoLocation.lat, userGeoLocation.lng], { icon: userIcon })
+        .addTo(campusMap)
+        .bindPopup(`
+          <div class="map-popup-card" style="text-align:center;">
+            <strong style="color:#38bdf8; font-size:0.9rem;">🔵 You are here</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">Browser coordinates used locally to show walking distances to campus spots.</span>
+          </div>
+        `);
+
+      campusMap.flyTo([userGeoLocation.lat, userGeoLocation.lng], 16, { duration: 1.2 });
+    }
+
+    if (noticeText) {
+      noticeText.innerHTML = `<span class="notice-icon">📍</span> <span class="notice-text"><strong>Location active!</strong> Walking distances to campus exchange spots are now displayed. Your coordinates are strictly private.</span>`;
+    }
+
+    renderMapMarkers();
+    showToast('📍 Location found! Showing walking distances to campus exchanges.');
+  };
+
+  const onGeoError = (err) => {
+    if (btnFindMe) btnFindMe.classList.remove('loading');
+    if (btnFindMeText) btnFindMeText.textContent = 'Find Me';
+
+    if (err && err.code === 1) {
+      // Permission denied
+      showToast('📍 Location access denied. You can still browse campus listings.');
       if (noticeText) {
-        noticeText.innerHTML = `📍 <strong>Location active!</strong> Walking distances to campus exchange spots are now displayed. Your coordinates are strictly private.`;
+        noticeText.innerHTML = `<span class="notice-icon">🛡️</span> <span class="notice-text">Location access denied. All SRM campus listings remain fully accessible.</span>`;
       }
+    } else if (err && err.code === 3) {
+      // Timeout
+      showToast('📍 Location request timed out. Please try again.');
+      if (noticeText) {
+        noticeText.innerHTML = `<span class="notice-icon">⚠️</span> <span class="notice-text">Location request timed out. Click "Find Me" to retry.</span>`;
+      }
+    } else {
+      // Unavailable
+      showToast('📍 Unable to determine your location.');
+      if (noticeText) {
+        noticeText.innerHTML = `<span class="notice-icon">⚠️</span> <span class="notice-text">Could not retrieve current position. You can browse landmarks directly.</span>`;
+      }
+    }
+  };
 
-      renderMapMarkers();
-      showToast('📍 Location found! Showing walking distances to campus exchanges.');
-    },
+  // Dual-mode geolocation: Try high accuracy first, then fallback to standard accuracy
+  navigator.geolocation.getCurrentPosition(
+    onGeoSuccess,
     (err) => {
-      if (btnFindMe) btnFindMe.classList.remove('loading');
-      if (btnFindMeText) btnFindMeText.textContent = 'Find Me';
-
-      if (err.code === 1) {
-        showToast('Location access denied. You can still browse campus listings.');
-      } else {
-        showToast('Unable to determine your location.');
-      }
+      // If error or timeout on high accuracy, retry without high accuracy
+      navigator.geolocation.getCurrentPosition(
+        onGeoSuccess,
+        onGeoError,
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 120000 }
+      );
     },
-    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
   );
 }
 
@@ -2918,7 +2978,25 @@ function renderMapMarkers() {
 
   const query = state.searchQuery.trim().toLowerCase();
 
-  let listingsWithLocation = state.listings.filter((l) => l.location && l.location.lat && l.location.lng);
+  // Ensure every real listing from application data is plotted
+  let listingsWithLocation = state.listings.map((l) => {
+    if (!l.location || !l.location.lat || !l.location.lng) {
+      const locKey = l.location && l.location.name && CAMPUS_LOCATIONS[l.location.name]
+        ? l.location.name
+        : (l.category === 'Item' ? 'Central Library' : l.category === 'Skill' ? 'Tech Park' : 'Student Activity Centre');
+      const fallbackLoc = CAMPUS_LOCATIONS[locKey] || CAMPUS_LOCATIONS['Central Library'];
+      return {
+        ...l,
+        location: {
+          name: fallbackLoc.name,
+          area: fallbackLoc.area,
+          lat: fallbackLoc.lat,
+          lng: fallbackLoc.lng
+        }
+      };
+    }
+    return l;
+  });
 
   if (currentMapFilter !== 'All' && currentMapFilter !== 'Nearby') {
     listingsWithLocation = listingsWithLocation.filter((l) => l.category === currentMapFilter);
@@ -3052,7 +3130,7 @@ function switchExploreViewMode(mode) {
   const btnMap = document.getElementById('btn-explore-map-view');
   const listContainer = document.getElementById('explore-list-container');
   const mapContainer = document.getElementById('explore-map-container');
-  const quickStats = document.getElementById('map-quick-stats');
+  const quickStatus = document.getElementById('map-quick-status-chip');
 
   if (mode === 'map') {
     if (btnList) {
@@ -3065,14 +3143,28 @@ function switchExploreViewMode(mode) {
     }
     if (listContainer) listContainer.style.display = 'none';
     if (mapContainer) mapContainer.style.display = 'flex';
-    if (quickStats) quickStats.style.display = 'inline-flex';
+    if (quickStatus) quickStatus.style.display = 'inline-flex';
+
+    initCampusMap();
+
+    if (campusMap) {
+      campusMap.invalidateSize();
+      renderMapMarkers();
+    }
 
     setTimeout(() => {
       initCampusMap();
       if (campusMap) {
         campusMap.invalidateSize();
+        renderMapMarkers();
       }
     }, 80);
+
+    setTimeout(() => {
+      if (campusMap) {
+        campusMap.invalidateSize();
+      }
+    }, 250);
   } else {
     if (btnList) {
       btnList.classList.add('active');
@@ -3084,7 +3176,6 @@ function switchExploreViewMode(mode) {
     }
     if (listContainer) listContainer.style.display = 'block';
     if (mapContainer) mapContainer.style.display = 'none';
-    if (quickStats) quickStats.style.display = 'none';
     renderListings();
   }
 }
@@ -5117,10 +5208,12 @@ window.getSupabaseClient = getSupabaseClient;
 window.initCampusMap = initCampusMap;
 window.switchExploreViewMode = switchExploreViewMode;
 window.handleFindMe = handleFindMe;
+window.renderMapMarkers = renderMapMarkers;
 window.openListingModal = openListingModal;
 window.calculateDistanceKm = calculateDistanceKm;
 window.formatDistance = formatDistance;
 window.CAMPUS_LOCATIONS = CAMPUS_LOCATIONS;
 window.SRM_CAMPUS_CENTER = SRM_CAMPUS_CENTER;
+window.state = state;
 
 
