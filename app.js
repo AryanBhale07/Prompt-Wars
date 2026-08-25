@@ -202,6 +202,12 @@ const countItemsBadge = document.getElementById('count-items');
 const countSkillsBadge = document.getElementById('count-skills');
 const countOppsBadge = document.getElementById('count-opportunities');
 
+// Campus Pulse Metrics Elements
+const pulseNewListings = document.getElementById('pulse-new-listings');
+const pulseSkillsShared = document.getElementById('pulse-skills-shared');
+const pulseOpportunities = document.getElementById('pulse-opportunities');
+const pulsePotentialMatches = document.getElementById('pulse-potential-matches');
+
 // Hero Interactive Elements
 const heroAiSearch = document.getElementById('hero-ai-search');
 const heroSearchBtn = document.getElementById('hero-search-btn');
@@ -225,6 +231,8 @@ const modalContact = document.getElementById('modal-contact');
 const modalCopyBtn = document.getElementById('modal-copy-btn');
 const modalSaveBtn = document.getElementById('modal-save-btn');
 const modalSaveText = document.getElementById('modal-save-text');
+const modalMsgBtn = document.getElementById('modal-msg-btn');
+const modalRelatedListings = document.getElementById('modal-related-listings');
 
 // Post Form AI Assist Elements
 const aiAssistBtn = document.getElementById('ai-assist-btn');
@@ -255,7 +263,7 @@ function showToast(message) {
   toast.style.display = 'block';
   setTimeout(() => {
     toast.style.display = 'none';
-  }, 2200);
+  }, 2400);
 }
 
 // Format timestamp for display
@@ -291,15 +299,23 @@ function getBadgeClass(category) {
   }
 }
 
-// Update category count indicators
-function updateCategoryCounts() {
+// Update category count indicators and Campus Pulse metrics from actual dataset
+function updateAllMetrics() {
+  const totalListings = state.listings.length;
   const itemsCount = state.listings.filter((l) => l.category === 'Item').length;
   const skillsCount = state.listings.filter((l) => l.category === 'Skill').length;
   const oppsCount = state.listings.filter((l) => l.category === 'Opportunity').length;
 
+  // Category Pillars count badges
   if (countItemsBadge) countItemsBadge.textContent = `${itemsCount} Listing${itemsCount === 1 ? '' : 's'}`;
   if (countSkillsBadge) countSkillsBadge.textContent = `${skillsCount} Listing${skillsCount === 1 ? '' : 's'}`;
   if (countOppsBadge) countOppsBadge.textContent = `${oppsCount} Listing${oppsCount === 1 ? '' : 's'}`;
+
+  // Campus Pulse Live Metrics
+  if (pulseNewListings) pulseNewListings.textContent = totalListings;
+  if (pulseSkillsShared) pulseSkillsShared.textContent = skillsCount;
+  if (pulseOpportunities) pulseOpportunities.textContent = oppsCount;
+  if (pulsePotentialMatches) pulsePotentialMatches.textContent = '0';
 }
 
 // Set active primary category filter
@@ -319,7 +335,7 @@ function setActiveFilter(filterName) {
 function renderListings() {
   const query = state.searchQuery.trim().toLowerCase();
 
-  // 1. Filter
+  // 1. Filter Logic
   let filtered = state.listings.filter((listing) => {
     // Category match
     const matchesCategory = state.activeFilter === 'All' || listing.category === state.activeFilter;
@@ -339,7 +355,7 @@ function renderListings() {
     // Secondary Filter match
     let matchesSecondary = true;
     if (state.filterType === 'free') {
-      matchesSecondary = listing.isFree || /\b(free|giveaway|give away)\b/i.test(listing.description + ' ' + listing.title);
+      matchesSecondary = listing.isFree === true || /\b(free|giveaway|give away)\b/i.test(listing.description + ' ' + listing.title);
     } else if (state.filterType === 'available') {
       matchesSecondary = (listing.availability || 'Available').toLowerCase() === 'available';
     }
@@ -347,7 +363,7 @@ function renderListings() {
     return matchesCategory && matchesSearch && matchesSecondary;
   });
 
-  // 2. Sort
+  // 2. Sort Logic
   if (state.sortBy === 'newest') {
     filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   } else if (state.sortBy === 'relevant') {
@@ -367,72 +383,74 @@ function renderListings() {
     listingCountTag.textContent = `${filtered.length} Listing${filtered.length === 1 ? '' : 's'}`;
   }
 
-  updateCategoryCounts();
+  updateAllMetrics();
 
   // Handle Empty State
   if (filtered.length === 0) {
-    emptyTitle.textContent = 'No matches found';
-    emptyDesc.textContent = 'Try searching for textbooks, tutoring, events or opportunities.';
-    emptyState.style.display = 'block';
-    listingsFeed.innerHTML = '';
+    if (emptyTitle) emptyTitle.textContent = 'No matches found';
+    if (emptyDesc) emptyDesc.textContent = 'Try searching for textbooks, tutoring, events or opportunities.';
+    if (emptyState) emptyState.style.display = 'block';
+    if (listingsFeed) listingsFeed.innerHTML = '';
     return;
   }
 
-  emptyState.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
 
   // Construct Responsive Cards Grid markup (3-column on desktop)
-  listingsFeed.innerHTML = filtered
-    .map((listing) => {
-      const safeId = escapeHtml(listing.id);
-      const safeTitle = escapeHtml(listing.title);
-      const safeDescription = escapeHtml(listing.description);
-      const safeCategory = escapeHtml(listing.category);
-      const safeAuthor = escapeHtml(listing.studentName || 'Student Member');
-      const safeAvatar = escapeHtml(listing.avatar || safeAuthor.slice(0, 2).toUpperCase());
-      const safeAvail = escapeHtml(listing.availability || 'Available');
-      const badgeClass = getBadgeClass(listing.category);
-      const formattedTime = formatTimestamp(listing.createdAt);
-      const isSaved = state.savedIds.has(listing.id);
+  if (listingsFeed) {
+    listingsFeed.innerHTML = filtered
+      .map((listing) => {
+        const safeId = escapeHtml(listing.id);
+        const safeTitle = escapeHtml(listing.title);
+        const safeDescription = escapeHtml(listing.description);
+        const safeCategory = escapeHtml(listing.category);
+        const safeAuthor = escapeHtml(listing.studentName || 'Student Member');
+        const safeAvatar = escapeHtml(listing.avatar || safeAuthor.slice(0, 2).toUpperCase());
+        const safeAvail = escapeHtml(listing.availability || 'Available');
+        const badgeClass = getBadgeClass(listing.category);
+        const formattedTime = formatTimestamp(listing.createdAt);
+        const isSaved = state.savedIds.has(listing.id);
 
-      const tagsHtml = (listing.tags || ['#campus', `#${listing.category.toLowerCase()}`])
-        .map(tag => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
-        .join('');
+        const tagsHtml = (listing.tags || ['#campus', `#${listing.category.toLowerCase()}`])
+          .map(tag => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
+          .join('');
 
-      return `
-        <article class="listing-card-modern" data-id="${safeId}">
-          <div class="card-top-row">
-            <div class="card-badges-left">
-              <span class="badge ${badgeClass}">${safeCategory}</span>
-              <span class="badge-avail">🟢 ${safeAvail}</span>
-            </div>
-            <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
-              ${isSaved ? '🔖' : '☆'}
-            </button>
-          </div>
-
-          <h3 class="card-listing-title">${safeTitle}</h3>
-          <p class="card-listing-desc">${safeDescription}</p>
-
-          <div class="card-tags-row">
-            ${tagsHtml}
-          </div>
-
-          <div class="card-author-footer">
-            <div class="author-profile-left">
-              <div class="author-avatar">${safeAvatar}</div>
-              <div class="author-details">
-                <span class="author-name">${safeAuthor}</span>
-                <span class="author-time">${formattedTime}</span>
+        return `
+          <article class="listing-card-modern" data-id="${safeId}">
+            <div class="card-top-row">
+              <div class="card-badges-left">
+                <span class="badge ${badgeClass}">${safeCategory}</span>
+                <span class="badge-avail">🟢 ${safeAvail}</span>
               </div>
+              <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
+                ${isSaved ? '🔖' : '☆'}
+              </button>
             </div>
-            <button type="button" class="btn-card-view" data-id="${safeId}">View →</button>
-          </div>
-        </article>
-      `;
-    })
-    .join('');
 
-  attachCardListeners();
+            <h3 class="card-listing-title">${safeTitle}</h3>
+            <p class="card-listing-desc">${safeDescription}</p>
+
+            <div class="card-tags-row">
+              ${tagsHtml}
+            </div>
+
+            <div class="card-author-footer">
+              <div class="author-profile-left">
+                <div class="author-avatar">${safeAvatar}</div>
+                <div class="author-details">
+                  <span class="author-name">${safeAuthor}</span>
+                  <span class="author-time">${formattedTime}</span>
+                </div>
+              </div>
+              <button type="button" class="btn-card-view" data-id="${safeId}">View →</button>
+            </div>
+          </article>
+        `;
+      })
+      .join('');
+
+    attachCardListeners();
+  }
 }
 
 // Attach card event listeners
@@ -496,7 +514,7 @@ function toggleSaveListing(listingId) {
   renderListings();
 }
 
-// Open Listing Modal Details
+// Open Listing Modal Details with Related Listings
 function openListingModal(listingId) {
   const listing = state.listings.find(l => l.id === listingId);
   if (!listing || !listingModal) return;
@@ -523,6 +541,42 @@ function openListingModal(listingId) {
   const isSaved = state.savedIds.has(listing.id);
   if (modalSaveText) modalSaveText.textContent = isSaved ? 'Saved 🔖' : 'Save Listing';
 
+  // Render Related Listings ("You may also like" — 3 from same category)
+  if (modalRelatedListings) {
+    const related = state.listings
+      .filter(l => l.category === listing.category && l.id !== listing.id)
+      .slice(0, 3);
+
+    if (related.length > 0) {
+      modalRelatedListings.innerHTML = related
+        .map(rel => {
+          const safeRelTitle = escapeHtml(rel.title);
+          const safeRelAuthor = escapeHtml(rel.studentName || 'Campus Member');
+          const relTime = formatTimestamp(rel.createdAt);
+          return `
+            <div class="related-card" data-id="${escapeHtml(rel.id)}">
+              <div class="related-info">
+                <span class="related-title">${safeRelTitle}</span>
+                <span class="related-meta">${safeRelAuthor} • ${relTime}</span>
+              </div>
+              <span class="btn-related-view">View →</span>
+            </div>
+          `;
+        })
+        .join('');
+
+      // Add click handlers on related cards
+      modalRelatedListings.querySelectorAll('.related-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const relId = card.getAttribute('data-id');
+          openListingModal(relId);
+        });
+      });
+    } else {
+      modalRelatedListings.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted);">No other listings in this category yet.</p>`;
+    }
+  }
+
   listingModal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -542,6 +596,13 @@ if (modalCloseActionBtn) modalCloseActionBtn.addEventListener('click', closeList
 if (listingModal) {
   listingModal.addEventListener('click', (e) => {
     if (e.target === listingModal) closeListingModal();
+  });
+}
+
+// Modal Message Student Button
+if (modalMsgBtn) {
+  modalMsgBtn.addEventListener('click', () => {
+    showToast('💬 Message feature coming next.');
   });
 }
 
@@ -572,7 +633,7 @@ filterButtons.forEach((btn) => {
   });
 });
 
-// Secondary Filter Buttons Listener
+// Secondary Filter Buttons Listener (Newest, Most Relevant, Free, Available)
 secFilterButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     const sortType = btn.getAttribute('data-sort');
@@ -597,7 +658,7 @@ secFilterButtons.forEach((btn) => {
   });
 });
 
-// Clear Search Button
+// Clear Search Button (Restores full listing feed)
 if (clearSearchBtn) {
   clearSearchBtn.addEventListener('click', () => {
     state.searchQuery = '';
@@ -608,7 +669,10 @@ if (clearSearchBtn) {
     if (searchClearBtn) searchClearBtn.style.display = 'none';
 
     filterButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-filter') === 'All'));
-    secFilterButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-sort') === 'newest'));
+    secFilterButtons.forEach(b => {
+      const isSortNewest = b.getAttribute('data-sort') === 'newest';
+      b.classList.toggle('active', isSortNewest);
+    });
 
     renderListings();
   });
@@ -713,53 +777,6 @@ if (exploreAiBtn) {
       showToast('✨ Type what you need to search listings');
     }
   });
-}
-
-// Animated Counter for Campus Pulse
-function animatePulseCounters() {
-  const metricElements = document.querySelectorAll('.metric-number[data-target]');
-  const duration = 1400; // ms
-
-  metricElements.forEach((el) => {
-    const target = parseInt(el.getAttribute('data-target'), 10) || 0;
-    const startTime = performance.now();
-
-    function updateCounter(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const currentVal = Math.floor(easeOut * target);
-
-      el.textContent = currentVal;
-
-      if (progress < 1) {
-        requestAnimationFrame(updateCounter);
-      } else {
-        el.textContent = target;
-      }
-    }
-
-    requestAnimationFrame(updateCounter);
-  });
-}
-
-const pulseSection = document.getElementById('pulse');
-if (pulseSection && 'IntersectionObserver' in window) {
-  let counterAnimated = false;
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && !counterAnimated) {
-          counterAnimated = true;
-          animatePulseCounters();
-        }
-      });
-    },
-    { threshold: 0.25 }
-  );
-  observer.observe(pulseSection);
-} else {
-  animatePulseCounters();
 }
 
 // Smart context-aware client fallback generator for AI Assist
@@ -984,5 +1001,5 @@ form.addEventListener('submit', (e) => {
   }
 });
 
-// Initial Render
+// Initial Render on Page Load
 renderListings();

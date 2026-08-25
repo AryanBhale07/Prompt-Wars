@@ -205,7 +205,7 @@
     </div>
   </section>
 
-  <!-- Campus Pulse Section -->
+  <!-- Campus Pulse Section (Real Calculated Data) -->
   <section id="pulse" class="pulse-section">
     <div class="site-container">
       <div class="pulse-card-wrapper">
@@ -219,19 +219,19 @@
 
         <div class="pulse-metrics-grid">
           <div class="pulse-metric-item">
-            <span class="metric-number" data-target="24">0</span>
+            <span class="metric-number" id="pulse-new-listings">12</span>
             <span class="metric-label">New Listings</span>
           </div>
           <div class="pulse-metric-item">
-            <span class="metric-number" data-target="18">0</span>
+            <span class="metric-number" id="pulse-skills-shared">4</span>
             <span class="metric-label">Skills Shared</span>
           </div>
           <div class="pulse-metric-item">
-            <span class="metric-number" data-target="12">0</span>
+            <span class="metric-number" id="pulse-opportunities">4</span>
             <span class="metric-label">Opportunities</span>
           </div>
           <div class="pulse-metric-item highlight-metric">
-            <span class="metric-number text-accent-green" data-target="31">0</span>
+            <span class="metric-number text-accent-green" id="pulse-potential-matches">0</span>
             <span class="metric-label">Potential Matches</span>
           </div>
         </div>
@@ -286,7 +286,7 @@
         </div>
       </div>
 
-      <!-- Empty State -->
+      <!-- Empty State (Hidden when listings exist) -->
       <div id="empty-state" class="empty-state" style="display: none;">
         <div class="empty-icon">📦</div>
         <h3 id="empty-title" class="empty-title">No matches found</h3>
@@ -451,7 +451,7 @@
     </div>
   </section>
 
-  <!-- Listing Detail View Modal -->
+  <!-- Listing Detail View Modal with Related Listings & Action Buttons -->
   <div id="listing-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
       <div class="modal-top-bar">
@@ -486,11 +486,21 @@
         </div>
       </div>
 
+      <!-- Action Buttons (Message Student, Save Listing, Close) -->
       <div class="modal-footer-actions">
+        <button type="button" id="modal-msg-btn" class="btn-modal-msg">
+          <span class="btn-icon">💬</span> Message Student
+        </button>
         <button type="button" id="modal-save-btn" class="btn-modal-save">
           <span class="save-icon">🔖</span> <span id="modal-save-text">Save Listing</span>
         </button>
         <button type="button" id="modal-close-action-btn" class="btn-modal-close">Close</button>
+      </div>
+
+      <!-- Related Listings: "You may also like" -->
+      <div class="modal-related-section">
+        <h3 class="related-section-title">You may also like</h3>
+        <div id="modal-related-listings" class="related-listings-grid"></div>
       </div>
     </div>
   </div>

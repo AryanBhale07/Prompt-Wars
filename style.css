@@ -173,7 +173,7 @@ body {
 }
 
 /* ==========================================================================
-   Hero Section (Proper 2-Column Desktop Grid)
+   Hero Section (2-Column Desktop Grid)
    ========================================================================== */
 .hero-section {
   padding: 60px 0 70px;
@@ -294,7 +294,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Hero Compact AI Search Bar */
+/* Compact AI Search Bar in Hero */
 .hero-search-wrapper {
   background: rgba(18, 21, 32, 0.85);
   border: 1px solid var(--border-card);
@@ -429,18 +429,11 @@ body {
   animation: dash-flow 20s linear infinite;
 }
 
-.conn-line-2, .conn-line-4 {
-  stroke: rgba(56, 189, 248, 0.25);
-}
-
-.conn-line-3, .conn-line-5 {
-  stroke: rgba(251, 191, 36, 0.25);
-}
+.conn-line-2, .conn-line-4 { stroke: rgba(56, 189, 248, 0.25); }
+.conn-line-3, .conn-line-5 { stroke: rgba(251, 191, 36, 0.25); }
 
 @keyframes dash-flow {
-  to {
-    stroke-dashoffset: -100;
-  }
+  to { stroke-dashoffset: -100; }
 }
 
 .pulse-node {
@@ -529,7 +522,7 @@ body {
 }
 
 /* ==========================================================================
-   Three Large Feature Category Cards
+   Three Category Pillar Cards
    ========================================================================== */
 .categories-section {
   padding: 50px 0 60px;
@@ -1643,7 +1636,7 @@ select option {
 }
 
 /* ==========================================================================
-   Detail Modal & Toast
+   Detail Modal & Related Listings
    ========================================================================== */
 .modal-backdrop {
   position: fixed;
@@ -1671,9 +1664,9 @@ select option {
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-xl);
-  max-width: 580px;
+  max-width: 620px;
   width: 100%;
-  padding: 30px;
+  padding: 28px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
   animation: modal-scale 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   max-height: 90vh;
@@ -1719,7 +1712,7 @@ select option {
 }
 
 .modal-listing-title {
-  font-size: 1.45rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.02em;
@@ -1836,14 +1829,39 @@ select option {
 
 .modal-footer-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 22px;
   border-top: 1px solid var(--border-subtle);
   padding-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-modal-msg {
+  flex: 1.2;
+  min-width: 140px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-inverse);
+  background-color: var(--accent-green);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-modal-msg:hover {
+  background-color: var(--accent-green-hover);
+  box-shadow: 0 0 16px var(--accent-green-glow);
 }
 
 .btn-modal-save {
-  padding: 10px 18px;
+  padding: 10px 16px;
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 700;
@@ -1864,8 +1882,7 @@ select option {
 }
 
 .btn-modal-close {
-  flex: 1;
-  padding: 10px 18px;
+  padding: 10px 16px;
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 700;
@@ -1879,6 +1896,81 @@ select option {
 
 .btn-modal-close:hover {
   background: #252a3a;
+}
+
+/* Related Listings in Modal */
+.modal-related-section {
+  margin-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 18px;
+}
+
+.related-section-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.related-listings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.related-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.related-card:hover {
+  border-color: var(--accent-green-border);
+  background: var(--bg-surface-elevated);
+  transform: translateX(3px);
+}
+
+.related-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.related-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.related-meta {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.btn-related-view {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-green);
+  background: var(--accent-green-subtle);
+  border: 1px solid var(--accent-green-border);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .toast-notification {
