@@ -2,6 +2,61 @@
 // RExchange — Core Application Logic (Single-Page Interactive Campus OS)
 // ==========================================================================
 
+// SRM Kattankulathur Campus Center & Landmark Directory
+const SRM_CAMPUS_CENTER = { lat: 12.8236, lng: 80.0440 };
+
+const CAMPUS_LOCATIONS = {
+  'Central Library': {
+    name: 'Central Library',
+    area: 'Ground Floor & Reading Hall',
+    lat: 12.8236,
+    lng: 80.0438,
+    icon: '📚'
+  },
+  'Tech Park': {
+    name: 'Tech Park (TP)',
+    area: '4th & 5th Floor Labs',
+    lat: 12.8248,
+    lng: 80.0452,
+    icon: '💻'
+  },
+  'Main Block': {
+    name: 'University Building (Main Block)',
+    area: 'Atrium & Central Lawns',
+    lat: 12.8228,
+    lng: 80.0425,
+    icon: '🏛️'
+  },
+  'Student Activity Centre': {
+    name: 'Student Activity Centre (SAC)',
+    area: 'SAC Plaza & Amphitheatre',
+    lat: 12.8215,
+    lng: 80.0460,
+    icon: '🚀'
+  },
+  'Java Food Court': {
+    name: 'Java Green Food Court',
+    area: 'Main Campus Dining Hub',
+    lat: 12.8240,
+    lng: 80.0465,
+    icon: '☕'
+  },
+  'Hostel Area': {
+    name: 'Hostel Zone',
+    area: 'Paari / Kaari / M-Block Courtyard',
+    lat: 12.8260,
+    lng: 80.0415,
+    icon: '🏠'
+  },
+  'Bio-Engineering Block': {
+    name: 'Bio-Tech & Medical Complex',
+    area: 'Bio-Engineering Atrium',
+    lat: 12.8205,
+    lng: 80.0410,
+    icon: '🔬'
+  }
+};
+
 // 12 Rich Demo Listings for SRM Campus Community
 const INITIAL_LISTINGS = [
   // --- ITEMS ---
@@ -21,6 +76,12 @@ const INITIAL_LISTINGS = [
     icon: '📖',
     matchScore: 94,
     matchReason: 'Matches your interests in DBMS and computer science coursework.',
+    location: {
+      name: 'Central Library',
+      area: 'Ground Floor & Reading Hall',
+      lat: 12.8236,
+      lng: 80.0438
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 25) // 25 mins ago
   },
   {
@@ -39,6 +100,12 @@ const INITIAL_LISTINGS = [
     icon: '📝',
     matchScore: 91,
     matchReason: 'Matches your core CSE syllabus and exam preparation focus.',
+    location: {
+      name: 'Tech Park',
+      area: '4th Floor Computer Lab',
+      lat: 12.8248,
+      lng: 80.0452
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 95) // 1.5 hours ago
   },
   {
@@ -57,6 +124,12 @@ const INITIAL_LISTINGS = [
     icon: '🧮',
     matchScore: 89,
     matchReason: 'Recommended for Engineering Mathematics and lab calculations.',
+    location: {
+      name: 'Main Block',
+      area: 'University Building Atrium',
+      lat: 12.8228,
+      lng: 80.0425
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 180) // 3 hours ago
   },
   {
@@ -75,6 +148,12 @@ const INITIAL_LISTINGS = [
     icon: '⚡',
     matchScore: 93,
     matchReason: 'High affinity for IoT hardware labs and microcontroller projects.',
+    location: {
+      name: 'Tech Park',
+      area: 'IoT & Hardware Lab',
+      lat: 12.8248,
+      lng: 80.0452
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 300) // 5 hours ago
   },
 
@@ -95,6 +174,12 @@ const INITIAL_LISTINGS = [
     icon: '🐍',
     matchScore: 96,
     matchReason: 'Matches your programming track and upcoming technical interview practice.',
+    location: {
+      name: 'Central Library',
+      area: '2nd Floor Discussion Room',
+      lat: 12.8236,
+      lng: 80.0438
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 45) // 45 mins ago
   },
   {
@@ -113,6 +198,12 @@ const INITIAL_LISTINGS = [
     icon: '☕',
     matchScore: 92,
     matchReason: 'Direct alignment with Object-Oriented System Design modules.',
+    location: {
+      name: 'Tech Park',
+      area: 'Tech Park Lab 3',
+      lat: 12.8248,
+      lng: 80.0452
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 120) // 2 hours ago
   },
   {
@@ -131,6 +222,12 @@ const INITIAL_LISTINGS = [
     icon: '🎨',
     matchScore: 90,
     matchReason: 'Great companion skill for web and mobile product development.',
+    location: {
+      name: 'Student Activity Centre',
+      area: 'Design Club Hub',
+      lat: 12.8215,
+      lng: 80.0460
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 240) // 4 hours ago
   },
   {
@@ -149,6 +246,12 @@ const INITIAL_LISTINGS = [
     icon: '📐',
     matchScore: 88,
     matchReason: 'Valuable for hackathon pitch decks and design systems.',
+    location: {
+      name: 'Java Food Court',
+      area: 'Outdoor Study Tables',
+      lat: 12.8240,
+      lng: 80.0465
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 360) // 6 hours ago
   },
 
@@ -169,6 +272,12 @@ const INITIAL_LISTINGS = [
     icon: '🚀',
     matchScore: 97,
     matchReason: 'Top match based on your React, Frontend, and Hackathon collaboration profile.',
+    location: {
+      name: 'Student Activity Centre',
+      area: 'SAC Main Hall',
+      lat: 12.8215,
+      lng: 80.0460
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 30) // 30 mins ago
   },
   {
@@ -187,6 +296,12 @@ const INITIAL_LISTINGS = [
     icon: '👥',
     matchScore: 95,
     matchReason: 'Recommended campus open source event with free peer learning.',
+    location: {
+      name: 'Main Block',
+      area: 'Auditorium Hall 2',
+      lat: 12.8228,
+      lng: 80.0425
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 60) // 1 hour ago
   },
   {
@@ -205,6 +320,12 @@ const INITIAL_LISTINGS = [
     icon: '🚗',
     matchScore: 92,
     matchReason: 'Strong alignment with collaborative fullstack campus projects.',
+    location: {
+      name: 'Hostel Area',
+      area: 'Paari / Kaari Quad',
+      lat: 12.8260,
+      lng: 80.0415
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 210) // 3.5 hours ago
   },
   {
@@ -223,6 +344,12 @@ const INITIAL_LISTINGS = [
     icon: '🏆',
     matchScore: 87,
     matchReason: 'Open campus creative competition with verified student awards.',
+    location: {
+      name: 'Student Activity Centre',
+      area: 'SAC Arts Gallery',
+      lat: 12.8215,
+      lng: 80.0460
+    },
     createdAt: new Date(Date.now() - 1000 * 60 * 480) // 8 hours ago
   }
 ];
@@ -2198,6 +2325,10 @@ function createListingCardHTML(listing) {
     .map((tag) => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
     .join('');
 
+  const locationBadge = listing.location
+    ? `<span class="badge" style="background:rgba(0,255,133,0.08); border:1px solid rgba(0,255,133,0.25); color:var(--accent-green); font-size:0.7rem; font-weight:700;">📍 ${escapeHtml(listing.location.name)}</span>`
+    : '';
+
   return `
     <article class="listing-card-modern" data-id="${safeId}">
       <div class="card-media-banner ${visual.themeClass}">
@@ -2227,8 +2358,9 @@ function createListingCardHTML(listing) {
         </button>
       </div>
 
-      <div class="card-badges-left" style="margin-bottom: 8px;">
+      <div class="card-badges-left" style="margin-bottom: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
         <span class="badge ${badgeClass}">${safeCategory}</span>
+        ${locationBadge}
       </div>
 
       <h3 class="card-listing-title">${safeTitle}</h3>
@@ -2262,8 +2394,9 @@ function renderListings() {
       const catMatch = listing.category.toLowerCase().includes(query);
       const nameMatch = (listing.studentName || '').toLowerCase().includes(query);
       const tagsMatch = Array.isArray(listing.tags) && listing.tags.some((t) => t.toLowerCase().includes(query));
+      const locMatch = listing.location && listing.location.name.toLowerCase().includes(query);
 
-      matchesSearch = titleMatch || descMatch || catMatch || nameMatch || tagsMatch;
+      matchesSearch = titleMatch || descMatch || catMatch || nameMatch || tagsMatch || locMatch;
     }
 
     let matchesSecondary = true;
@@ -2301,15 +2434,400 @@ function renderListings() {
     if (emptyDesc) emptyDesc.textContent = 'Try searching for textbooks, tutoring, events or opportunities.';
     if (emptyState) emptyState.style.display = 'block';
     if (listingsFeed) listingsFeed.innerHTML = '';
+  } else {
+    if (emptyState) emptyState.style.display = 'none';
+
+    if (listingsFeed) {
+      listingsFeed.innerHTML = filtered.map(createListingCardHTML).join('');
+      attachCardListeners(listingsFeed);
+    }
+  }
+
+  if (campusMap) {
+    renderMapMarkers();
+  }
+}
+
+// ==========================================================================
+// 🗺️ Campus Exchange Map Module (Interactive Leaflet & SRM Landmarks)
+// ==========================================================================
+
+let campusMap = null;
+let mapMarkersLayer = null;
+let userLocationMarker = null;
+let currentMapFilter = 'All';
+let currentExploreViewMode = 'list'; // 'list' | 'map'
+let userGeoLocation = null; // { lat, lng } — In-memory only for privacy
+
+function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function formatDistance(distKm) {
+  if (distKm == null || isNaN(distKm)) return '';
+  if (distKm < 1) {
+    const meters = Math.round(distKm * 1000);
+    return `📍 ${meters}m away`;
+  }
+  return `📍 ${distKm.toFixed(1)} km away`;
+}
+
+function initCampusMap() {
+  const mapEl = document.getElementById('campus-exchange-map');
+  if (!mapEl || typeof L === 'undefined') return;
+
+  if (!campusMap) {
+    // Center at SRM Kattankulathur Campus
+    campusMap = L.map('campus-exchange-map', {
+      center: [SRM_CAMPUS_CENTER.lat, SRM_CAMPUS_CENTER.lng],
+      zoom: 16,
+      minZoom: 14,
+      maxZoom: 19,
+      zoomControl: true
+    });
+
+    // CartoDB Dark Matter Basemap
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(campusMap);
+
+    mapMarkersLayer = L.layerGroup().addTo(campusMap);
+
+    setupMapControls();
+  }
+
+  renderMapMarkers();
+}
+
+function setupMapControls() {
+  const btnFindMe = document.getElementById('btn-find-me');
+  const btnCenterCampus = document.getElementById('btn-center-campus');
+  const mapFilterChips = document.querySelectorAll('#map-filter-chips .map-chip');
+  const landmarkButtons = document.querySelectorAll('.landmark-tag');
+  const btnCloseInsp = document.getElementById('btn-close-insp');
+
+  if (btnFindMe) {
+    btnFindMe.addEventListener('click', handleFindMe);
+  }
+
+  if (btnCenterCampus) {
+    btnCenterCampus.addEventListener('click', () => {
+      if (campusMap) {
+        campusMap.flyTo([SRM_CAMPUS_CENTER.lat, SRM_CAMPUS_CENTER.lng], 16, { duration: 1.2 });
+        showToast('🏫 Centered on SRM Kattankulathur Campus');
+      }
+    });
+  }
+
+  mapFilterChips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const filter = chip.getAttribute('data-map-filter') || 'All';
+      
+      if (filter === 'Nearby' && !userGeoLocation) {
+        showToast('📍 Please click "Find Me" first to enable proximity sorting.');
+        handleFindMe();
+        return;
+      }
+
+      currentMapFilter = filter;
+      mapFilterChips.forEach((c) => {
+        const isActive = (c.getAttribute('data-map-filter') || 'All') === filter;
+        c.classList.toggle('active', isActive);
+        c.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      renderMapMarkers();
+    });
+  });
+
+  landmarkButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const landmarkKey = btn.getAttribute('data-landmark');
+      if (CAMPUS_LOCATIONS[landmarkKey] && campusMap) {
+        const loc = CAMPUS_LOCATIONS[landmarkKey];
+        campusMap.flyTo([loc.lat, loc.lng], 17, { duration: 1 });
+        showToast(`📍 Jumping to ${loc.name}`);
+      }
+    });
+  });
+
+  if (btnCloseInsp) {
+    btnCloseInsp.addEventListener('click', () => {
+      const insp = document.getElementById('map-marker-inspector');
+      if (insp) insp.style.display = 'none';
+    });
+  }
+}
+
+function handleFindMe() {
+  const btnFindMe = document.getElementById('btn-find-me');
+  const btnFindMeText = document.getElementById('btn-find-me-text');
+  const noticeText = document.getElementById('map-notice-text');
+
+  if (!navigator.geolocation) {
+    showToast('⚠️ Geolocation is not supported by your browser.');
     return;
   }
 
-  if (emptyState) emptyState.style.display = 'none';
+  if (btnFindMe) btnFindMe.classList.add('loading');
+  if (btnFindMeText) btnFindMeText.textContent = 'Locating...';
 
-  if (listingsFeed) {
-    listingsFeed.innerHTML = filtered.map(createListingCardHTML).join('');
-    attachCardListeners(listingsFeed);
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      if (btnFindMe) btnFindMe.classList.remove('loading');
+      if (btnFindMeText) btnFindMeText.textContent = 'Located ✓';
+
+      userGeoLocation = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+
+      if (campusMap) {
+        if (userLocationMarker) {
+          campusMap.removeLayer(userLocationMarker);
+        }
+
+        const userPinHtml = `
+          <div class="user-location-pin" title="You are here"></div>
+        `;
+
+        const userIcon = L.divIcon({
+          html: userPinHtml,
+          className: 'custom-map-marker',
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        });
+
+        userLocationMarker = L.marker([userGeoLocation.lat, userGeoLocation.lng], { icon: userIcon })
+          .addTo(campusMap)
+          .bindPopup(`
+            <div class="map-popup-card" style="text-align:center;">
+              <strong style="color:#38bdf8; font-size:0.9rem;">🔵 You are here</strong>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Current browser position used locally to show walking distances</span>
+            </div>
+          `);
+
+        campusMap.flyTo([userGeoLocation.lat, userGeoLocation.lng], 16, { duration: 1.2 });
+      }
+
+      if (noticeText) {
+        noticeText.innerHTML = `📍 <strong>Location active!</strong> Walking distances to campus exchange spots are now displayed. Your coordinates are strictly private.`;
+      }
+
+      renderMapMarkers();
+      showToast('📍 Location found! Showing walking distances to campus exchanges.');
+    },
+    (err) => {
+      if (btnFindMe) btnFindMe.classList.remove('loading');
+      if (btnFindMeText) btnFindMeText.textContent = 'Find Me';
+
+      if (err.code === 1) {
+        showToast('Location access denied. You can still browse campus listings.');
+      } else {
+        showToast('Unable to determine your location.');
+      }
+    },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+  );
+}
+
+function renderMapMarkers() {
+  if (!campusMap || !mapMarkersLayer) return;
+
+  mapMarkersLayer.clearLayers();
+
+  const query = state.searchQuery.trim().toLowerCase();
+
+  let listingsWithLocation = state.listings.filter((l) => l.location && l.location.lat && l.location.lng);
+
+  if (currentMapFilter !== 'All' && currentMapFilter !== 'Nearby') {
+    listingsWithLocation = listingsWithLocation.filter((l) => l.category === currentMapFilter);
   }
+
+  if (query) {
+    listingsWithLocation = listingsWithLocation.filter((l) => {
+      const t = (l.title || '').toLowerCase();
+      const d = (l.description || '').toLowerCase();
+      const c = (l.category || '').toLowerCase();
+      const loc = (l.location.name || '').toLowerCase();
+      return t.includes(query) || d.includes(query) || c.includes(query) || loc.includes(query);
+    });
+  }
+
+  if (currentMapFilter === 'Nearby' && userGeoLocation) {
+    listingsWithLocation.sort((a, b) => {
+      const distA = calculateDistanceKm(userGeoLocation.lat, userGeoLocation.lng, a.location.lat, a.location.lng);
+      const distB = calculateDistanceKm(userGeoLocation.lat, userGeoLocation.lng, b.location.lat, b.location.lng);
+      return distA - distB;
+    });
+  }
+
+  const spotsLabel = document.getElementById('map-quick-spots-text');
+  if (spotsLabel) {
+    spotsLabel.textContent = `${listingsWithLocation.length} Campus Exchange Spot${listingsWithLocation.length === 1 ? '' : 's'} Active`;
+  }
+
+  listingsWithLocation.forEach((listing) => {
+    const lat = listing.location.lat;
+    const lng = listing.location.lng;
+    const catClass = listing.category.toLowerCase();
+    const iconChar = listing.icon || (listing.category === 'Item' ? '📦' : listing.category === 'Skill' ? '🧠' : '🚀');
+
+    const pinHtml = `
+      <div class="map-marker-pin pin-${catClass}" data-id="${listing.id}" title="${escapeHtml(listing.title)}">
+        <span>${iconChar}</span>
+      </div>
+    `;
+
+    const markerIcon = L.divIcon({
+      html: pinHtml,
+      className: 'custom-map-marker',
+      iconSize: [38, 38],
+      iconAnchor: [19, 19]
+    });
+
+    let distText = '';
+    if (userGeoLocation) {
+      const distKm = calculateDistanceKm(userGeoLocation.lat, userGeoLocation.lng, lat, lng);
+      distText = `<span class="map-popup-dist">${formatDistance(distKm)}</span>`;
+    }
+
+    const popupHtml = `
+      <div class="map-popup-card">
+        <div class="map-popup-badge-row">
+          <span class="badge ${getBadgeClass(listing.category)}">${escapeHtml(listing.category)}</span>
+          <span style="font-size:0.72rem; color:var(--text-muted);">🟢 ${escapeHtml(listing.availability || 'Available')}</span>
+        </div>
+        <h4 class="map-popup-title">${escapeHtml(listing.title)}</h4>
+        <div class="map-popup-meta">
+          <span>By <strong>${escapeHtml(listing.studentName || 'SRM Student')}</strong> (${escapeHtml(listing.year || 'SRM')})</span>
+          <div class="map-popup-loc">📍 ${escapeHtml(listing.location.name)}</div>
+          ${distText}
+        </div>
+        <button type="button" class="btn-popup-view" onclick="openListingModal('${listing.id}')">View Listing →</button>
+      </div>
+    `;
+
+    const marker = L.marker([lat, lng], { icon: markerIcon }).addTo(mapMarkersLayer);
+    marker.bindPopup(popupHtml);
+
+    marker.on('click', () => {
+      showMapListingInspector(listing);
+    });
+  });
+}
+
+function showMapListingInspector(listing) {
+  const insp = document.getElementById('map-marker-inspector');
+  const avatar = document.getElementById('insp-avatar');
+  const title = document.getElementById('insp-title');
+  const badge = document.getElementById('insp-badge');
+  const meta = document.getElementById('insp-meta');
+  const locName = document.getElementById('insp-loc-name');
+  const distBadge = document.getElementById('insp-distance-badge');
+  const btnView = document.getElementById('btn-insp-view-listing');
+
+  if (!insp) return;
+
+  const studentInfo = getStudentInfo(listing.studentName || 'SRM Student');
+
+  if (avatar) {
+    avatar.textContent = studentInfo.initials;
+    avatar.className = `inspector-avatar ${studentInfo.grad}`;
+  }
+  if (title) title.textContent = listing.title;
+  if (badge) {
+    badge.textContent = listing.category;
+    badge.className = `badge ${getBadgeClass(listing.category)}`;
+  }
+  if (meta) {
+    meta.textContent = `${listing.studentName || 'SRM Student'} • ${listing.year || listing.department || 'SRM'}`;
+  }
+  if (locName && listing.location) {
+    locName.textContent = `📍 ${listing.location.name} (${listing.location.area || 'Campus Spot'})`;
+  }
+
+  if (distBadge) {
+    if (userGeoLocation && listing.location) {
+      const distKm = calculateDistanceKm(userGeoLocation.lat, userGeoLocation.lng, listing.location.lat, listing.location.lng);
+      distBadge.textContent = formatDistance(distKm);
+      distBadge.style.display = 'inline-block';
+    } else {
+      distBadge.style.display = 'none';
+    }
+  }
+
+  if (btnView) {
+    btnView.onclick = () => {
+      openListingModal(listing.id);
+    };
+  }
+
+  insp.style.display = 'block';
+}
+
+function switchExploreViewMode(mode) {
+  currentExploreViewMode = mode;
+  const btnList = document.getElementById('btn-explore-list-view');
+  const btnMap = document.getElementById('btn-explore-map-view');
+  const listContainer = document.getElementById('explore-list-container');
+  const mapContainer = document.getElementById('explore-map-container');
+  const quickStats = document.getElementById('map-quick-stats');
+
+  if (mode === 'map') {
+    if (btnList) {
+      btnList.classList.remove('active');
+      btnList.setAttribute('aria-selected', 'false');
+    }
+    if (btnMap) {
+      btnMap.classList.add('active');
+      btnMap.setAttribute('aria-selected', 'true');
+    }
+    if (listContainer) listContainer.style.display = 'none';
+    if (mapContainer) mapContainer.style.display = 'flex';
+    if (quickStats) quickStats.style.display = 'inline-flex';
+
+    setTimeout(() => {
+      initCampusMap();
+      if (campusMap) {
+        campusMap.invalidateSize();
+      }
+    }, 80);
+  } else {
+    if (btnList) {
+      btnList.classList.add('active');
+      btnList.setAttribute('aria-selected', 'true');
+    }
+    if (btnMap) {
+      btnMap.classList.remove('active');
+      btnMap.setAttribute('aria-selected', 'false');
+    }
+    if (listContainer) listContainer.style.display = 'block';
+    if (mapContainer) mapContainer.style.display = 'none';
+    if (quickStats) quickStats.style.display = 'none';
+    renderListings();
+  }
+}
+
+// Attach View Mode Switcher Listeners
+const btnExploreListView = document.getElementById('btn-explore-list-view');
+const btnExploreMapView = document.getElementById('btn-explore-map-view');
+
+if (btnExploreListView) {
+  btnExploreListView.addEventListener('click', () => switchExploreViewMode('list'));
+}
+if (btnExploreMapView) {
+  btnExploreMapView.addEventListener('click', () => switchExploreViewMode('map'));
 }
 
 // ==========================================================================
@@ -3195,6 +3713,30 @@ function openListingModal(listingId) {
 
   if (modalContact) {
     modalContact.textContent = listing.contact;
+  }
+
+  const modalLocSection = document.getElementById('modal-location-section');
+  const modalLocName = document.getElementById('modal-location-name');
+  const modalLocArea = document.getElementById('modal-location-area');
+  const modalDistPill = document.getElementById('modal-distance-pill');
+
+  if (modalLocSection && modalLocName) {
+    if (listing.location && listing.location.name) {
+      modalLocSection.style.display = 'block';
+      modalLocName.textContent = listing.location.name;
+      if (modalLocArea) modalLocArea.textContent = listing.location.area || 'Campus Exchange Spot';
+      if (modalDistPill) {
+        if (userGeoLocation && listing.location.lat && listing.location.lng) {
+          const distKm = calculateDistanceKm(userGeoLocation.lat, userGeoLocation.lng, listing.location.lat, listing.location.lng);
+          modalDistPill.textContent = formatDistance(distKm);
+          modalDistPill.style.display = 'inline-block';
+        } else {
+          modalDistPill.style.display = 'none';
+        }
+      }
+    } else {
+      modalLocSection.style.display = 'none';
+    }
   }
 
   const isSaved = state.savedIds.has(listing.id);
@@ -4087,6 +4629,18 @@ form.addEventListener('submit', (e) => {
     if (/\bfree\b/i.test(description + ' ' + title)) listingTags.push('#free');
   }
 
+  const locationSelect = document.getElementById('location-select');
+  let selectedLocation = null;
+  if (locationSelect && locationSelect.value && CAMPUS_LOCATIONS[locationSelect.value]) {
+    const locData = CAMPUS_LOCATIONS[locationSelect.value];
+    selectedLocation = {
+      name: locData.name,
+      area: locData.area,
+      lat: locData.lat,
+      lng: locData.lng
+    };
+  }
+
   const newListing = {
     id: `my-listing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     title,
@@ -4103,6 +4657,7 @@ form.addEventListener('submit', (e) => {
     icon: category === 'Item' ? '📦' : category === 'Skill' ? '💡' : '🚀',
     matchScore: 96,
     matchReason: 'Your newly created listing on the SRM network.',
+    location: selectedLocation,
     createdAt: new Date()
   };
 
@@ -4286,5 +4841,15 @@ setupStudentHoverCards();
 initScrollReveal();
 initPulseAnimation();
 initRotatingPlaceholders();
+
+// Export window functions for testing and external hooks
+window.initCampusMap = initCampusMap;
+window.switchExploreViewMode = switchExploreViewMode;
+window.handleFindMe = handleFindMe;
+window.openListingModal = openListingModal;
+window.calculateDistanceKm = calculateDistanceKm;
+window.formatDistance = formatDistance;
+window.CAMPUS_LOCATIONS = CAMPUS_LOCATIONS;
+window.SRM_CAMPUS_CENTER = SRM_CAMPUS_CENTER;
 
 

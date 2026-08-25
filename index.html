@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Leaflet Map CSS for Interactive Campus Exchange Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -540,40 +543,133 @@
             </div>
           </div>
 
-          <!-- Category Filter Bar (ALL, ITEMS, SKILLS, OPPORTUNITIES) -->
-          <div class="explore-filters-container">
-            <div class="category-filters-row" id="filter-bar" role="tablist" aria-label="Filter listings by category">
-              <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">ALL</button>
-              <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">ITEMS</button>
-              <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">SKILLS</button>
-              <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">OPPORTUNITIES</button>
+          <!-- View Mode Switcher: [ 📋 List View ] [ 🗺️ Map View ] -->
+          <div class="explore-view-control-bar">
+            <div class="view-mode-pill" role="tablist" aria-label="Explore display mode">
+              <button type="button" id="btn-explore-list-view" class="btn-view-mode active" role="tab" aria-selected="true">
+                <span>📋</span> List View
+              </button>
+              <button type="button" id="btn-explore-map-view" class="btn-view-mode" role="tab" aria-selected="false">
+                <span>🗺️</span> Map View
+              </button>
             </div>
+            <div class="map-quick-status-chip" id="map-quick-status-chip">
+              <span class="pulse-dot"></span>
+              <span id="map-quick-spots-text">12 Campus Exchange Spots Mapped</span>
+            </div>
+          </div>
 
-            <!-- Secondary Filters (Newest, Most Relevant, Free, Available) -->
-            <div class="secondary-filters-row">
-              <div class="sec-filters-left">
-                <span class="sec-filter-label">Sort:</span>
-                <button type="button" class="sec-filter-btn active" data-sort="newest">Newest</button>
-                <button type="button" class="sec-filter-btn" data-sort="relevant">Most Relevant</button>
-                <span class="sec-filter-divider">|</span>
-                <span class="sec-filter-label">Filter:</span>
-                <button type="button" class="sec-filter-btn" data-filter-type="free">Free</button>
-                <button type="button" class="sec-filter-btn" data-filter-type="available">Available</button>
+          <!-- [A] LIST VIEW CONTAINER -->
+          <div id="explore-list-container" class="explore-list-container">
+            <!-- Category Filter Bar (ALL, ITEMS, SKILLS, OPPORTUNITIES) -->
+            <div class="explore-filters-container">
+              <div class="category-filters-row" id="filter-bar" role="tablist" aria-label="Filter listings by category">
+                <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">ALL</button>
+                <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">ITEMS</button>
+                <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">SKILLS</button>
+                <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">OPPORTUNITIES</button>
               </div>
-              <div class="feed-count-tag" id="listing-count-tag">12 Listings</div>
+
+              <!-- Secondary Filters (Newest, Most Relevant, Free, Available) -->
+              <div class="secondary-filters-row">
+                <div class="sec-filters-left">
+                  <span class="sec-filter-label">Sort:</span>
+                  <button type="button" class="sec-filter-btn active" data-sort="newest">Newest</button>
+                  <button type="button" class="sec-filter-btn" data-sort="relevant">Most Relevant</button>
+                  <span class="sec-filter-divider">|</span>
+                  <span class="sec-filter-label">Filter:</span>
+                  <button type="button" class="sec-filter-btn" data-filter-type="free">Free</button>
+                  <button type="button" class="sec-filter-btn" data-filter-type="available">Available</button>
+                </div>
+                <div class="feed-count-tag" id="listing-count-tag">12 Listings</div>
+              </div>
             </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+              <div class="empty-icon">📦</div>
+              <h3 id="empty-title" class="empty-title">No matches found</h3>
+              <p id="empty-desc" class="empty-desc">Try searching for textbooks, tutoring, events or opportunities.</p>
+              <button type="button" id="clear-search-btn" class="btn-clear-search">Clear Search</button>
+            </div>
+
+            <!-- Responsive Listing Grid (3 col desktop, 2 col tablet, 1 col mobile) -->
+            <div id="listings-feed" class="listings-grid"></div>
           </div>
 
-          <!-- Empty State -->
-          <div id="empty-state" class="empty-state" style="display: none;">
-            <div class="empty-icon">📦</div>
-            <h3 id="empty-title" class="empty-title">No matches found</h3>
-            <p id="empty-desc" class="empty-desc">Try searching for textbooks, tutoring, events or opportunities.</p>
-            <button type="button" id="clear-search-btn" class="btn-clear-search">Clear Search</button>
-          </div>
+          <!-- [B] CAMPUS MAP VIEW CONTAINER -->
+          <div id="explore-map-container" class="explore-map-container" style="display: none;">
+            
+            <!-- Map Top Control Ribbon -->
+            <div class="map-ribbon-toolbar">
+              <div class="map-ribbon-filters" id="map-filter-chips" role="tablist" aria-label="Filter map markers">
+                <button type="button" class="map-chip active" data-map-filter="All" role="tab" aria-selected="true">All</button>
+                <button type="button" class="map-chip" data-map-filter="Item" role="tab" aria-selected="false">📦 Items</button>
+                <button type="button" class="map-chip" data-map-filter="Skill" role="tab" aria-selected="false">🧠 Skills</button>
+                <button type="button" class="map-chip" data-map-filter="Opportunity" role="tab" aria-selected="false">🚀 Opportunities</button>
+                <button type="button" class="map-chip" id="btn-map-filter-nearby" data-map-filter="Nearby" role="tab" aria-selected="false" title="Requires Location Permission">📍 Nearby</button>
+              </div>
 
-          <!-- Responsive Listing Grid (3 col desktop, 2 col tablet, 1 col mobile) -->
-          <div id="listings-feed" class="listings-grid"></div>
+              <div class="map-ribbon-actions">
+                <button type="button" id="btn-find-me" class="btn-map-action" title="Request location to calculate distance to listings">
+                  <span id="btn-find-me-icon">📍</span> <span id="btn-find-me-text">Find Me</span>
+                </button>
+                <button type="button" id="btn-center-campus" class="btn-map-action secondary" title="Reset view to SRM Kattankulathur Campus">
+                  <span>🏫</span> SRM Campus
+                </button>
+              </div>
+            </div>
+
+            <!-- Location Status Alert / Privacy Assurance -->
+            <div id="map-location-notice" class="map-location-notice">
+              <span class="notice-icon">🛡️</span>
+              <span id="map-notice-text" class="notice-text">Interactive SRM Campus Map. Click <strong>"📍 Find Me"</strong> to view walking distance to nearby study exchanges. Your live location is strictly private and never saved.</span>
+            </div>
+
+            <!-- Map Viewport Wrapper -->
+            <div class="map-viewport-wrapper">
+              <div id="campus-exchange-map" class="campus-exchange-map" role="region" aria-label="Campus Exchange Interactive Map"></div>
+              
+              <!-- Quick Inspector / Selected Marker Floating Card -->
+              <div id="map-marker-inspector" class="map-marker-inspector" style="display: none;">
+                <div class="inspector-card-content">
+                  <div class="inspector-top-row">
+                    <div class="inspector-author-col">
+                      <div class="inspector-avatar" id="insp-avatar">RS</div>
+                      <div>
+                        <div class="insp-title-row">
+                          <h4 class="insp-title" id="insp-title">DBMS Textbook</h4>
+                          <span class="badge badge-item" id="insp-badge">Item</span>
+                        </div>
+                        <span class="insp-meta" id="insp-meta">Rahul Sharma • 2nd Year CSE</span>
+                      </div>
+                    </div>
+                    <button type="button" id="btn-close-insp" class="btn-close-insp" aria-label="Close preview">✕</button>
+                  </div>
+
+                  <div class="inspector-bottom-row">
+                    <div class="insp-loc-info">
+                      <span class="insp-loc-name" id="insp-loc-name">📍 Central Library (Ground Floor)</span>
+                      <span class="insp-distance-badge" id="insp-distance-badge" style="display: none;">350m away</span>
+                    </div>
+                    <button type="button" id="btn-insp-view-listing" class="btn-insp-view">View Listing →</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campus Landmark Quick Nav Row -->
+            <div class="campus-landmarks-row">
+              <span class="landmarks-label">CAMPUS HOTSPOTS:</span>
+              <button type="button" class="landmark-tag" data-landmark="Central Library">📚 Central Library</button>
+              <button type="button" class="landmark-tag" data-landmark="Tech Park">💻 Tech Park</button>
+              <button type="button" class="landmark-tag" data-landmark="Main Block">🏛️ Main Block</button>
+              <button type="button" class="landmark-tag" data-landmark="Student Activity Centre">🚀 SAC</button>
+              <button type="button" class="landmark-tag" data-landmark="Java Food Court">☕ Java Food Court</button>
+              <button type="button" class="landmark-tag" data-landmark="Hostel Area">🏠 Hostels</button>
+            </div>
+
+          </div>
 
         </div>
       </section>
@@ -1192,6 +1288,20 @@
           <input type="text" id="contact" name="contact" placeholder="e.g. student@srmist.edu.in / @discord_handle" required>
         </div>
 
+        <div class="form-group">
+          <label for="location-select">📍 Exchange Location <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Optional Campus Landmark)</span></label>
+          <select id="location-select" name="location">
+            <option value="">Flexible Campus Meetup / Anywhere</option>
+            <option value="Central Library">Central Library (Ground Floor & Reading Hall)</option>
+            <option value="Tech Park">Tech Park (TP 4th/5th Floor Labs)</option>
+            <option value="Main Block">University Building / Main Block Atrium</option>
+            <option value="Student Activity Centre">Student Activity Centre (SAC & Amphitheatre)</option>
+            <option value="Java Food Court">Java Green / Main Campus Food Court</option>
+            <option value="Hostel Area">Hostel Zone (Paari / Kaari / M-Block)</option>
+            <option value="Bio-Engineering Block">Bio-Tech & Medical Complex</option>
+          </select>
+        </div>
+
         <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
       </form>
 
@@ -1308,6 +1418,19 @@
         <div class="modal-desc-section">
           <h3 class="modal-subhead">DESCRIPTION</h3>
           <p id="modal-desc" class="modal-desc-text"></p>
+        </div>
+
+        <!-- Exchange Location Callout -->
+        <div id="modal-location-section" class="modal-location-section" style="display: none;">
+          <h3 class="modal-subhead">EXCHANGE LOCATION</h3>
+          <div class="modal-location-box">
+            <span class="loc-pin-icon">📍</span>
+            <div class="loc-text-col">
+              <strong id="modal-location-name" class="modal-location-name">Central Library</strong>
+              <span id="modal-location-area" class="modal-location-area">Ground Floor & Reading Hall</span>
+            </div>
+            <span id="modal-distance-pill" class="modal-distance-pill" style="display: none;">📍 350m away</span>
+          </div>
         </div>
 
         <!-- Tags -->
@@ -1534,6 +1657,9 @@
 
   <!-- Toast Notification Popover -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Leaflet Map JS for Campus Exchange Interactive Map -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <!-- Main JavaScript Application -->
   <script src="app.js"></script>

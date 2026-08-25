@@ -320,6 +320,37 @@ if 'Item ↔ Skill' in app_js_text and 'Skill ↔ Skill' in app_js_text and 'Ite
 else:
     log_fail("Smart Matches", "Missing dual-value exchange types in app.js.")
 
+# Audit Campus Exchange Map Feature
+if 'id="btn-explore-map-view"' in index_html_text and 'id="btn-explore-list-view"' in index_html_text:
+    log_pass("Campus Exchange Map", "Explore view mode switcher ([ List View ] [ Map View ]) configured in DOM.")
+else:
+    log_fail("Campus Exchange Map", "Missing view mode buttons in index.html.")
+
+if 'id="campus-exchange-map"' in index_html_text and 'id="explore-map-container"' in index_html_text:
+    log_pass("Campus Exchange Map", "Campus Exchange Map viewport and container configured.")
+else:
+    log_fail("Campus Exchange Map", "Missing campus-exchange-map container in index.html.")
+
+if 'id="btn-find-me"' in index_html_text and 'id="map-location-notice"' in index_html_text:
+    log_pass("Campus Exchange Map", "Find Me button and strict privacy notice banner configured in DOM.")
+else:
+    log_fail("Campus Exchange Map", "Missing btn-find-me or privacy notice in index.html.")
+
+if 'CAMPUS_LOCATIONS' in app_js_text and 'SRM_CAMPUS_CENTER' in app_js_text:
+    log_pass("Campus Exchange Map", "SRM Campus landmarks and hotspot registry configured.")
+else:
+    log_fail("Campus Exchange Map", "Missing CAMPUS_LOCATIONS in app.js.")
+
+if 'calculateDistanceKm' in app_js_text and 'handleFindMe' in app_js_text and 'renderMapMarkers' in app_js_text:
+    log_pass("Campus Exchange Map", "Geolocation distance calculator, Find Me handler, and Leaflet marker renderer verified.")
+else:
+    log_fail("Campus Exchange Map", "Missing map controller functions in app.js.")
+
+if 'id="location-select"' in index_html_text and 'location:' in app_js_text:
+    log_pass("Campus Exchange Map", "Optional Exchange Location field added to listing creation workflow.")
+else:
+    log_fail("Campus Exchange Map", "Missing location selection in listing form.")
+
 # -------------------------------------------------------------------------
 # Phase 5: Accessibility & WCAG Standards Audit
 # -------------------------------------------------------------------------
