@@ -75,10 +75,18 @@
           <span class="section-hint">Latest listings posted across campus</span>
         </div>
 
+        <!-- Category Filter Bar -->
+        <div id="filter-bar" class="filter-bar" role="tablist" aria-label="Filter listings by category">
+          <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">All</button>
+          <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">Item</button>
+          <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">Skill</button>
+          <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">Opportunity</button>
+        </div>
+
         <div id="empty-state" class="empty-state">
           <div class="empty-icon">📦</div>
-          <p class="empty-title">No listings yet</p>
-          <p class="empty-desc">Be the first to post an item, skill, or opportunity above!</p>
+          <p id="empty-title" class="empty-title">No listings yet</p>
+          <p id="empty-desc" class="empty-desc">Be the first to post an item, skill, or opportunity above!</p>
         </div>
 
         <div id="listings-feed" class="listings-feed"></div>

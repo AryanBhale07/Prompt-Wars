@@ -1,6 +1,7 @@
-// State to store listings (in-memory)
+// State to store listings and active filter
 const state = {
-  listings: []
+  listings: [],
+  activeFilter: 'All'
 };
 
 // DOM Elements
@@ -12,6 +13,9 @@ const contactInput = document.getElementById('contact');
 const errorMessage = document.getElementById('error-message');
 const listingsFeed = document.getElementById('listings-feed');
 const emptyState = document.getElementById('empty-state');
+const emptyTitle = document.getElementById('empty-title');
+const emptyDesc = document.getElementById('empty-desc');
+const filterButtons = document.querySelectorAll('.filter-btn');
 
 // Helper to escape HTML characters for safe rendering
 function escapeHtml(str) {
@@ -42,9 +46,33 @@ function getBadgeClass(category) {
   }
 }
 
-// Render all listings in state to the feed
+// Set active filter and update UI
+function setActiveFilter(filterName) {
+  state.activeFilter = filterName;
+
+  filterButtons.forEach((btn) => {
+    const isActive = btn.getAttribute('data-filter') === filterName;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+
+  renderListings();
+}
+
+// Render listings matching current filter to the feed
 function renderListings() {
-  if (state.listings.length === 0) {
+  const filteredListings = state.activeFilter === 'All'
+    ? state.listings
+    : state.listings.filter((listing) => listing.category === state.activeFilter);
+
+  if (filteredListings.length === 0) {
+    if (state.listings.length === 0) {
+      emptyTitle.textContent = 'No listings yet';
+      emptyDesc.textContent = 'Be the first to post an item, skill, or opportunity above!';
+    } else {
+      emptyTitle.textContent = `No ${state.activeFilter} listings found`;
+      emptyDesc.textContent = `There are currently no listings in the "${state.activeFilter}" category.`;
+    }
     emptyState.style.display = 'block';
     listingsFeed.innerHTML = '';
     return;
@@ -53,7 +81,7 @@ function renderListings() {
   emptyState.style.display = 'none';
 
   // Construct listings markup
-  listingsFeed.innerHTML = state.listings
+  listingsFeed.innerHTML = filteredListings
     .map((listing) => {
       const safeTitle = escapeHtml(listing.title);
       const safeDescription = escapeHtml(listing.description);
@@ -98,6 +126,14 @@ function validateForm(title, category, description, contact) {
   return null;
 }
 
+// Filter button click event listeners
+filterButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const filterName = btn.getAttribute('data-filter');
+    setActiveFilter(filterName);
+  });
+});
+
 // Handle form submission
 form.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -132,8 +168,12 @@ form.addEventListener('submit', (e) => {
   // Add listing to the beginning of the list (newest first)
   state.listings.unshift(newListing);
 
-  // Update DOM
-  renderListings();
+  // If the active filter would hide the new listing, reset filter to 'All' or its category
+  if (state.activeFilter !== 'All' && state.activeFilter !== category) {
+    setActiveFilter('All');
+  } else {
+    renderListings();
+  }
 
   // Reset form
   form.reset();

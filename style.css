@@ -282,6 +282,52 @@ select option {
   font-weight: 500;
 }
 
+/* Category Filter Bar */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 18px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.filter-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(16, 224, 80, 0.4);
+  background-color: var(--bg-surface-elevated);
+}
+
+.filter-btn:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-green-subtle);
+}
+
+.filter-btn.active {
+  background-color: var(--accent-green);
+  color: var(--text-inverse);
+  border-color: var(--accent-green);
+  font-weight: 700;
+  box-shadow: 0 0 14px var(--accent-green-glow);
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;
