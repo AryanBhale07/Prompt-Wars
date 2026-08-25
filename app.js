@@ -2438,6 +2438,430 @@ savedFilterButtons.forEach((btn) => {
 });
 
 // ==========================================================================
+// ✨ Smart Matches (Core Differentiating Value Exchange System)
+// ==========================================================================
+
+const SMART_MATCHES_DATA = [
+  {
+    id: 'sm-1',
+    studentName: 'Peter Parker',
+    avatar: 'PP',
+    dept: '2nd Year CSE • Web & Systems',
+    hasCategory: 'Item',
+    hasText: 'DBMS 7th Edition Textbook (Navathe)',
+    hasIcon: '📖',
+    needsCategory: 'Skill',
+    needsText: 'Python & Data Structures Tutoring',
+    needsIcon: '🐍',
+    score: 94,
+    exchangeType: 'Item ↔ Skill',
+    rationale: 'Peter has the exact database systems textbook needed for 3rd semester coursework and is actively seeking 1-on-1 Python algorithmic practice.'
+  },
+  {
+    id: 'sm-2',
+    studentName: 'Tony Stark',
+    avatar: 'TS',
+    dept: '3rd Year ECE • Embedded Systems',
+    hasCategory: 'Item',
+    hasText: 'TI-84 Plus Graphing Calculator',
+    hasIcon: '🧮',
+    needsCategory: 'Item',
+    needsText: 'Arduino Sensor Starter Kit',
+    needsIcon: '⚡',
+    score: 88,
+    exchangeType: 'Item ↔ Item',
+    rationale: 'Tony has a surplus scientific calculator from last term and needs IoT microcontrollers and ultrasonic sensors for his robotics lab.'
+  },
+  {
+    id: 'sm-3',
+    studentName: 'Gwen Stacy',
+    avatar: 'GS',
+    dept: '2nd Year CSE • UI/UX & Design',
+    hasCategory: 'Skill',
+    hasText: 'UI/UX Design & Figma Prototyping',
+    hasIcon: '🎨',
+    needsCategory: 'Skill',
+    needsText: 'Java OOP & Backend Tutoring',
+    needsIcon: '☕',
+    score: 91,
+    exchangeType: 'Skill ↔ Skill',
+    rationale: 'Gwen offers top-tier campus app UI design and needs coaching on Java OOP inheritance, polymorphism, and collections.'
+  },
+  {
+    id: 'sm-4',
+    studentName: 'Miles Morales',
+    avatar: 'MM',
+    dept: '1st Year IT • Software Dev',
+    hasCategory: 'Item',
+    hasText: 'Engineering Math Notes (Sem 1 & 2)',
+    hasIcon: '📝',
+    needsCategory: 'Skill',
+    needsText: 'Web Dev Portfolio Mentoring',
+    needsIcon: '💻',
+    score: 78,
+    exchangeType: 'Item ↔ Skill',
+    rationale: 'Miles has clean handwritten calculus and linear algebra notes and wants feedback on his personal portfolio and HTML/CSS projects.'
+  }
+];
+
+function getMatchScoreTier(score) {
+  if (score >= 90) return { tier: 'Perfect Match', className: 'score-perfect', label: 'PERFECT MATCH' };
+  if (score >= 75) return { tier: 'Strong Match', className: 'score-strong', label: 'STRONG MATCH' };
+  return { tier: 'Potential Match', className: 'score-potential', label: 'POTENTIAL MATCH' };
+}
+
+function calculateMatchScore(itemHas, itemNeeds, userInterests = []) {
+  let score = 70;
+  if (!itemHas || !itemNeeds) return score;
+
+  const hasLower = itemHas.toLowerCase();
+  const needsLower = itemNeeds.toLowerCase();
+
+  // Category synergy boost
+  if (hasLower.includes('textbook') || hasLower.includes('dbms')) score += 12;
+  if (needsLower.includes('python') || needsLower.includes('java')) score += 12;
+  
+  return Math.min(98, Math.max(65, score));
+}
+
+function renderSmartMatches() {
+  const grid = document.getElementById('smart-matches-grid');
+  if (!grid) return;
+
+  grid.innerHTML = SMART_MATCHES_DATA.map((match) => {
+    const tierInfo = getMatchScoreTier(match.score);
+    const safeName = escapeHtml(match.studentName);
+    const safeDept = escapeHtml(match.dept);
+    const safeHas = escapeHtml(match.hasText);
+    const safeNeeds = escapeHtml(match.needsText);
+    const safeType = escapeHtml(match.exchangeType);
+
+    return `
+      <div class="smart-match-card" data-match-id="${match.id}">
+        <div>
+          <div class="match-card-top-row">
+            <div class="match-student-profile">
+              <div class="match-avatar-bubble">${escapeHtml(match.avatar)}</div>
+              <div class="match-student-meta">
+                <span class="match-student-name">${safeName}</span>
+                <span class="match-student-dept">${safeDept}</span>
+              </div>
+            </div>
+            <div class="match-score-badge-wrap">
+              <span class="match-score-pill ${tierInfo.className}">
+                <span>✨</span> ${match.score}% Match
+              </span>
+              <span class="match-tier-label">${tierInfo.tier}</span>
+            </div>
+          </div>
+
+          <div class="match-exchange-box">
+            <div class="exchange-node">
+              <span class="exchange-node-tag tag-has">HAS</span>
+              <span class="exchange-node-content">${match.hasIcon} ${safeHas}</span>
+            </div>
+
+            <div class="exchange-connector-bar">
+              <div class="connector-line"></div>
+              <span>${safeType}</span>
+              <div class="connector-line"></div>
+            </div>
+
+            <div class="exchange-node">
+              <span class="exchange-node-tag tag-needs">NEEDS</span>
+              <span class="exchange-node-content">${match.needsIcon} ${safeNeeds}</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="match-category-tag">
+            <span>🔄 Dual-Value Exchange</span>
+            <span>•</span>
+            <span>100% Campus Verified</span>
+          </div>
+
+          <div class="match-actions-row">
+            <button type="button" class="btn-match-connect" data-match-id="${match.id}">
+              <span>💬</span> Connect
+            </button>
+            <button type="button" class="btn-match-view" data-match-id="${match.id}">
+              <span>👁️</span> View Match
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Attach Listeners
+  grid.querySelectorAll('.btn-match-connect').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const matchId = btn.getAttribute('data-match-id');
+      openExchangeRequestModal(matchId);
+    });
+  });
+
+  grid.querySelectorAll('.btn-match-view').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const matchId = btn.getAttribute('data-match-id');
+      openMatchDetailsModal(matchId);
+    });
+  });
+
+  grid.querySelectorAll('.smart-match-card').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      const matchId = card.getAttribute('data-match-id');
+      openMatchDetailsModal(matchId);
+    });
+  });
+}
+
+// Exchange Request Modal
+let activeExchangeMatch = null;
+const exchangeRequestModal = document.getElementById('exchange-request-modal');
+const btnCloseExchangeModal = document.getElementById('btn-close-exchange-modal');
+const btnCancelExchangeModal = document.getElementById('btn-cancel-exchange-modal');
+const exchangeRequestForm = document.getElementById('exchange-request-form');
+const exchangeOfferInput = document.getElementById('exchange-offer-input');
+const exchangeMessageInput = document.getElementById('exchange-message-input');
+const exchangeModalOverview = document.getElementById('exchange-modal-overview');
+
+function openExchangeRequestModal(matchId) {
+  if (!requireSRMVerification('requesting an exchange')) return;
+
+  const match = SMART_MATCHES_DATA.find((m) => m.id === matchId) || SMART_MATCHES_DATA[0];
+  activeExchangeMatch = match;
+
+  if (exchangeModalOverview) {
+    exchangeModalOverview.innerHTML = `
+      <div class="exchange-overview-peer">
+        <div class="match-avatar-bubble" style="width:36px; height:36px; font-size:0.82rem;">${escapeHtml(match.avatar)}</div>
+        <div>
+          <div style="font-weight:800; color:#fff; font-size:0.95rem;">${escapeHtml(match.studentName)}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(match.dept)}</div>
+        </div>
+        <span class="match-score-pill ${getMatchScoreTier(match.score).className}" style="margin-left:auto; font-size:0.76rem;">
+          ${match.score}% Match
+        </span>
+      </div>
+
+      <div class="exchange-overview-grid">
+        <div>
+          <span style="font-size:0.7rem; color:var(--accent-green); font-weight:800; text-transform:uppercase; display:block;">THEY OFFER (HAS)</span>
+          <strong style="color:#fff; font-size:0.8rem;">${match.hasIcon} ${escapeHtml(match.hasText)}</strong>
+        </div>
+        <div>
+          <span style="font-size:0.7rem; color:#00d4ff; font-weight:800; text-transform:uppercase; display:block;">THEY NEED</span>
+          <strong style="color:#fff; font-size:0.8rem;">${match.needsIcon} ${escapeHtml(match.needsText)}</strong>
+        </div>
+      </div>
+    `;
+  }
+
+  if (exchangeOfferInput) {
+    exchangeOfferInput.value = match.needsText.replace(/\s*\([^)]*\)/, '');
+  }
+
+  if (exchangeMessageInput) {
+    exchangeMessageInput.value = `Hey ${match.studentName.split(' ')[0]}, I saw you need ${match.needsText} and I'd love to exchange for your ${match.hasText}!`;
+  }
+
+  if (exchangeRequestModal) {
+    exchangeRequestModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    if (exchangeOfferInput) exchangeOfferInput.focus();
+  }
+}
+
+function closeExchangeRequestModal() {
+  if (exchangeRequestModal) {
+    exchangeRequestModal.style.display = 'none';
+    if (!document.querySelector('.drawer-overlay.open') && !document.querySelector('.modal-backdrop[style*="display: flex"]')) {
+      document.body.style.overflow = 'auto';
+    }
+  }
+}
+
+if (btnCloseExchangeModal) btnCloseExchangeModal.addEventListener('click', closeExchangeRequestModal);
+if (btnCancelExchangeModal) btnCancelExchangeModal.addEventListener('click', closeExchangeRequestModal);
+
+if (exchangeRequestModal) {
+  exchangeRequestModal.addEventListener('click', (e) => {
+    if (e.target === exchangeRequestModal) closeExchangeRequestModal();
+  });
+}
+
+if (exchangeRequestForm) {
+  exchangeRequestForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!activeExchangeMatch) return;
+
+    const offer = (exchangeOfferInput.value || '').trim();
+    const note = (exchangeMessageInput.value || '').trim();
+
+    if (!offer) {
+      showToast('⚠️ Please specify what you would like to exchange.');
+      if (exchangeOfferInput) exchangeOfferInput.focus();
+      return;
+    }
+
+    // 1. Create Inbox Thread/Message
+    const peerName = activeExchangeMatch.studentName;
+    const peerAvatar = activeExchangeMatch.avatar;
+    const peerDept = activeExchangeMatch.dept;
+
+    let convo = state.conversations.find((c) => c.peerName === peerName);
+    if (!convo) {
+      convo = {
+        id: `convo-exchange-${Date.now()}`,
+        peerName,
+        peerAvatar,
+        peerDept,
+        verified: true,
+        lastMessage: note || `Proposed exchange: ${offer}`,
+        lastTime: 'Just now',
+        unread: false,
+        relatedListing: {
+          title: activeExchangeMatch.hasText,
+          category: activeExchangeMatch.hasCategory,
+          icon: activeExchangeMatch.hasIcon,
+          authorName: peerName,
+          authorDept: peerDept
+        },
+        messages: [
+          {
+            sender: 'me',
+            text: `🤝 Exchange Proposal: I'm offering "${offer}" in exchange for "${activeExchangeMatch.hasText}".\n\n${note}`,
+            time: formatCurrentTime()
+          }
+        ]
+      };
+      state.conversations.unshift(convo);
+    } else {
+      convo.messages.push({
+        sender: 'me',
+        text: `🤝 Exchange Proposal: I'm offering "${offer}" in exchange for "${activeExchangeMatch.hasText}".\n\n${note}`,
+        time: formatCurrentTime()
+      });
+      convo.lastMessage = `Proposed exchange: ${offer}`;
+      convo.lastTime = 'Just now';
+    }
+    saveConversationsToStorage();
+
+    // 2. Create Notification
+    createNotification({
+      type: 'messages',
+      icon: '🤝',
+      title: 'Exchange Request Sent',
+      desc: `You proposed an exchange with ${peerName} for "${activeExchangeMatch.hasText}".`,
+      targetId: convo.id,
+      actionType: 'open-inbox'
+    });
+
+    closeExchangeRequestModal();
+    renderInboxConversations();
+    showToast(`✓ Exchange request sent to ${peerName}!`);
+  });
+}
+
+// Match Details Modal
+const matchDetailsModal = document.getElementById('match-details-modal');
+const btnCloseMatchDetails = document.getElementById('btn-close-match-details');
+const btnMatchDetailsConnect = document.getElementById('btn-match-details-connect');
+const matchDetailsBody = document.getElementById('match-details-body');
+let activeDetailsMatchId = null;
+
+function openMatchDetailsModal(matchId) {
+  const match = SMART_MATCHES_DATA.find((m) => m.id === matchId) || SMART_MATCHES_DATA[0];
+  activeDetailsMatchId = match.id;
+  const tierInfo = getMatchScoreTier(match.score);
+
+  if (matchDetailsBody) {
+    matchDetailsBody.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; background:rgba(0,0,0,0.3); padding:12px 14px; border-radius:var(--radius-sm); border:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="match-avatar-bubble">${escapeHtml(match.avatar)}</div>
+          <div>
+            <div style="font-weight:800; color:#fff; font-size:1.05rem;">${escapeHtml(match.studentName)}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(match.dept)}</div>
+          </div>
+        </div>
+        <span class="match-score-pill ${tierInfo.className}">
+          ${match.score}% Match
+        </span>
+      </div>
+
+      <div class="match-breakdown-row">
+        <span class="breakdown-icon">🎯</span>
+        <div>
+          <strong style="color:var(--accent-green); font-size:0.88rem; display:block; margin-bottom:2px;">Exchange Synergy Breakdown</strong>
+          <p style="font-size:0.84rem; color:var(--text-secondary); line-height:1.5;">${escapeHtml(match.rationale)}</p>
+        </div>
+      </div>
+
+      <div class="match-breakdown-row">
+        <span class="breakdown-icon">🔄</span>
+        <div>
+          <strong style="color:#00d4ff; font-size:0.88rem; display:block; margin-bottom:4px;">Two-Way Value Flow (${escapeHtml(match.exchangeType)})</strong>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;">
+            <div style="background:rgba(0,255,133,0.08); padding:8px 10px; border-radius:4px; border:1px solid rgba(0,255,133,0.2);">
+              <span style="font-size:0.7rem; color:var(--accent-green); font-weight:800;">THEY HAVE</span>
+              <div style="color:#fff; font-size:0.82rem; font-weight:700; margin-top:2px;">${match.hasIcon} ${escapeHtml(match.hasText)}</div>
+            </div>
+            <div style="background:rgba(0,212,255,0.08); padding:8px 10px; border-radius:4px; border:1px solid rgba(0,212,255,0.2);">
+              <span style="font-size:0.7rem; color:#00d4ff; font-weight:800;">YOU OFFER (THEY NEED)</span>
+              <div style="color:#fff; font-size:0.82rem; font-weight:700; margin-top:2px;">${match.needsIcon} ${escapeHtml(match.needsText)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="match-breakdown-row">
+        <span class="breakdown-icon">🛡️</span>
+        <div>
+          <strong style="color:#ffffff; font-size:0.88rem; display:block; margin-bottom:2px;">Campus Safety & Trust</strong>
+          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">Both parties are institutional SRM students verified with @srmist.edu.in. Meetups occur on campus or via verified institutional channels.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (matchDetailsModal) {
+    matchDetailsModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMatchDetailsModal() {
+  if (matchDetailsModal) {
+    matchDetailsModal.style.display = 'none';
+    if (!document.querySelector('.drawer-overlay.open') && !document.querySelector('.modal-backdrop[style*="display: flex"]')) {
+      document.body.style.overflow = 'auto';
+    }
+  }
+}
+
+if (btnCloseMatchDetails) btnCloseMatchDetails.addEventListener('click', closeMatchDetailsModal);
+if (matchDetailsModal) {
+  matchDetailsModal.addEventListener('click', (e) => {
+    if (e.target === matchDetailsModal) closeMatchDetailsModal();
+  });
+}
+
+if (btnMatchDetailsConnect) {
+  btnMatchDetailsConnect.addEventListener('click', () => {
+    closeMatchDetailsModal();
+    if (activeDetailsMatchId) {
+      openExchangeRequestModal(activeDetailsMatchId);
+    }
+  });
+}
+
+// ==========================================================================
 // Student Profile & SRM Verified Identity Section
 // ==========================================================================
 
@@ -3837,6 +4261,8 @@ window.addEventListener('keydown', (e) => {
     if (listingModal && listingModal.style.display === 'flex') closeListingModal();
     if (postModal && postModal.style.display === 'flex') closePostModal();
     if (srmProtectionModal && srmProtectionModal.style.display === 'flex') closeSRMProtectionModal();
+    if (exchangeRequestModal && exchangeRequestModal.style.display === 'flex') closeExchangeRequestModal();
+    if (matchDetailsModal && matchDetailsModal.style.display === 'flex') closeMatchDetailsModal();
     if (savedDrawer && savedDrawer.classList.contains('open')) closeSavedDrawer();
     if (inboxDrawer && inboxDrawer.classList.contains('open')) closeInboxDrawer();
     if (profileDrawer && profileDrawer.classList.contains('open')) closeProfileDrawer();
@@ -3847,6 +4273,7 @@ window.addEventListener('keydown', (e) => {
 // Initialize on Load
 initSRMVerification();
 renderHomeFeatured();
+renderSmartMatches();
 renderListings();
 renderSavedListings();
 renderProfile();

@@ -12,6 +12,9 @@ import subprocess
 import urllib.request
 import urllib.error
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
 BASE_URL = "http://127.0.0.1:8080"
 WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -295,6 +298,27 @@ if item_matches >= 3 and skill_matches >= 3 and opp_matches >= 3:
     log_pass("Problem Alignment", f"Balanced listing registry: {item_matches} Items, {skill_matches} Skills, {opp_matches} Opportunities.")
 else:
     log_fail("Problem Alignment", f"Unbalanced listing registry: Items={item_matches}, Skills={skill_matches}, Opps={opp_matches}")
+
+# Audit Smart Matches Feature
+if 'id="smart-matches-section"' in index_html_text and 'id="smart-matches-grid"' in index_html_text:
+    log_pass("Smart Matches", "Smart Matches section and grid configured on Homepage.")
+else:
+    log_fail("Smart Matches", "Missing smart-matches-section in index.html.")
+
+if 'SMART_MATCHES_DATA' in app_js_text and 'renderSmartMatches' in app_js_text:
+    log_pass("Smart Matches", "Smart Matches data registry and renderer implemented.")
+else:
+    log_fail("Smart Matches", "Missing SMART_MATCHES_DATA or renderSmartMatches in app.js.")
+
+if 'id="exchange-request-modal"' in index_html_text and 'id="match-details-modal"' in index_html_text:
+    log_pass("Smart Matches", "Request Exchange modal and Smart Match Breakdown modal configured.")
+else:
+    log_fail("Smart Matches", "Missing exchange-request-modal or match-details-modal in index.html.")
+
+if 'Item ↔ Skill' in app_js_text and 'Skill ↔ Skill' in app_js_text and 'Item ↔ Item' in app_js_text:
+    log_pass("Smart Matches", "Dual-value exchange types (Item ↔ Skill, Skill ↔ Skill, Item ↔ Item) verified.")
+else:
+    log_fail("Smart Matches", "Missing dual-value exchange types in app.js.")
 
 # -------------------------------------------------------------------------
 # Phase 5: Accessibility & WCAG Standards Audit
