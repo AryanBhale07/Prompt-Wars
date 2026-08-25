@@ -675,13 +675,13 @@ const btnVerifyEmailText = document.getElementById('btn-verify-email-text');
 
 const btnCodeBack = document.getElementById('btn-code-back');
 const srmTargetEmail = document.getElementById('srm-target-email');
-const btnAutofillCode = document.getElementById('btn-autofill-code');
 const srmCodeForm = document.getElementById('srm-code-form');
 const srmCodeInput = document.getElementById('srm-code-input');
 const srmCodeError = document.getElementById('srm-code-error');
 const btnVerifyCode = document.getElementById('btn-verify-code');
 const btnVerifyCodeText = document.getElementById('btn-verify-code-text');
 const btnResendCode = document.getElementById('btn-resend-code');
+const resendCountdown = document.getElementById('resend-countdown');
 
 const btnEnterRexchange = document.getElementById('btn-enter-rexchange');
 const navSrmBadge = document.getElementById('nav-srm-badge');
@@ -1988,14 +1988,33 @@ activityFilterButtons.forEach((btn) => {
 });
 
 // ==========================================================================
-// SRM Student Sign-In & Domain Verification (@srmist.edu.in)
+// SRM Student Sign-In & Supabase Email OTP Verification (@srmist.edu.in)
 // --------------------------------------------------------------------------
-// PROTOTYPE SECURITY NOTE:
-// Checking email.endsWith("@srmist.edu.in") verifies that the entered address
-// has the institutional SRM domain.
-// Production version should verify email ownership using an OTP or verification
-// link sent to the institutional email.
+// SECURITY ARCHITECTURE:
+// 1. Step 1: Pre-validation of typed institutional email ending in @srmist.edu.in.
+// 2. Step 2: Real Supabase signInWithOtp({ email, options: { shouldCreateUser: true } }).
+// 3. Step 3: 30-second resend cooldown timer to prevent spam.
+// 4. Step 4: Real Supabase verifyOtp({ email, token, type: 'email' }).
+// 5. Step 5 (Source of Truth): Verify authenticated email from session.user.email.
+//    If not @srmist.edu.in, immediately signOut() and deny entry.
+// 6. Zero client secrets exposed in frontend code.
 // ==========================================================================
+
+let resendTimerId = null;
+let resendSecondsRemaining = 0;
+
+function getSupabaseClient() {
+  if (window.supabase && window.supabase.createClient && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.anonKey) {
+    if (!window._supabaseClientInstance) {
+      window._supabaseClientInstance = window.supabase.createClient(
+        window.SUPABASE_CONFIG.url,
+        window.SUPABASE_CONFIG.anonKey
+      );
+    }
+    return window._supabaseClientInstance;
+  }
+  return null;
+}
 
 function switchGateStep(activeStepElement) {
   [gateStepWelcome, gateStepEmail, gateStepCode, gateStepSuccess].forEach((el) => {
@@ -2031,7 +2050,93 @@ function requireSRMVerification(featureName = 'this feature') {
   return false;
 }
 
-function initSRMVerification() {
+function startResendCooldown() {
+  if (resendTimerId) clearInterval(resendTimerId);
+  resendSecondsRemaining = 30;
+
+  const resendBtn = document.getElementById('btn-resend-code');
+  const resendCountdown = document.getElementById('resend-countdown');
+
+  if (resendBtn) {
+    resendBtn.disabled = true;
+    resendBtn.style.opacity = '0.5';
+    resendBtn.style.cursor = 'not-allowed';
+    resendBtn.textContent = 'Resend code in';
+  }
+  if (resendCountdown) {
+    resendCountdown.style.display = 'inline';
+    resendCountdown.textContent = `(${resendSecondsRemaining}s)`;
+  }
+
+  resendTimerId = setInterval(() => {
+    resendSecondsRemaining--;
+    if (resendSecondsRemaining > 0) {
+      if (resendCountdown) resendCountdown.textContent = `(${resendSecondsRemaining}s)`;
+    } else {
+      clearInterval(resendTimerId);
+      resendTimerId = null;
+      if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.style.opacity = '1';
+        resendBtn.style.cursor = 'pointer';
+        resendBtn.textContent = 'Resend Code';
+      }
+      if (resendCountdown) {
+        resendCountdown.style.display = 'none';
+      }
+    }
+  }, 1000);
+}
+
+async function initSRMVerification() {
+  const client = getSupabaseClient();
+  
+  if (client) {
+    try {
+      const { data, error } = await client.auth.getSession();
+      if (data && data.session && data.session.user) {
+        const authUserEmail = (data.session.user.email || '').toLowerCase().trim();
+        
+        // Critical Security Check: authenticated email MUST end with @srmist.edu.in
+        if (isValidSrmEmail(authUserEmail)) {
+          localStorage.setItem('isSRMVerified', 'true');
+          state.currentSrmEmail = authUserEmail;
+          state.profile.email = authUserEmail;
+          
+          if (data.session.user.user_metadata && data.session.user.user_metadata.full_name) {
+            state.profile.name = data.session.user.user_metadata.full_name;
+          }
+          saveStoredProfile();
+          
+          if (srmAccessGate) srmAccessGate.style.display = 'none';
+          if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
+          document.body.style.overflow = 'auto';
+          renderProfile();
+          return;
+        } else {
+          // Rejection Flow: Authenticated account is NOT an SRM address!
+          console.warn('[RExchange Security] Unauthorized Account:', authUserEmail);
+          await client.auth.signOut();
+          localStorage.removeItem('isSRMVerified');
+          
+          if (srmEmailError) {
+            srmEmailError.textContent = 'Access restricted to verified SRM students.';
+            srmEmailError.style.display = 'block';
+          }
+          
+          if (srmAccessGate) srmAccessGate.style.display = 'flex';
+          if (navSrmBadge) navSrmBadge.style.display = 'none';
+          document.body.style.overflow = 'hidden';
+          switchGateStep(gateStepEmail);
+          showToast('❌ Access restricted to verified SRM students (@srmist.edu.in).');
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('[RExchange Auth]', err);
+    }
+  }
+
   const verified = isSRMVerified();
 
   if (verified) {
@@ -2065,14 +2170,88 @@ if (btnEmailBack) {
   });
 }
 
+if (btnCodeBack) {
+  btnCodeBack.addEventListener('click', () => {
+    switchGateStep(gateStepEmail);
+    if (srmEmailInput) srmEmailInput.focus();
+    if (srmEmailError) srmEmailError.style.display = 'none';
+  });
+}
+
+async function requestEmailOtp(email) {
+  const client = getSupabaseClient();
+  const cleanEmail = email.trim().toLowerCase();
+
+  if (btnVerifyEmail) btnVerifyEmail.disabled = true;
+  if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Sending code...';
+  if (srmEmailError) srmEmailError.style.display = 'none';
+
+  if (!client) {
+    if (srmEmailError) {
+      srmEmailError.textContent = 'Authentication service is initializing. Please try again.';
+      srmEmailError.style.display = 'block';
+    }
+    if (btnVerifyEmail) btnVerifyEmail.disabled = false;
+    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
+    return false;
+  }
+
+  try {
+    const { data, error } = await client.auth.signInWithOtp({
+      email: cleanEmail,
+      options: {
+        shouldCreateUser: true
+      }
+    });
+
+    if (error) {
+      console.error('[Supabase OTP Send Error]', error);
+      if (srmEmailError) {
+        srmEmailError.textContent = error.message || 'Unable to send verification code. Please check your email and try again.';
+        srmEmailError.style.display = 'block';
+      }
+      if (btnVerifyEmail) btnVerifyEmail.disabled = false;
+      if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
+      return false;
+    }
+
+    // Success: transition to OTP Code Entry step
+    state.currentSrmEmail = cleanEmail;
+    if (srmTargetEmail) srmTargetEmail.textContent = cleanEmail;
+    
+    if (btnVerifyEmail) btnVerifyEmail.disabled = false;
+    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
+
+    switchGateStep(gateStepCode);
+    startResendCooldown();
+
+    if (srmCodeInput) {
+      srmCodeInput.value = '';
+      srmCodeInput.focus();
+    }
+    if (srmCodeError) srmCodeError.style.display = 'none';
+    showToast('✉️ Verification code sent to your SRM email!');
+    return true;
+  } catch (err) {
+    console.error('[Supabase OTP Send Exception]', err);
+    if (srmEmailError) {
+      srmEmailError.textContent = 'Network error while contacting verification service.';
+      srmEmailError.style.display = 'block';
+    }
+    if (btnVerifyEmail) btnVerifyEmail.disabled = false;
+    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
+    return false;
+  }
+}
+
 if (srmEmailForm) {
-  srmEmailForm.addEventListener('submit', (e) => {
+  srmEmailForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const rawEmail = (srmEmailInput.value || '').trim();
 
     if (!isValidSrmEmail(rawEmail)) {
       if (srmEmailError) {
-        srmEmailError.textContent = 'Please use a valid @srmist.edu.in student email.';
+        srmEmailError.textContent = 'Please use your SRM institutional email (@srmist.edu.in).';
         srmEmailError.style.display = 'block';
       }
       srmEmailInput.focus();
@@ -2080,23 +2259,102 @@ if (srmEmailForm) {
     }
 
     if (srmEmailError) srmEmailError.style.display = 'none';
-    const cleanEmail = rawEmail.toLowerCase();
-    state.currentSrmEmail = cleanEmail;
-    state.profile.email = cleanEmail;
-    saveStoredProfile();
+    await requestEmailOtp(rawEmail);
+  });
+}
 
-    if (btnVerifyEmail) btnVerifyEmail.disabled = true;
-    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Verifying...';
+if (btnResendCode) {
+  btnResendCode.addEventListener('click', async () => {
+    if (resendSecondsRemaining > 0) return;
+    if (state.currentSrmEmail && isValidSrmEmail(state.currentSrmEmail)) {
+      await requestEmailOtp(state.currentSrmEmail);
+    } else {
+      switchGateStep(gateStepEmail);
+    }
+  });
+}
 
-    setTimeout(() => {
-      if (btnVerifyEmail) btnVerifyEmail.disabled = false;
-      if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Continue';
+if (srmCodeForm) {
+  srmCodeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = (srmCodeInput ? srmCodeInput.value : '').trim();
+    const email = state.currentSrmEmail;
 
-      if (srmTargetEmail) srmTargetEmail.textContent = cleanEmail;
+    if (!token || token.length < 6) {
+      if (srmCodeError) {
+        srmCodeError.textContent = 'Please enter the 6-digit code received on your SRM email.';
+        srmCodeError.style.display = 'block';
+      }
+      if (srmCodeInput) srmCodeInput.focus();
+      return;
+    }
 
-      // Transition to verified success screen
-      switchGateStep(gateStepSuccess);
-    }, 280);
+    if (srmCodeError) srmCodeError.style.display = 'none';
+    if (btnVerifyCode) btnVerifyCode.disabled = true;
+    if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verifying...';
+
+    const client = getSupabaseClient();
+    if (!client) {
+      if (srmCodeError) {
+        srmCodeError.textContent = 'Authentication service is initializing. Please try again.';
+        srmCodeError.style.display = 'block';
+      }
+      if (btnVerifyCode) btnVerifyCode.disabled = false;
+      if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
+      return;
+    }
+
+    try {
+      const { data, error } = await client.auth.verifyOtp({
+        email: email,
+        token: token,
+        type: 'email'
+      });
+
+      if (error) {
+        console.error('[Supabase OTP Verification Error]', error);
+        if (srmCodeError) {
+          srmCodeError.textContent = error.message || 'Invalid or expired verification code. Please check and try again.';
+          srmCodeError.style.display = 'block';
+        }
+        if (btnVerifyCode) btnVerifyCode.disabled = false;
+        if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
+        return;
+      }
+
+      // Read authenticated session user
+      const authEmail = (data && data.user && data.user.email) ? data.user.email.toLowerCase().trim() : (data && data.session && data.session.user && data.session.user.email) ? data.session.user.email.toLowerCase().trim() : '';
+
+      // Critical Security Check: authenticated email MUST end with @srmist.edu.in
+      if (isValidSrmEmail(authEmail)) {
+        localStorage.setItem('isSRMVerified', 'true');
+        state.profile.email = authEmail;
+        saveStoredProfile();
+
+        if (btnVerifyCode) btnVerifyCode.disabled = false;
+        if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
+
+        // Transition to verified success screen
+        switchGateStep(gateStepSuccess);
+      } else {
+        await client.auth.signOut();
+        localStorage.removeItem('isSRMVerified');
+        if (srmCodeError) {
+          srmCodeError.textContent = 'Access restricted to verified SRM students.';
+          srmCodeError.style.display = 'block';
+        }
+        if (btnVerifyCode) btnVerifyCode.disabled = false;
+        if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
+      }
+    } catch (err) {
+      console.error('[Supabase OTP Verification Exception]', err);
+      if (srmCodeError) {
+        srmCodeError.textContent = 'Network error during verification. Please try again.';
+        srmCodeError.style.display = 'block';
+      }
+      if (btnVerifyCode) btnVerifyCode.disabled = false;
+      if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
+    }
   });
 }
 
@@ -2167,15 +2425,27 @@ function closeLogoutModal() {
   }
 }
 
-function performLogout() {
+async function performLogout() {
   closeLogoutModal();
   closeAllDrawers();
 
+  // Call Supabase signOut()
+  const client = getSupabaseClient();
+  if (client) {
+    try {
+      await client.auth.signOut();
+    } catch (err) {
+      console.warn('[Supabase SignOut Warning]', err);
+    }
+  }
+
   // Clear ONLY the current user's local session/verification state
   localStorage.removeItem('isSRMVerified');
+  state.currentSrmEmail = '';
 
   // Return the user to the existing SRM verification screen
   initSRMVerification();
+  switchGateStep(gateStepWelcome);
 
   showToast("✓ You've been logged out.");
 }
@@ -4843,6 +5113,7 @@ initPulseAnimation();
 initRotatingPlaceholders();
 
 // Export window functions for testing and external hooks
+window.getSupabaseClient = getSupabaseClient;
 window.initCampusMap = initCampusMap;
 window.switchExploreViewMode = switchExploreViewMode;
 window.handleFindMe = handleFindMe;

@@ -253,12 +253,15 @@ if "@srmist.edu.in" in app_js_text and "isValidSrmEmail" in app_js_text:
 else:
     log_fail("Security", "Missing @srmist.edu.in validation logic")
 
-# Audit 3: No raw API keys in client-side JS
+# Audit 3: No raw API keys, Google client secrets or service-role keys in client-side JS
 api_key_leak = re.findall(r'AIza[0-9A-Za-z-_]{35}', app_js_text)
-if not api_key_leak:
-    log_pass("Security", "Zero exposed API keys in client-side JavaScript.")
+service_role_leak = re.findall(r'service_role', app_js_text, re.IGNORECASE)
+client_secret_leak = re.findall(r'client_secret', app_js_text, re.IGNORECASE)
+
+if not api_key_leak and not service_role_leak and not client_secret_leak:
+    log_pass("Security", "Zero exposed secret keys, service-role keys, or OAuth secrets in client-side JavaScript.")
 else:
-    log_fail("Security", f"Potential API key leak in app.js: {api_key_leak}")
+    log_fail("Security", f"Potential secret leak in app.js: api={api_key_leak}, service_role={service_role_leak}")
 
 # Audit 4: localStorage error handling
 if "try {" in app_js_text and "localStorage" in app_js_text:
@@ -266,14 +269,49 @@ if "try {" in app_js_text and "localStorage" in app_js_text:
 else:
     log_fail("Security", "Unguarded localStorage operations detected.")
 
-# Audit 5: Logout Dialog & Workflow Components
+# Audit 5: Supabase Config File & Client Integration
+if os.path.exists(os.path.join(WORKSPACE_DIR, "supabase-config.js")):
+    with open(os.path.join(WORKSPACE_DIR, "supabase-config.js"), "r", encoding="utf-8") as f:
+        supa_config_text = f.read()
+    if 'window.SUPABASE_CONFIG' in supa_config_text and 'qcgzzgvqvdqqoeklopby' in supa_config_text:
+        log_pass("Supabase Config", "supabase-config.js verified with public project URL and anonKey.")
+    else:
+        log_fail("Supabase Config", "Invalid supabase-config.js format or missing project URL.")
+else:
+    log_fail("Supabase Config", "supabase-config.js missing from workspace.")
+
+# Audit 6: Real Supabase Email OTP Workflow Components in index.html & app.js
+if 'id="gate-step-code"' in index_html_text and 'id="srm-code-input"' in index_html_text and 'id="btn-verify-code"' in index_html_text:
+    log_pass("Email OTP Flow", "6-Digit OTP verification step, input, and verify button configured in DOM.")
+else:
+    log_fail("Email OTP Flow", "Missing gate-step-code or srm-code-input in index.html.")
+
+if 'signInWithOtp' in app_js_text and 'verifyOtp' in app_js_text:
+    log_pass("Email OTP Flow", "Supabase signInWithOtp and verifyOtp integration implemented in app.js.")
+else:
+    log_fail("Email OTP Flow", "Missing signInWithOtp or verifyOtp in app.js.")
+
+if 'startResendCooldown' in app_js_text and 'resend-countdown' in index_html_text:
+    log_pass("Email OTP Flow", "30-Second resend cooldown timer and countdown badge verified.")
+else:
+    log_fail("Email OTP Flow", "Missing resend cooldown logic in app.js.")
+
+if 'isValidSrmEmail(authUserEmail)' in app_js_text or 'isValidSrmEmail(authEmail)' in app_js_text:
+    log_pass("Email OTP Security", "Strict source-of-truth verification of authenticated email ending with @srmist.edu.in.")
+else:
+    log_fail("Email OTP Security", "Missing post-OTP authenticated email domain verification.")
+
+# Audit 7: Logout Dialog & Supabase SignOut Workflow Components
 if 'id="btn-profile-logout"' in index_html_text and 'id="logout-modal"' in index_html_text:
     log_pass("Logout Feature", "Profile Logout button and confirmation modal configured in DOM.")
 else:
     log_fail("Logout Feature", "Missing btn-profile-logout or logout-modal in index.html.")
 
-if 'performLogout()' in app_js_text or 'function performLogout(' in app_js_text:
-    log_pass("Logout Feature", "performLogout handler cleans session and reveals verification gate.")
+if 'performLogout()' in app_js_text or 'function performLogout(' in app_js_text or 'async function performLogout(' in app_js_text:
+    if 'signOut()' in app_js_text:
+        log_pass("Logout Feature", "performLogout handler cleans local session, calls Supabase signOut(), and reveals verification gate.")
+    else:
+        log_fail("Logout Feature", "performLogout missing Supabase signOut() call.")
 else:
     log_fail("Logout Feature", "Missing performLogout function in app.js.")
 

@@ -101,12 +101,62 @@
           </div>
 
           <button type="submit" id="btn-verify-email" class="btn-gate-primary">
-            <span id="btn-verify-email-text">Continue</span>
+            <span id="btn-verify-email-text">Send Verification Code</span>
           </button>
         </form>
       </div>
 
-      <!-- Step 3: Verification Success Screen -->
+      <!-- Step 3: Real Supabase Email OTP Verification -->
+      <div id="gate-step-code" class="gate-step-block" style="display: none;">
+        <button type="button" id="btn-code-back" class="btn-gate-back">← Change Email</button>
+        
+        <div class="gate-success-icon-wrap" style="width:48px; height:48px; font-size:1.3rem; margin:0 auto 12px;">
+          <span class="success-check-icon">✉️</span>
+        </div>
+
+        <h2 class="gate-step-title">Verification code sent</h2>
+        <p class="gate-step-subtitle">Enter the 6-digit code sent to your SRM email.</p>
+
+        <div class="gate-detected-email-badge" style="display:inline-flex; align-items:center; gap:6px; background:rgba(0,255,133,0.08); border:1px solid rgba(0,255,133,0.25); border-radius:var(--radius-full); padding:4px 14px; font-size:0.84rem; font-weight:600; color:var(--accent-green); margin-bottom:14px;">
+          <span>✓ SRM email detected:</span> <strong id="srm-target-email">student@srmist.edu.in</strong>
+        </div>
+
+        <form id="srm-code-form" class="gate-form" novalidate>
+          <div class="gate-input-group">
+            <label for="srm-code-input" class="gate-label">6-Digit Verification Code</label>
+            <div class="gate-input-wrapper">
+              <span class="gate-input-icon">🔢</span>
+              <input 
+                type="text" 
+                id="srm-code-input" 
+                class="gate-input" 
+                placeholder="123456" 
+                maxlength="6"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                autocomplete="one-time-code"
+                required
+                style="letter-spacing: 4px; font-weight: 700; font-size: 1.15rem; text-align: center;"
+              >
+            </div>
+            <span id="srm-code-error" class="gate-error-text" style="display: none;">Invalid or expired verification code.</span>
+            <span class="gate-hint-text">Check your SRM inbox or spam folder for the one-time code.</span>
+          </div>
+
+          <button type="submit" id="btn-verify-code" class="btn-gate-primary">
+            <span id="btn-verify-code-text">Verify Code</span>
+          </button>
+
+          <div style="margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <button type="button" id="btn-resend-code" class="btn-gate-resend" style="background:transparent; border:none; color:var(--text-secondary); font-size:0.84rem; cursor:pointer; text-decoration:underline;">
+              Resend Code
+            </button>
+            <span id="resend-countdown" style="font-size:0.82rem; color:var(--text-muted); display:none;">(30s)</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 4: Verification Success Screen -->
       <div id="gate-step-success" class="gate-step-block" style="display: none;">
         <div class="gate-success-icon-wrap">
           <span class="success-check-icon">✓</span>
@@ -1660,6 +1710,10 @@
 
   <!-- Leaflet Map JS for Campus Exchange Interactive Map -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Supabase JS Client & Public Configuration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
 
   <!-- Main JavaScript Application -->
   <script src="app.js"></script>
