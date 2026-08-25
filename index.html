@@ -391,6 +391,25 @@
   </section>
 
   <!-- =========================================================================
+       Smart User Recommendations (Students You May Want to Connect With)
+       ========================================================================= -->
+  <section id="student-recommendations-section" class="student-rec-section">
+    <div class="site-container">
+      <div class="student-rec-header">
+        <div class="student-rec-title-group">
+          <span class="section-eyebrow">CAMPUS NETWORK</span>
+          <h3 class="student-rec-title">Students you may want to connect with</h3>
+        </div>
+        <span class="rec-badge-mono">PEER MATCHES</span>
+      </div>
+
+      <div class="student-rec-cards-stream" id="student-rec-stream">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
        Explore Directory Section
        ========================================================================= -->
   <section id="explore" class="explore-section">
@@ -979,6 +998,18 @@
             </div>
           </div>
 
+          <!-- Profile Completeness Progress Bar -->
+          <div class="profile-completeness-card">
+            <div class="completeness-header">
+              <span class="completeness-label">Profile completeness</span>
+              <span class="completeness-percent" id="profile-completeness-text">85%</span>
+            </div>
+            <div class="completeness-bar-bg">
+              <div class="completeness-bar-fill" id="profile-completeness-bar" style="width: 85%;"></div>
+            </div>
+            <span class="completeness-hint" id="profile-completeness-hint">Add more skills or campus bio to reach 100% profile completeness.</span>
+          </div>
+
           <!-- Live Profile Stats Row -->
           <div class="profile-metrics-row">
             <div class="profile-stat-box">
@@ -996,6 +1027,14 @@
             <div class="profile-stat-box">
               <span class="stat-number-mono text-green" id="profile-stat-trust">100%</span>
               <span class="stat-desc-label">Campus Trust</span>
+            </div>
+          </div>
+
+          <!-- Recent Student Activity Timeline -->
+          <div class="profile-recent-activity-card">
+            <span class="profile-subhead-label">RECENT ACTIVITY</span>
+            <div class="profile-activity-stream" id="profile-activity-list">
+              <!-- Populated dynamically -->
             </div>
           </div>
 
@@ -1078,7 +1117,7 @@
               <span class="ai-sparkle">✨</span> <span id="ai-btn-text">AI Assist</span>
             </button>
           </div>
-          <textarea id="description" name="description" rows="3" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
+          <textarea id="description" name="description" rows="3" placeholder="Describe what you are offering, seeking, or trading (e.g., 'I have old java books for first year students')..." required></textarea>
           <span id="ai-feedback-msg" class="ai-feedback-msg" style="display: none;"></span>
         </div>
 
@@ -1092,34 +1131,62 @@
 
       <!-- AI Suggestions Box -->
       <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
-        <div class="ai-suggestion-header">
-          <div class="ai-suggestion-badge">
-            <span class="sparkle-icon">✨</span> AI Generated Suggestions
-          </div>
-          <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
-        </div>
         
-        <div class="ai-suggestion-content">
-          <div class="ai-preview-item">
-            <span class="ai-preview-label">Suggested Title</span>
-            <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
-          </div>
-          
-          <div class="ai-preview-item">
-            <span class="ai-preview-label">Suggested Category</span>
-            <div><span id="ai-suggested-category" class="badge"></span></div>
-          </div>
-          
-          <div class="ai-preview-item">
-            <span class="ai-preview-label">Polished Description</span>
-            <p id="ai-suggested-description" class="ai-preview-text"></p>
+        <!-- AI Assist Processing Animation State -->
+        <div id="ai-assist-processing" class="ai-assist-processing-panel" style="display: none;">
+          <div class="ai-assist-scanner-line"></div>
+          <div class="ai-assist-proc-row">
+            <div class="ai-proc-icon-pulse" style="width:36px; height:36px; font-size:1.1rem;">
+              <span>✨</span>
+            </div>
+            <div class="ai-assist-proc-text">
+              <span class="ai-assist-brand">✨ RExchange AI</span>
+              <h4 id="ai-assist-status" class="ai-assist-status-text">Understanding your listing...</h4>
+            </div>
           </div>
         </div>
 
-        <div class="ai-suggestion-actions">
-          <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use This</button>
-          <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Ignore</button>
+        <div id="ai-suggestion-result-content">
+          <div class="ai-suggestion-header">
+            <div class="ai-suggestion-badge">
+              <span class="sparkle-icon">✨</span> AI Generated Suggestions
+            </div>
+            <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
+          </div>
+          
+          <div class="ai-suggestion-content">
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Suggested Title</span>
+              <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
+            </div>
+            
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Suggested Category</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span id="ai-suggested-category" class="badge"></span>
+                <span class="gate-hint-text" style="margin:0; font-size:0.75rem;">(You can edit this before publishing)</span>
+              </div>
+            </div>
+
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Auto-Generated Tags (Click ✕ to remove)</span>
+              <div id="ai-suggested-tags" class="ai-tags-chips-row">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+            
+            <div class="ai-preview-item">
+              <span class="ai-preview-label">Polished Description</span>
+              <p id="ai-suggested-description" class="ai-preview-text"></p>
+            </div>
+          </div>
+
+          <div class="ai-suggestion-actions">
+            <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use Suggestions</button>
+            <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Edit Manually</button>
+          </div>
         </div>
+
       </div>
 
     </div>
@@ -1281,6 +1348,27 @@
         <button type="button" id="btn-protection-cancel" class="btn-gate-secondary">Cancel</button>
         <button type="button" id="btn-protection-verify-now" class="btn-gate-primary" style="margin-top: 0;">Verify Now →</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Floating Student Hover Card (Desktop Hover / Mobile Tap) -->
+  <div id="student-hover-card" class="student-hover-card" style="display: none;" role="tooltip">
+    <div class="hover-card-inner">
+      <div class="hover-card-top">
+        <div class="hover-card-avatar" id="hover-avatar">RS</div>
+        <div class="hover-card-info">
+          <div class="hover-card-name-row">
+            <span class="hover-card-name" id="hover-name">Rahul Sharma</span>
+            <span class="badge-srm-verified">✓ SRM Verified</span>
+          </div>
+          <span class="hover-card-dept" id="hover-dept">2nd Year CSE • Computer Science</span>
+        </div>
+      </div>
+      <div class="hover-card-skills" id="hover-skills">
+        <span class="profile-skill-chip">DBMS</span>
+        <span class="profile-skill-chip">SQL</span>
+      </div>
+      <button type="button" id="btn-hover-view-profile" class="btn-hover-view-profile">View Profile →</button>
     </div>
   </div>
 

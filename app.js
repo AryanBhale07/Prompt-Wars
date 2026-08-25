@@ -363,6 +363,35 @@ const DEFAULT_PROFILE = {
   skills: ['Java', 'Python', 'UI/UX', 'Figma', 'React', 'Cybersecurity']
 };
 
+const STUDENT_REGISTRY = {
+  'Rahul Sharma': { initials: 'RS', grad: 'avatar-grad-blue', dept: '2nd Year CSE • Computer Science & Engineering', skills: ['DBMS', 'SQL', 'CS205', 'C++'] },
+  'Priya Nair': { initials: 'PN', grad: 'avatar-grad-purple', dept: '3rd Year CS • Computer Science', skills: ['Python', 'DSA', 'React', 'JavaScript'] },
+  'Arjun Kumar': { initials: 'AK', grad: 'avatar-grad-cyan', dept: '3rd Year CSE • Computer Science', skills: ['Hackathons', 'Frontend', 'React', 'Tailwind'] },
+  'Meera Shah': { initials: 'MS', grad: 'avatar-grad-amber', dept: '3rd Year Design • Human-Centered Design', skills: ['Figma', 'UI/UX', 'Prototypes', 'Design Systems'] },
+  'Rachel Torres': { initials: 'RT', grad: 'avatar-grad-rose', dept: '2nd Year SE • Software Engineering', skills: ['Operating Systems', 'Notes', 'C', 'Semaphores'] },
+  'Liam Patel': { initials: 'LP', grad: 'avatar-grad-amber', dept: '2nd Year IT • Information Technology', skills: ['Java', 'OOP', 'Software Architecture', 'Testing'] },
+  'Chloe Vance': { initials: 'CV', grad: 'avatar-grad-magenta', dept: '4th Year Design • Human-Centered Design', skills: ['UI/UX', 'User Research', 'Portfolios', 'Figma'] },
+  'David Kim': { initials: 'DK', grad: 'avatar-grad-violet', dept: '1st Year ECE • Electronics & Communication', skills: ['Calculus', 'Math', 'Linear Algebra', 'Physics'] },
+  'Jordan Miller': { initials: 'JM', grad: 'avatar-grad-teal', dept: '2nd Year ECE • Mathematics & Computing', skills: ['Arduino', 'Robotics', 'Circuits', 'Sensors'] },
+  'Aiden Scott': { initials: 'AS', grad: 'avatar-grad-teal', dept: '3rd Year CSE • Computer Science', skills: ['Cybersecurity', 'CTF', 'Linux', 'Networking'] },
+  'Karan Patel': { initials: 'KP', grad: 'avatar-grad-blue', dept: '2nd Year CSE • Computer Science', skills: ['Java', 'Spring Boot', 'Backend'] },
+  'Ananya Rao': { initials: 'AR', grad: 'avatar-grad-rose', dept: '3rd Year IT • Information Technology', skills: ['Web Development', 'React', 'UI/UX'] },
+  'Aryan Sharma': { initials: 'AS', grad: 'avatar-grad-emerald', dept: '3rd Year CSE • Computer Science & Engineering', skills: ['Java', 'Python', 'React', 'UI/UX'] }
+};
+
+function getStudentInfo(name) {
+  if (!name) return { initials: 'SR', grad: 'avatar-grad-default', dept: 'SRM Student', skills: ['Campus Exchange'] };
+  const trimmed = name.trim();
+  if (STUDENT_REGISTRY[trimmed]) return STUDENT_REGISTRY[trimmed];
+
+  const parts = trimmed.split(' ').filter(Boolean);
+  const initials = parts.map((p) => p[0]).join('').toUpperCase().slice(0, 2) || 'SR';
+  const grads = ['avatar-grad-blue', 'avatar-grad-purple', 'avatar-grad-cyan', 'avatar-grad-amber', 'avatar-grad-rose', 'avatar-grad-teal', 'avatar-grad-emerald'];
+  const charCodeSum = trimmed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const grad = grads[charCodeSum % grads.length];
+  return { initials, grad, dept: 'SRM Student', skills: ['Campus Exchange'] };
+}
+
 function loadStoredSearchHistory() {
   try {
     const raw = localStorage.getItem('rexchange_ai_history');
@@ -1881,12 +1910,16 @@ function createListingCardHTML(listing) {
   const safeTitle = escapeHtml(listing.title);
   const safeDescription = escapeHtml(listing.description);
   const safeCategory = escapeHtml(listing.category);
-  const safeAuthor = escapeHtml(listing.studentName || 'SRM Student');
-  const safeAvatar = escapeHtml(listing.avatar || safeAuthor.slice(0, 2).toUpperCase());
+  const safeAuthor = escapeHtml(listing.studentName || 'Rahul Sharma');
+  const safeDept = escapeHtml(listing.year || listing.department || 'SRM Student');
   const safeAvail = escapeHtml(listing.availability || 'Available');
   const badgeClass = getBadgeClass(listing.category);
   const formattedTime = formatTimestamp(listing.createdAt);
   const isSaved = state.savedIds.has(listing.id);
+
+  const studentInfo = getStudentInfo(safeAuthor);
+  const safeAvatar = escapeHtml(studentInfo.initials);
+  const avatarGrad = studentInfo.grad;
 
   const tagsHtml = (listing.tags || ['#srm', `#${listing.category.toLowerCase()}`])
     .map((tag) => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
@@ -1894,15 +1927,27 @@ function createListingCardHTML(listing) {
 
   return `
     <article class="listing-card-modern" data-id="${safeId}">
-      <div class="card-top-row">
-        <div class="card-badges-left">
-          <span class="badge ${badgeClass}">${safeCategory}</span>
-          <span class="badge-avail">🟢 ${safeAvail}</span>
-          <span class="badge-srm-verified">✓ SRM Verified</span>
+      <div class="card-author-header">
+        <div class="card-author-left">
+          <div class="student-avatar-wrap" data-student-name="${safeAuthor}" data-student-dept="${safeDept}">
+            <div class="author-avatar ${avatarGrad}">${safeAvatar}</div>
+            <span class="avatar-verified-tick" title="Verified SRM Student">✓</span>
+          </div>
+          <div class="card-author-meta">
+            <div class="card-author-name-row">
+              <span class="card-author-name" data-student-name="${safeAuthor}">${safeAuthor}</span>
+              <span class="badge-srm-verified" title="Verified SRM Student">✓ SRM Verified</span>
+            </div>
+            <span class="author-time">${formattedTime} • 🟢 ${safeAvail}</span>
+          </div>
         </div>
         <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
           ${isSaved ? '🔖' : '☆'}
         </button>
+      </div>
+
+      <div class="card-badges-left" style="margin-bottom: 8px;">
+        <span class="badge ${badgeClass}">${safeCategory}</span>
       </div>
 
       <h3 class="card-listing-title">${safeTitle}</h3>
@@ -1912,14 +1957,7 @@ function createListingCardHTML(listing) {
         ${tagsHtml}
       </div>
 
-      <div class="card-author-footer">
-        <div class="author-profile-left">
-          <div class="author-avatar">${safeAvatar}</div>
-          <div class="author-details">
-            <span class="author-name">${safeAuthor} <span class="badge-srm-verified" style="font-size:0.64rem; padding: 1px 4px; margin-left: 3px;">✓ SRM Verified</span></span>
-            <span class="author-time">${formattedTime}</span>
-          </div>
-        </div>
+      <div class="card-author-footer" style="padding-top: 10px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end;">
         <button type="button" class="btn-card-view" data-id="${safeId}">View →</button>
       </div>
     </article>
@@ -2046,7 +2084,7 @@ function attachCardListeners(container) {
 
   container.querySelectorAll('.listing-card-modern').forEach((card) => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.tag-pill') || e.target.closest('.btn-card-save')) return;
+      if (e.target.closest('.tag-pill') || e.target.closest('.btn-card-save') || e.target.closest('.student-avatar-wrap') || e.target.closest('.card-author-name')) return;
       const listingId = card.getAttribute('data-id');
       openListingModal(listingId);
     });
@@ -2064,6 +2102,8 @@ function attachCardListeners(container) {
       if (exploreSection) exploreSection.scrollIntoView({ behavior: 'smooth' });
     });
   });
+
+  setupStudentHoverCards();
 }
 
 function toggleSaveListing(listingId) {
@@ -2160,7 +2200,70 @@ function renderProfile() {
   }
 
   renderProfileStats();
+  renderProfileCompleteness();
+  renderProfileActivity();
   renderProfileTabContent();
+}
+
+function renderProfileCompleteness() {
+  const bar = document.getElementById('profile-completeness-bar');
+  const text = document.getElementById('profile-completeness-text');
+  const hint = document.getElementById('profile-completeness-hint');
+  if (!bar || !text) return;
+
+  let score = 55; // Base verified student profile
+  const p = state.profile;
+  if (p.bio && p.bio.length > 20) score += 20;
+  if (p.skills && p.skills.length >= 3) score += 15;
+  if (getMyListings().length > 0) score += 10;
+
+  score = Math.min(100, score);
+
+  bar.style.width = `${score}%`;
+  text.textContent = `${score}%`;
+
+  if (hint) {
+    if (score === 100) {
+      hint.textContent = '🌟 Your profile is 100% complete and fully verified on campus.';
+    } else if (!p.skills || p.skills.length < 4) {
+      hint.textContent = 'Add more skills to reach 100% profile completeness.';
+    } else if (getMyListings().length === 0) {
+      hint.textContent = 'Post a listing or offer a skill to reach 100% profile completeness.';
+    } else {
+      hint.textContent = 'Add a detailed campus bio to complete your verified student identity.';
+    }
+  }
+}
+
+function renderProfileActivity() {
+  const stream = document.getElementById('profile-activity-list');
+  if (!stream) return;
+
+  const activities = [
+    { icon: '✓', text: 'Verified institutional identity with @srmist.edu.in', time: 'Active' }
+  ];
+
+  const myListings = getMyListings();
+  if (myListings.length > 0) {
+    activities.unshift({ icon: '📝', text: `Posted "${myListings[0].title.slice(0, 30)}"`, time: 'Recent' });
+  }
+
+  const savedListings = state.listings.filter((l) => state.savedIds.has(l.id));
+  if (savedListings.length > 0) {
+    activities.unshift({ icon: '🔖', text: `Saved "${savedListings[0].title.slice(0, 30)}"`, time: '1 hr ago' });
+  }
+
+  activities.unshift({ icon: '✨', text: 'Matched with campus study opportunities', time: 'Just now' });
+
+  stream.innerHTML = activities.slice(0, 4)
+    .map((act) => `
+      <div class="profile-activity-item">
+        <span class="profile-act-icon">${escapeHtml(act.icon)}</span>
+        <span style="font-size:0.78rem;">${escapeHtml(act.text)}</span>
+        <span class="profile-act-time">${escapeHtml(act.time)}</span>
+      </div>
+    `)
+    .join('');
 }
 
 function renderProfileStats() {
@@ -2349,8 +2452,10 @@ function openListingModal(listingId) {
   const authorDept = listing.department || 'Computer Science & Engineering';
   const authorYear = listing.year || '2nd Year CSE';
   
+  const studentInfo = getStudentInfo(authorName);
   if (modalAvatar) {
-    modalAvatar.textContent = listing.avatar || authorName.slice(0, 2).toUpperCase();
+    modalAvatar.textContent = studentInfo.initials;
+    modalAvatar.className = `author-avatar-large ${studentInfo.grad}`;
   }
   if (modalAuthorName) {
     modalAuthorName.innerHTML = `${authorName} <span class="badge-srm-verified" style="font-size:0.68rem; margin-left: 4px;">✓ SRM Verified</span>`;
@@ -2428,12 +2533,149 @@ function openListingModal(listingId) {
         });
       });
     } else {
-      modalRelatedListings.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted);">No other listings in this category yet.</p>`;
+      modalRelatedListings.innerHTML = '<p class="empty-desc" style="margin: 8px 0;">No other listings in this category right now.</p>';
     }
   }
 
-  listingModal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  if (listingModal) {
+    listingModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+// ==========================================================================
+// Floating Student Hover Profile Preview Card (Desktop Hover / Mobile Tap)
+// ==========================================================================
+const studentHoverCard = document.getElementById('student-hover-card');
+const hoverAvatar = document.getElementById('hover-avatar');
+const hoverName = document.getElementById('hover-name');
+const hoverDept = document.getElementById('hover-dept');
+const hoverSkills = document.getElementById('hover-skills');
+const btnHoverViewProfile = document.getElementById('btn-hover-view-profile');
+
+let hoverTimeout = null;
+
+function setupStudentHoverCards() {
+  if (!studentHoverCard) return;
+
+  function showHoverCard(e, studentName, deptText) {
+    clearTimeout(hoverTimeout);
+    const info = getStudentInfo(studentName);
+    
+    if (hoverName) hoverName.textContent = studentName;
+    if (hoverAvatar) {
+      hoverAvatar.textContent = info.initials;
+      hoverAvatar.className = `hover-card-avatar ${info.grad}`;
+    }
+    if (hoverDept) hoverDept.textContent = deptText || info.dept;
+    if (hoverSkills) {
+      hoverSkills.innerHTML = (info.skills || ['Campus Exchange', 'SRM Student'])
+        .map((s) => `<span class="profile-skill-chip">${escapeHtml(s)}</span>`)
+        .join('');
+    }
+
+    if (btnHoverViewProfile) {
+      btnHoverViewProfile.onclick = () => {
+        studentHoverCard.style.display = 'none';
+        openProfileDrawer();
+        showToast(`👤 Viewing ${studentName}'s verified profile`);
+      };
+    }
+
+    const rect = e.target.getBoundingClientRect();
+    let top = rect.bottom + 8;
+    let left = rect.left;
+
+    if (left + 300 > window.innerWidth) {
+      left = window.innerWidth - 310;
+    }
+    if (top + 180 > window.innerHeight) {
+      top = rect.top - 180;
+    }
+    if (top < 10) top = 10;
+    if (left < 10) left = 10;
+
+    studentHoverCard.style.top = `${top}px`;
+    studentHoverCard.style.left = `${left}px`;
+    studentHoverCard.style.display = 'block';
+  }
+
+  function hideHoverCard() {
+    hoverTimeout = setTimeout(() => {
+      if (studentHoverCard) studentHoverCard.style.display = 'none';
+    }, 250);
+  }
+
+  studentHoverCard.addEventListener('mouseenter', () => clearTimeout(hoverTimeout));
+  studentHoverCard.addEventListener('mouseleave', hideHoverCard);
+
+  document.querySelectorAll('.student-avatar-wrap, .card-author-name').forEach((el) => {
+    el.addEventListener('mouseenter', (e) => {
+      const name = el.getAttribute('data-student-name') || el.textContent.trim();
+      const dept = el.getAttribute('data-student-dept') || '';
+      showHoverCard(e, name, dept);
+    });
+    el.addEventListener('mouseleave', hideHoverCard);
+
+    el.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768) {
+        e.stopPropagation();
+        const name = el.getAttribute('data-student-name') || el.textContent.trim();
+        const dept = el.getAttribute('data-student-dept') || '';
+        showHoverCard(e, name, dept);
+      }
+    });
+  });
+}
+
+// ==========================================================================
+// Smart User Recommendations ("Students you may want to connect with")
+// ==========================================================================
+function renderStudentRecommendations() {
+  const recStream = document.getElementById('student-rec-stream');
+  if (!recStream) return;
+
+  const demoPeers = [
+    { name: 'Rahul Sharma', dept: '2nd Year CSE', topSkill: 'DBMS & SQL Mentoring' },
+    { name: 'Priya Nair', dept: '3rd Year CS', topSkill: 'Python & DSA Tutor' },
+    { name: 'Arjun Kumar', dept: '3rd Year CSE', topSkill: 'Frontend Hackathon Lead' },
+    { name: 'Meera Shah', dept: '3rd Year Design', topSkill: 'Figma UI/UX Systems' }
+  ];
+
+  recStream.innerHTML = demoPeers
+    .map((peer) => {
+      const info = getStudentInfo(peer.name);
+      return `
+        <div class="student-rec-card">
+          <div class="student-rec-top">
+            <div class="student-avatar-wrap" data-student-name="${escapeHtml(peer.name)}" data-student-dept="${escapeHtml(peer.dept)}">
+              <div class="rec-card-avatar ${info.grad}">${escapeHtml(info.initials)}</div>
+              <span class="avatar-verified-tick">✓</span>
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span class="student-rec-name">${escapeHtml(peer.name)}</span>
+                <span class="badge-srm-verified" style="font-size:0.6rem; padding:1px 3px;">✓</span>
+              </div>
+              <span class="student-rec-dept">${escapeHtml(peer.dept)}</span>
+            </div>
+          </div>
+          <span class="student-rec-skill-tag">⚡ ${escapeHtml(peer.topSkill)}</span>
+          <button type="button" class="btn-student-rec-view" data-name="${escapeHtml(peer.name)}">View Profile →</button>
+        </div>
+      `;
+    })
+    .join('');
+
+  recStream.querySelectorAll('.btn-student-rec-view').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const name = btn.getAttribute('data-name');
+      openProfileDrawer();
+      showToast(`👤 Viewing ${name}'s verified campus profile`);
+    });
+  });
+
+  setupStudentHoverCards();
 }
 
 function closeListingModal() {
@@ -2911,121 +3153,167 @@ function generateFallbackAiSuggestion(roughText) {
   let category = 'Item';
   if (isOpportunity && !(isItem && /\b(selling|give away|have an? old|have an? used)\b/i.test(textLower))) {
     category = 'Opportunity';
-  } else if (isItem && !(isSkill && /\b(teach|tutor|give lessons)\b/i.test(textLower) && !/\b(have an?|selling|give away|don't need)\b/i.test(textLower))) {
-    category = 'Item';
-  } else if (isSkill) {
+  } else if (isSkill && !(isItem && /\b(have an? old|selling|give away|don't need)\b/i.test(textLower))) {
     category = 'Skill';
   } else {
     category = 'Item';
   }
 
-  const knownSubjects = [
-    { name: 'DBMS Textbook', regex: /\bdbms\b|database/i },
-    { name: 'Arduino Starter Kit', regex: /\barduino\b|microcontroller/i },
-    { name: 'Operating Systems Notes', regex: /\boperating systems?\b|\bos notes\b/i },
-    { name: 'DSA / Data Structures', regex: /\bdsa\b|data structures?/i },
-    { name: 'OOP / Java', regex: /\boop\b|object oriented/i },
-    { name: 'Calculus', regex: /\bcalculus\b|\bcalc\b/i },
-    { name: 'Linear Algebra', regex: /\blinear algebra\b/i },
-    { name: 'Python', regex: /\bpython\b/i },
-    { name: 'Figma / UI/UX', regex: /\bfigma\b|ui\/ux|ui design/i },
-    { name: 'JavaScript / Web Dev', regex: /\bjavascript\b|\bjs\b|\bweb dev\b|\breact\b/i },
-    { name: 'TI-84 Graphing Calculator', regex: /\bti-?84\b|\bgraphing calculator\b/i }
-  ];
+  // Detect specific subjects & topics for Tag generation
+  const tagList = [];
+  if (/\bjava\b/i.test(textLower)) tagList.push('Java');
+  if (/\b(oop|object oriented)\b/i.test(textLower)) tagList.push('OOP');
+  if (/\bpython\b/i.test(textLower)) tagList.push('Python');
+  if (/\b(dbms|database)\b/i.test(textLower)) tagList.push('DBMS');
+  if (/\b(dsa|data structures?)\b/i.test(textLower)) tagList.push('DSA');
+  if (/\b(hackathon|competition)\b/i.test(textLower)) tagList.push('Hackathon');
+  if (/\b(ui\/ux|figma|design)\b/i.test(textLower)) tagList.push('UI/UX');
+  if (/\b(react|frontend|web)\b/i.test(textLower)) tagList.push('Frontend');
+  if (/\b(textbook|books?)\b/i.test(textLower)) tagList.push('Textbook');
+  if (/\b(first[- ]year|1st year|freshman|freshmen)\b/i.test(textLower)) tagList.push('First Year');
+  if (/\b(notes|sheets)\b/i.test(textLower)) tagList.push('Study Notes');
+  if (/\b(programming|coding|code)\b/i.test(textLower)) tagList.push('Programming');
+  if (/\b(tutoring|teach|tutor)\b/i.test(textLower)) tagList.push('Tutoring');
+  if (/\b(arduino|robotics)\b/i.test(textLower)) tagList.push('Arduino');
+  if (/\b(calculator|ti-?84)\b/i.test(textLower)) tagList.push('Calculator');
+  if (/\bfree\b/i.test(textLower)) tagList.push('Free');
+  if (/\btrade\b/i.test(textLower)) tagList.push('Trade');
 
-  let detectedSubject = null;
-  for (const s of knownSubjects) {
-    if (s.regex.test(textLower)) {
-      detectedSubject = s.name;
-      break;
-    }
+  if (tagList.length === 0) {
+    tagList.push(category, 'SRM', 'Campus');
   }
 
-  const tradeMatch = textLower.match(/\btrade (?:it )?(?:for|with) (?:a |an )?([^,.\n]+?)(?=\s+(?:or|and|for free|give|to)\b|[.,;]|$)/i);
-  let tradeTarget = tradeMatch ? tradeMatch[1].trim() : null;
-  const isGiveaway = /\b(give (it )?away|giving away|free|free to good home|don't need)\b/i.test(textLower);
-
+  // Generate clean title & description
   let title = '';
   let description = '';
 
-  if (category === 'Item') {
-    const baseTitle = detectedSubject || 'Campus Item';
-    if (tradeTarget && isGiveaway) {
-      title = `${baseTitle} (Trade for ${tradeTarget} or Giveaway)`;
-    } else if (tradeTarget) {
-      title = `${baseTitle} (Trade for ${tradeTarget})`;
-    } else if (isGiveaway) {
-      title = `${baseTitle} (Free Giveaway)`;
-    } else {
-      title = `${baseTitle} for Exchange`;
-    }
-    description = `Offering ${baseTitle.toLowerCase()} in great condition. ${textClean} Open for quick SRM campus meetup or exchange.`;
+  if (/java.*books?.*first.*year/i.test(textLower) || (/java/i.test(textLower) && /book/i.test(textLower))) {
+    title = 'Java Programming Books for First-Year Students';
+    description = `Offering gently used Java programming textbooks and reference materials for first-year SRM students. ${textClean} Available for campus meetup or exchange.`;
+    category = 'Item';
+  } else if (/teach.*java.*oop/i.test(textLower) || (/java/i.test(textLower) && /oop/i.test(textLower) && category === 'Skill')) {
+    title = 'Java & OOP 1-on-1 Peer Tutoring for First-Year Students';
+    description = `Offering peer tutoring covering Java core concepts, Object-Oriented Programming (classes, inheritance, polymorphism), and clean coding practice. ${textClean}`;
+    category = 'Skill';
+  } else if (category === 'Opportunity') {
+    const mainTopic = tagList.length > 0 ? tagList[0] : 'Campus Project';
+    title = `${mainTopic} Team Collaborator Needed`;
+    description = `Looking for motivated student teammates to collaborate on ${mainTopic}. ${textClean} Reach out to connect!`;
   } else if (category === 'Skill') {
-    const subj = detectedSubject || 'Peer';
-    title = `${subj} Tutoring & Skill Sharing`;
-    description = `Offering 1-on-1 peer tutoring and guidance in ${subj}. ${textClean} Reach out to connect!`;
+    const mainTopic = tagList.length > 0 ? tagList[0] : 'Peer';
+    title = `${mainTopic} Tutoring & Peer Mentoring`;
+    description = `Offering 1-on-1 peer guidance and tutoring in ${mainTopic}. ${textClean}`;
   } else {
-    const subj = detectedSubject || 'Campus Project';
-    title = `${subj} Collaboration Opportunity`;
-    description = `Looking for motivated SRM student collaborators to team up on ${subj}. ${textClean} Reach out if interested!`;
+    const mainTopic = tagList.length > 0 ? tagList[0] : 'Study Resource';
+    title = `${mainTopic} for SRM Student Exchange`;
+    description = `Offering ${mainTopic.toLowerCase()} in great condition. ${textClean} Open for quick SRM campus meetup.`;
   }
 
-  return { title, category, description, source: 'smart_fallback' };
+  return {
+    title,
+    category,
+    tags: Array.from(new Set(tagList)),
+    description
+  };
 }
+
+let activeAiSuggestedTags = [];
 
 function displayAiSuggestions(suggestion) {
   state.currentAiSuggestion = suggestion;
+  activeAiSuggestedTags = [...(suggestion.tags || [])];
 
-  aiSuggestedTitle.textContent = suggestion.title;
-  aiSuggestedCategory.textContent = suggestion.category;
-  aiSuggestedCategory.className = `badge ${getBadgeClass(suggestion.category)}`;
-  aiSuggestedDescription.textContent = suggestion.description;
+  if (aiSuggestedTitle) aiSuggestedTitle.textContent = suggestion.title;
+  if (aiSuggestedCategory) {
+    aiSuggestedCategory.textContent = suggestion.category;
+    aiSuggestedCategory.className = `badge ${getBadgeClass(suggestion.category)}`;
+  }
+  if (aiSuggestedDescription) aiSuggestedDescription.textContent = suggestion.description;
 
-  aiSuggestionBox.style.display = 'block';
-  aiSuggestionBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  renderAiSuggestedTags();
+
+  const procPanel = document.getElementById('ai-assist-processing');
+  const resultContent = document.getElementById('ai-suggestion-result-content');
+  if (procPanel) procPanel.style.display = 'none';
+  if (resultContent) resultContent.style.display = 'block';
+
+  if (aiSuggestionBox) {
+    aiSuggestionBox.style.display = 'block';
+    aiSuggestionBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function renderAiSuggestedTags() {
+  const tagsRow = document.getElementById('ai-suggested-tags');
+  if (!tagsRow) return;
+
+  if (activeAiSuggestedTags.length === 0) {
+    tagsRow.innerHTML = '<span class="gate-hint-text">No custom tags</span>';
+    return;
+  }
+
+  tagsRow.innerHTML = activeAiSuggestedTags
+    .map((tag, idx) => `
+      <span class="ai-tag-chip">
+        #${escapeHtml(tag)}
+        <button type="button" class="ai-tag-remove-btn" data-tag-idx="${idx}" title="Remove tag" aria-label="Remove tag">✕</button>
+      </span>
+    `)
+    .join('');
+
+  tagsRow.querySelectorAll('.ai-tag-remove-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.getAttribute('data-tag-idx'), 10);
+      activeAiSuggestedTags.splice(idx, 1);
+      renderAiSuggestedTags();
+    });
+  });
 }
 
 function hideAiSuggestions() {
-  aiSuggestionBox.style.display = 'none';
+  if (aiSuggestionBox) aiSuggestionBox.style.display = 'none';
+  const procPanel = document.getElementById('ai-assist-processing');
+  if (procPanel) procPanel.style.display = 'none';
   state.currentAiSuggestion = null;
 }
 
 if (aiAssistBtn) {
-  aiAssistBtn.addEventListener('click', async () => {
+  aiAssistBtn.addEventListener('click', () => {
     const rawDescription = descriptionInput.value.trim();
 
     if (!rawDescription) {
-      aiFeedbackMsg.textContent = '💡 Please type a rough description first (e.g. "trading my DBMS book for python notes")';
-      aiFeedbackMsg.style.display = 'block';
+      if (aiFeedbackMsg) {
+        aiFeedbackMsg.textContent = '💡 Please type a rough description first (e.g. "I have old java books for first year students")';
+        aiFeedbackMsg.style.display = 'block';
+      }
       descriptionInput.focus();
       return;
     }
 
-    aiFeedbackMsg.style.display = 'none';
-    aiAssistBtn.disabled = true;
-    if (aiBtnText) aiBtnText.textContent = 'Generating...';
+    if (aiFeedbackMsg) aiFeedbackMsg.style.display = 'none';
+    if (aiSuggestionBox) aiSuggestionBox.style.display = 'block';
 
-    try {
-      const response = await fetch('/api/ai-assist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: rawDescription })
-      });
+    const procPanel = document.getElementById('ai-assist-processing');
+    const resultContent = document.getElementById('ai-suggestion-result-content');
+    const procStatus = document.getElementById('ai-assist-status');
 
-      if (response.ok) {
-        const data = await response.json();
-        displayAiSuggestions(data);
-      } else {
-        const fallbackData = generateFallbackAiSuggestion(rawDescription);
-        displayAiSuggestions(fallbackData);
-      }
-    } catch (err) {
-      const fallbackData = generateFallbackAiSuggestion(rawDescription);
-      displayAiSuggestions(fallbackData);
-    } finally {
-      aiAssistBtn.disabled = false;
-      if (aiBtnText) aiBtnText.textContent = 'AI Assist';
-    }
+    if (procPanel) procPanel.style.display = 'block';
+    if (resultContent) resultContent.style.display = 'none';
+    if (procStatus) procStatus.textContent = 'Understanding your listing...';
+
+    setTimeout(() => {
+      if (procStatus) procStatus.textContent = 'Suggesting the best category...';
+    }, 350);
+
+    setTimeout(() => {
+      if (procStatus) procStatus.textContent = 'Improving your listing...';
+    }, 700);
+
+    setTimeout(() => {
+      const suggestion = generateFallbackAiSuggestion(rawDescription);
+      displayAiSuggestions(suggestion);
+    }, 1050);
   });
 }
 
@@ -3038,8 +3326,10 @@ if (aiApplyBtn) {
     titleInput.value = title;
     categorySelect.value = category;
     descriptionInput.value = description;
+    state.postPendingTags = [...activeAiSuggestedTags];
 
     hideAiSuggestions();
+    showToast('✨ AI suggestions applied');
     contactInput.focus();
   });
 }
@@ -3077,9 +3367,14 @@ form.addEventListener('submit', (e) => {
   errorMessage.textContent = '';
   errorMessage.style.display = 'none';
 
-  const titleWords = title.toLowerCase().split(/\s+/).filter((w) => w.length > 3).slice(0, 2);
-  const autoTags = [`#srm`, `#${category.toLowerCase()}`, ...titleWords.map((w) => `#${w}`)];
-  if (/\bfree\b/i.test(description + ' ' + title)) autoTags.push('#free');
+  let listingTags = [];
+  if (state.postPendingTags && state.postPendingTags.length > 0) {
+    listingTags = state.postPendingTags.map((t) => (t.startsWith('#') ? t : `#${t.toLowerCase().replace(/\s+/g, '')}`));
+  } else {
+    const titleWords = title.toLowerCase().split(/\s+/).filter((w) => w.length > 3).slice(0, 2);
+    listingTags = [`#srm`, `#${category.toLowerCase()}`, ...titleWords.map((w) => `#${w}`)];
+    if (/\bfree\b/i.test(description + ' ' + title)) listingTags.push('#free');
+  }
 
   const newListing = {
     id: `my-listing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -3087,20 +3382,21 @@ form.addEventListener('submit', (e) => {
     category,
     description,
     studentName: state.profile.name || 'Aryan Sharma',
-    department: state.profile.department || 'Computer Science',
+    department: state.profile.department || 'Computer Science & Engineering',
     year: state.profile.year || '3rd Year',
     avatar: state.profile.avatar || 'AS',
     contact,
-    tags: autoTags,
+    tags: listingTags,
     availability: 'Available',
     isFree: /\bfree\b/i.test(description + ' ' + title),
     icon: category === 'Item' ? '📦' : category === 'Skill' ? '💡' : '🚀',
-    matchScore: 95,
+    matchScore: 96,
     matchReason: 'Your newly created listing on the SRM network.',
     createdAt: new Date()
   };
 
   state.listings.unshift(newListing);
+  state.postPendingTags = null;
 
   if (state.activeFilter !== 'All' && state.activeFilter !== category) {
     setActiveFilter('All');
@@ -3121,7 +3417,7 @@ form.addEventListener('submit', (e) => {
   hideAiSuggestions();
   form.reset();
   closePostModal();
-  showToast('🎉 Your listing is live on SRM campus!');
+  showToast('✓ Listing published');
 
   const exploreSection = document.getElementById('explore');
   if (exploreSection) {
@@ -3138,3 +3434,5 @@ renderNotifications();
 renderInboxConversations();
 renderActiveChat();
 renderSearchHistory();
+renderStudentRecommendations();
+setupStudentHoverCards();
