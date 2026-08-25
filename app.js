@@ -3415,13 +3415,103 @@ form.addEventListener('submit', (e) => {
 
   renderProfile();
   hideAiSuggestions();
-  form.reset();
-  closePostModal();
-  showToast('✓ Listing published');
 
-  const exploreSection = document.getElementById('explore');
-  if (exploreSection) {
-    exploreSection.scrollIntoView({ behavior: 'smooth' });
+  const successState = document.getElementById('post-success-state');
+  if (successState) {
+    form.style.display = 'none';
+    if (aiSuggestionBox) aiSuggestionBox.style.display = 'none';
+    successState.style.display = 'flex';
+  }
+
+  setTimeout(() => {
+    if (successState) successState.style.display = 'none';
+    form.style.display = 'block';
+    form.reset();
+    closePostModal();
+    showToast('✓ Listing published');
+
+    const exploreSection = document.getElementById('explore');
+    if (exploreSection) {
+      exploreSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, 1200);
+});
+
+// ==========================================================================
+// Scroll Reveal & Campus Pulse Count Ticker Animations
+// ==========================================================================
+function initScrollReveal() {
+  const elements = document.querySelectorAll('.reveal-on-scroll');
+  if (!elements.length) return;
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+    elements.forEach((el) => observer.observe(el));
+  } else {
+    elements.forEach((el) => el.classList.add('revealed'));
+  }
+}
+
+let pulseAnimated = false;
+function initPulseAnimation() {
+  const pulseEl = document.getElementById('pulse') || document.getElementById('how-it-works');
+  if (!pulseEl) return;
+
+  function animateCount(elemId, target) {
+    const el = document.getElementById(elemId);
+    if (!el) return;
+    const duration = 1200;
+    const startTime = performance.now();
+    function update(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const current = Math.floor(progress * target);
+      el.textContent = current;
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target;
+      }
+    }
+    requestAnimationFrame(update);
+  }
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !pulseAnimated) {
+          pulseAnimated = true;
+          const totalItems = state.listings.length;
+          const skillsCount = state.listings.filter((l) => l.category === 'Skill').length;
+          const oppsCount = state.listings.filter((l) => l.category === 'Opportunity').length;
+          animateCount('pulse-new-listings', totalItems);
+          animateCount('pulse-skills-shared', skillsCount);
+          animateCount('pulse-opportunities', oppsCount);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    observer.observe(pulseEl);
+  }
+}
+
+// Global Keyboard Escape Key Handler for all Modals and Drawers
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (listingModal && listingModal.style.display === 'flex') closeListingModal();
+    if (postModal && postModal.style.display === 'flex') closePostModal();
+    if (srmProtectionModal && srmProtectionModal.style.display === 'flex') closeSRMProtectionModal();
+    if (savedDrawer && savedDrawer.classList.contains('open')) closeSavedDrawer();
+    if (inboxDrawer && inboxDrawer.classList.contains('open')) closeInboxDrawer();
+    if (profileDrawer && profileDrawer.classList.contains('open')) closeProfileDrawer();
+    if (notifDropdown && notifDropdown.style.display === 'flex') notifDropdown.style.display = 'none';
   }
 });
 
@@ -3436,3 +3526,5 @@ renderActiveChat();
 renderSearchHistory();
 renderStudentRecommendations();
 setupStudentHoverCards();
+initScrollReveal();
+initPulseAnimation();
