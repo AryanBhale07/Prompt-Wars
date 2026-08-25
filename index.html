@@ -3,101 +3,462 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RExchange - Campus Community Exchange</title>
+  <title>RExchange — Campus Community Exchange Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Top Navigation Bar -->
+
+  <!-- Sticky Navbar -->
   <nav class="navbar">
     <div class="nav-container">
-      <div class="brand-logo">
+      <a href="#" class="brand-logo">
         <span class="logo-accent">RE</span><span>xchange</span>
+      </a>
+      <div class="nav-links">
+        <a href="#explore" class="nav-link">Explore</a>
+        <a href="#categories" class="nav-link">Categories</a>
+        <a href="#pulse" class="nav-link">Campus Pulse</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
       </div>
-      <div class="nav-tag">Campus Exchange</div>
+      <div class="nav-actions">
+        <a href="#post" class="nav-btn-primary">+ Post Something</a>
+      </div>
     </div>
   </nav>
 
-  <div class="container">
-    <header class="app-header">
-      <h1 class="hero-title">Exchange with your <span class="highlight-green">Campus Community</span></h1>
-      <p class="tagline">Post and discover items, skills, and opportunities from fellow students.</p>
-    </header>
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          <span>Active University Community Platform</span>
+        </div>
+        
+        <h1 class="hero-headline">
+          Everything your campus has.<br>
+          <span class="hero-headline-gradient">Everything your campus needs.</span>
+        </h1>
+        
+        <p class="hero-subtext">
+          RExchange connects students to the items, skills and opportunities already available within their campus community.
+        </p>
 
-    <main>
-      <!-- Listing Form Section -->
-      <section class="form-section">
-        <div class="section-header">
-          <h2>Post a Listing</h2>
-          <span class="section-hint">Fill in the details below to share with your campus</span>
+        <!-- Hero Actions -->
+        <div class="hero-actions">
+          <a href="#explore" class="btn-hero-primary">Explore Campus</a>
+          <a href="#post" class="btn-hero-secondary">+ Post Something</a>
         </div>
 
-        <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
-
-        <form id="listing-form" novalidate>
-          <div class="form-group">
-            <label for="title">Title <span class="required">*</span></label>
-            <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook, Python Tutoring, Hackathon Teammate" required>
+        <!-- Large AI-Powered Search Bar -->
+        <div class="hero-search-wrapper">
+          <div class="hero-search-box">
+            <span class="hero-search-sparkle">✨</span>
+            <input type="text" id="hero-ai-search" class="hero-search-input" placeholder="Ask RExchange what you're looking for..." aria-label="AI Campus Search">
+            <button type="button" id="hero-search-btn" class="hero-search-submit">Search</button>
           </div>
+          
+          <div class="hero-search-prompts">
+            <span class="prompts-label">Try searching:</span>
+            <button type="button" class="prompt-chip" data-query="Python tutor">Find a Python tutor</button>
+            <button type="button" class="prompt-chip" data-query="free textbook">Show me free textbooks</button>
+            <button type="button" class="prompt-chip" data-query="hackathon teammates">Find hackathon teammates</button>
+          </div>
+        </div>
+      </div>
 
-          <div class="form-group">
-            <label for="category">Category <span class="required">*</span></label>
-            <div class="select-wrapper">
-              <select id="category" name="category" required>
-                <option value="">Select a category...</option>
-                <option value="Item">Item</option>
-                <option value="Skill">Skill</option>
-                <option value="Opportunity">Opportunity</option>
-              </select>
+      <!-- Connected Campus Ecosystem Illustration (Pure CSS / SVG / HTML) -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="ecosystem-container">
+          <!-- Animated SVG Connection Lines -->
+          <svg class="connection-svg" viewBox="0 0 460 420" fill="none">
+            <path class="conn-line conn-line-1" d="M120,70 Q230,120 340,90" />
+            <path class="conn-line conn-line-2" d="M120,70 Q160,210 130,280" />
+            <path class="conn-line conn-line-3" d="M340,90 Q310,210 330,290" />
+            <path class="conn-line conn-line-4" d="M130,280 Q230,240 330,290" />
+            <path class="conn-line conn-line-5" d="M230,160 Q230,250 230,350" />
+            <path class="conn-line conn-line-6" d="M120,70 Q230,160 330,290" />
+            <!-- Pulse Nodes -->
+            <circle class="pulse-node" cx="230" cy="180" r="4" />
+            <circle class="pulse-node" cx="190" cy="120" r="3" />
+            <circle class="pulse-node" cx="280" cy="240" r="3" />
+          </svg>
+
+          <!-- Floating Ecosystem Node Cards representing Books, Skills, Events, Opportunities, Students -->
+          <div class="eco-card eco-card-books">
+            <div class="eco-icon-wrap icon-item">📚</div>
+            <div class="eco-info">
+              <span class="eco-title">Textbooks</span>
+              <span class="eco-tag">DBMS, Calc, OS Notes</span>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="description">Description <span class="required">*</span></label>
-            <textarea id="description" name="description" rows="4" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
+          <div class="eco-card eco-card-students">
+            <div class="eco-icon-wrap icon-student">👥</div>
+            <div class="eco-info">
+              <span class="eco-title">Students</span>
+              <span class="eco-tag tag-green">31 Active Matches</span>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="contact">Contact Info <span class="required">*</span></label>
-            <input type="text" id="contact" name="contact" placeholder="e.g. student@campus.edu / @discord_handle" required>
+          <div class="eco-card eco-card-skills">
+            <div class="eco-icon-wrap icon-skill">💻</div>
+            <div class="eco-info">
+              <span class="eco-title">Skills</span>
+              <span class="eco-tag">Python, React, Figma</span>
+            </div>
           </div>
 
-          <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
-        </form>
-      </section>
+          <div class="eco-card eco-card-opportunities">
+            <div class="eco-icon-wrap icon-opp">🚀</div>
+            <div class="eco-info">
+              <span class="eco-title">Opportunities</span>
+              <span class="eco-tag">Hackathon Teammates</span>
+            </div>
+          </div>
 
-      <!-- Listings Feed Section -->
-      <section class="feed-section">
-        <div class="section-header">
-          <h2>Exchange Feed</h2>
-          <span class="section-hint">Latest listings posted across campus</span>
+          <div class="eco-card eco-card-events">
+            <div class="eco-icon-wrap icon-event">🎟️</div>
+            <div class="eco-info">
+              <span class="eco-title">Events</span>
+              <span class="eco-tag">Campus Meetups & Passes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Three Large Feature Category Cards -->
+  <section id="categories" class="categories-section">
+    <div class="site-container">
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Explore Categories</span>
+        <h2 class="section-heading">Three Ways to Exchange Value</h2>
+      </div>
+
+      <div class="category-cards-grid">
+        <!-- Card 1: Items -->
+        <div class="feature-cat-card" data-category="Item" role="button" tabindex="0">
+          <div class="cat-card-header">
+            <div class="cat-icon-badge badge-color-item">
+              <span class="cat-emoji">📦</span>
+            </div>
+            <div class="cat-header-right">
+              <span class="cat-badge-label">ITEMS</span>
+              <span class="cat-count-badge" id="count-items">3 Listings</span>
+            </div>
+          </div>
+          <h3 class="cat-card-title">Items</h3>
+          <p class="cat-card-desc">Books, electronics, study materials and useful college resources.</p>
+          <div class="cat-card-action">
+            <span>Browse Items</span>
+            <span class="arrow-icon">→</span>
+          </div>
         </div>
 
-        <!-- Category Filter Bar -->
-        <div id="filter-bar" class="filter-bar" role="tablist" aria-label="Filter listings by category">
-          <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">All</button>
-          <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">Item</button>
-          <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">Skill</button>
-          <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">Opportunity</button>
+        <!-- Card 2: Skills -->
+        <div class="feature-cat-card" data-category="Skill" role="button" tabindex="0">
+          <div class="cat-card-header">
+            <div class="cat-icon-badge badge-color-skill">
+              <span class="cat-emoji">🧠</span>
+            </div>
+            <div class="cat-header-right">
+              <span class="cat-badge-label">SKILLS</span>
+              <span class="cat-count-badge" id="count-skills">2 Listings</span>
+            </div>
+          </div>
+          <h3 class="cat-card-title">Skills</h3>
+          <p class="cat-card-desc">Find students who can teach, mentor or help you.</p>
+          <div class="cat-card-action">
+            <span>Browse Skills</span>
+            <span class="arrow-icon">→</span>
+          </div>
         </div>
 
-        <div id="empty-state" class="empty-state">
-          <div class="empty-icon">📦</div>
-          <p id="empty-title" class="empty-title">No listings yet</p>
-          <p id="empty-desc" class="empty-desc">Be the first to post an item, skill, or opportunity above!</p>
+        <!-- Card 3: Opportunities -->
+        <div class="feature-cat-card" data-category="Opportunity" role="button" tabindex="0">
+          <div class="cat-card-header">
+            <div class="cat-icon-badge badge-color-opp">
+              <span class="cat-emoji">🚀</span>
+            </div>
+            <div class="cat-header-right">
+              <span class="cat-badge-label">OPPORTUNITIES</span>
+              <span class="cat-count-badge" id="count-opportunities">1 Listing</span>
+            </div>
+          </div>
+          <h3 class="cat-card-title">Opportunities</h3>
+          <p class="cat-card-desc">Discover projects, hackathons, events and other opportunities.</p>
+          <div class="cat-card-action">
+            <span>Browse Opportunities</span>
+            <span class="arrow-icon">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Campus Pulse Section -->
+  <section id="pulse" class="pulse-section">
+    <div class="site-container">
+      <div class="pulse-card-wrapper">
+        <div class="pulse-header">
+          <div class="pulse-title-group">
+            <span class="pulse-live-indicator"><span class="pulse-ring"></span></span>
+            <h3>Campus Pulse</h3>
+          </div>
+          <span class="pulse-time-tag">Real-Time Community Metrics</span>
         </div>
 
-        <div id="listings-feed" class="listings-feed"></div>
-      </section>
-    </main>
+        <div class="pulse-metrics-grid">
+          <div class="pulse-metric-item">
+            <span class="metric-number" data-target="24">0</span>
+            <span class="metric-label">New Listings</span>
+          </div>
+          <div class="pulse-metric-item">
+            <span class="metric-number" data-target="18">0</span>
+            <span class="metric-label">Skills Shared</span>
+          </div>
+          <div class="pulse-metric-item">
+            <span class="metric-number" data-target="12">0</span>
+            <span class="metric-label">Opportunities</span>
+          </div>
+          <div class="pulse-metric-item highlight-metric">
+            <span class="metric-number text-accent-green" data-target="31">0</span>
+            <span class="metric-label">Potential Matches</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <footer class="app-footer">
-      <p class="footer-brand"><span class="logo-accent">RE</span><span>xchange</span></p>
-      <p class="footer-text">© 2026 RExchange. Built for students, by students.</p>
-    </footer>
-  </div>
+  <!-- Interactive Platform Engine: Post Form & Trending Feed -->
+  <section id="explore" class="main-app-section">
+    <div class="site-container">
+      <div class="app-layout-grid">
+        
+        <!-- Post a Listing Section -->
+        <div id="post" class="form-column">
+          <section class="form-section">
+            <div class="section-header">
+              <div class="section-header-badge">Campus Exchange</div>
+              <h2>Post a Listing</h2>
+              <span class="section-hint">Share an item, skill, or opportunity with your campus</span>
+            </div>
+
+            <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
+
+            <form id="listing-form" novalidate>
+              <div class="form-group">
+                <label for="title">Title <span class="required">*</span></label>
+                <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook, Python Tutoring, Hackathon Teammate" required>
+              </div>
+
+              <div class="form-group">
+                <label for="category">Category <span class="required">*</span></label>
+                <div class="select-wrapper">
+                  <select id="category" name="category" required>
+                    <option value="">Select a category...</option>
+                    <option value="Item">Item</option>
+                    <option value="Skill">Skill</option>
+                    <option value="Opportunity">Opportunity</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="label-with-action">
+                  <label for="description">Description <span class="required">*</span></label>
+                  <button type="button" id="ai-assist-btn" class="btn-ai-assist" title="Generate polished title, description, and category from your rough notes">
+                    <span class="ai-sparkle">✨</span> <span id="ai-btn-text">AI Assist</span>
+                  </button>
+                </div>
+                <textarea id="description" name="description" rows="4" placeholder="Describe what you are offering, seeking, or trading..." required></textarea>
+                <span id="ai-feedback-msg" class="ai-feedback-msg" style="display: none;"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="contact">Contact Info <span class="required">*</span></label>
+                <input type="text" id="contact" name="contact" placeholder="e.g. student@campus.edu / @discord_handle" required>
+              </div>
+
+              <button type="submit" id="submit-btn" class="btn-primary">Post Listing</button>
+            </form>
+
+            <!-- AI Suggestions Box -->
+            <div id="ai-suggestion-box" class="ai-suggestion-box" style="display: none;">
+              <div class="ai-suggestion-header">
+                <div class="ai-suggestion-badge">
+                  <span class="sparkle-icon">✨</span> AI Generated Suggestions
+                </div>
+                <button type="button" id="ai-dismiss-btn" class="ai-close-btn" aria-label="Dismiss suggestions">✕</button>
+              </div>
+              
+              <div class="ai-suggestion-content">
+                <div class="ai-preview-item">
+                  <span class="ai-preview-label">Suggested Title</span>
+                  <p id="ai-suggested-title" class="ai-preview-text ai-preview-title"></p>
+                </div>
+                
+                <div class="ai-preview-item">
+                  <span class="ai-preview-label">Suggested Category</span>
+                  <div><span id="ai-suggested-category" class="badge"></span></div>
+                </div>
+                
+                <div class="ai-preview-item">
+                  <span class="ai-preview-label">Polished Description</span>
+                  <p id="ai-suggested-description" class="ai-preview-text"></p>
+                </div>
+              </div>
+
+              <div class="ai-suggestion-actions">
+                <button type="button" id="ai-apply-btn" class="btn-ai-apply">⚡ Use This</button>
+                <button type="button" id="ai-ignore-btn" class="btn-ai-ignore">Ignore</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Trending Listings Feed Section -->
+        <div class="feed-column">
+          <section class="feed-section">
+            <div class="section-header feed-header">
+              <div>
+                <h2>🔥 Trending on Campus</h2>
+                <span class="section-hint">Live listings posted by students across your university</span>
+              </div>
+              <div class="feed-count-tag" id="listing-count-tag">6 Active Listings</div>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-box">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="search-input" class="search-input" placeholder="Search by title, subject, or description..." aria-label="Search listings by title or description">
+              <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;" aria-label="Clear search">✕</button>
+            </div>
+
+            <!-- Category Filter Bar -->
+            <div id="filter-bar" class="filter-bar" role="tablist" aria-label="Filter listings by category">
+              <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">All</button>
+              <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">Item</button>
+              <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">Skill</button>
+              <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">Opportunity</button>
+            </div>
+
+            <div id="empty-state" class="empty-state" style="display: none;">
+              <div class="empty-icon">📦</div>
+              <p id="empty-title" class="empty-title">No listings found</p>
+              <p id="empty-desc" class="empty-desc">Try clearing your search query or selecting a different category filter.</p>
+            </div>
+
+            <!-- Listings Feed (rendered dynamically by app.js) -->
+            <div id="listings-feed" class="listings-feed"></div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- How RExchange Works Section -->
+  <section id="how-it-works" class="how-it-works-section">
+    <div class="site-container">
+      <div class="section-title-wrap text-center">
+        <span class="section-eyebrow">Simple & Transparent</span>
+        <h2 class="section-heading">How RExchange Works</h2>
+        <p class="section-subtext">A frictionless 4-step loop designed specifically for university students.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-num">01</span>
+            <span class="step-tag">POST</span>
+          </div>
+          <h3 class="step-title">Post</h3>
+          <p class="step-desc">Share an item, skill or opportunity.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-num">02</span>
+            <span class="step-tag">DISCOVER</span>
+          </div>
+          <h3 class="step-title">Discover</h3>
+          <p class="step-desc">Browse your campus or ask RExchange AI.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-num">03</span>
+            <span class="step-tag">CONNECT</span>
+          </div>
+          <h3 class="step-title">Connect</h3>
+          <p class="step-desc">Message students who have what you need.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-num">04</span>
+            <span class="step-tag">EXCHANGE</span>
+          </div>
+          <h3 class="step-title">Exchange</h3>
+          <p class="step-desc">Turn unused campus value into something useful.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Banner -->
+  <section class="final-cta-section">
+    <div class="site-container">
+      <div class="cta-banner-card">
+        <div class="cta-content">
+          <span class="cta-badge">Join Your Campus Network</span>
+          <h2 class="cta-headline">Your campus has more to offer.</h2>
+          <p class="cta-desc">Discover the people, resources and opportunities already around you.</p>
+          <div class="cta-buttons">
+            <a href="#explore" class="btn-cta-explore">Explore RExchange</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modern Startup Footer -->
+  <footer class="app-footer">
+    <div class="site-container">
+      <div class="footer-top">
+        <div class="footer-brand-group">
+          <div class="footer-brand"><span class="logo-accent">RE</span><span>xchange</span></div>
+          <p class="footer-tagline">Campus community exchange platform for items, skills, and opportunities.</p>
+        </div>
+        <div class="footer-nav">
+          <a href="#explore">Explore Listings</a>
+          <a href="#post">Post a Listing</a>
+          <a href="#categories">Categories</a>
+          <a href="#pulse">Campus Pulse</a>
+          <a href="#how-it-works">How It Works</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-text">© 2026 RExchange. Built for students, by students.</p>
+        <div class="footer-sublinks">
+          <span>Student Safe Meetups</span>
+          <span>•</span>
+          <span>Zero Fees</span>
+          <span>•</span>
+          <span>Open Campus Exchange</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <script src="app.js"></script>
 </body>
