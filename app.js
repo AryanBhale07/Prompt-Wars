@@ -1861,7 +1861,13 @@ activityFilterButtons.forEach((btn) => {
 });
 
 // ==========================================================================
-// SRM Student Verification (@srmist.edu.in validation only)
+// SRM Student Sign-In & Domain Verification (@srmist.edu.in)
+// --------------------------------------------------------------------------
+// PROTOTYPE SECURITY NOTE:
+// Checking email.endsWith("@srmist.edu.in") verifies that the entered address
+// has the institutional SRM domain.
+// Production version should verify email ownership using an OTP or verification
+// link sent to the institutional email.
 // ==========================================================================
 
 function switchGateStep(activeStepElement) {
@@ -1874,8 +1880,10 @@ function switchGateStep(activeStepElement) {
 }
 
 function isValidSrmEmail(email) {
-  if (!email) return false;
+  if (!email || typeof email !== 'string') return false;
   const cleanEmail = email.trim().toLowerCase();
+  
+  // Must have local username part and end strictly with @srmist.edu.in
   const srmRegex = /^[a-zA-Z0-9._%+-]+@srmist\.edu\.in$/i;
   return srmRegex.test(cleanEmail);
 }
@@ -1937,7 +1945,7 @@ if (srmEmailForm) {
 
     if (!isValidSrmEmail(rawEmail)) {
       if (srmEmailError) {
-        srmEmailError.textContent = 'Please use your official SRM institutional email.';
+        srmEmailError.textContent = 'Please use a valid @srmist.edu.in student email.';
         srmEmailError.style.display = 'block';
       }
       srmEmailInput.focus();
@@ -1945,79 +1953,23 @@ if (srmEmailForm) {
     }
 
     if (srmEmailError) srmEmailError.style.display = 'none';
-    state.currentSrmEmail = rawEmail.toLowerCase();
-    state.profile.email = state.currentSrmEmail;
+    const cleanEmail = rawEmail.toLowerCase();
+    state.currentSrmEmail = cleanEmail;
+    state.profile.email = cleanEmail;
     saveStoredProfile();
 
     if (btnVerifyEmail) btnVerifyEmail.disabled = true;
-    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Checking Domain...';
+    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Verifying...';
 
     setTimeout(() => {
       if (btnVerifyEmail) btnVerifyEmail.disabled = false;
-      if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Verify Email';
+      if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Continue';
 
-      if (srmTargetEmail) srmTargetEmail.textContent = state.currentSrmEmail;
-      if (srmCodeInput) srmCodeInput.value = '';
-      if (srmCodeError) srmCodeError.style.display = 'none';
+      if (srmTargetEmail) srmTargetEmail.textContent = cleanEmail;
 
-      switchGateStep(gateStepCode);
-      if (srmCodeInput) srmCodeInput.focus();
-    }, 450);
-  });
-}
-
-if (btnCodeBack) {
-  btnCodeBack.addEventListener('click', () => {
-    switchGateStep(gateStepEmail);
-    if (srmEmailInput) srmEmailInput.focus();
-  });
-}
-
-if (btnAutofillCode) {
-  btnAutofillCode.addEventListener('click', () => {
-    if (srmCodeInput) {
-      srmCodeInput.value = '123456';
-      srmCodeInput.focus();
-    }
-    if (srmCodeError) srmCodeError.style.display = 'none';
-  });
-}
-
-if (btnResendCode) {
-  btnResendCode.addEventListener('click', () => {
-    showToast('📩 Demo verification code: 123456');
-    if (srmCodeInput) {
-      srmCodeInput.value = '123456';
-      srmCodeInput.focus();
-    }
-  });
-}
-
-if (srmCodeForm) {
-  srmCodeForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const rawCode = (srmCodeInput.value || '').trim();
-
-    if (!rawCode || rawCode.length < 6 || !/^\d{6}$/.test(rawCode)) {
-      if (srmCodeError) {
-        srmCodeError.textContent = 'Invalid verification code. Use demo code: 123456';
-        srmCodeError.style.display = 'block';
-      }
-      srmCodeInput.focus();
-      return;
-    }
-
-    if (srmCodeError) srmCodeError.style.display = 'none';
-
-    if (btnVerifyCode) btnVerifyCode.disabled = true;
-    if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verifying Code...';
-
-    setTimeout(() => {
-      if (btnVerifyCode) btnVerifyCode.disabled = false;
-      if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
-
+      // Transition to verified success screen
       switchGateStep(gateStepSuccess);
-    }, 450);
+    }, 280);
   });
 }
 
@@ -2059,7 +2011,7 @@ if (btnProtectionCancel) {
 function resetSRMVerification() {
   localStorage.removeItem('isSRMVerified');
   initSRMVerification();
-  showToast('🔒 SRM verification reset to demo mode.');
+  showToast('🔒 Verification reset to student sign-in.');
 }
 
 if (btnResetSrmDemo) {

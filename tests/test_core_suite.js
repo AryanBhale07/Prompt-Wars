@@ -65,16 +65,22 @@ test('SRM Verification', 'Valid SRM student email is accepted', () => {
 
 test('SRM Verification', 'Invalid and non-SRM emails are strictly rejected', () => {
   assert(!isValidSrmEmail('user@gmail.com'), 'Should reject gmail.com');
-  assert(!isValidSrmEmail('student@srmist.com'), 'Should reject .com domain');
+  assert(!isValidSrmEmail('student@outlook.com'), 'Should reject outlook.com');
+  assert(!isValidSrmEmail('student@srm.edu.in'), 'Should reject @srm.edu.in');
+  assert(!isValidSrmEmail('student@srmist.com'), 'Should reject @srmist.com');
+  assert(!isValidSrmEmail('student@srmist.ac.in'), 'Should reject @srmist.ac.in');
   assert(!isValidSrmEmail('attacker@fake-srmist.edu.in.evil.com'), 'Should reject spoofed subdomains');
   assert(!isValidSrmEmail('plainaddress'), 'Should reject missing @ and domain');
   assert(!isValidSrmEmail('@srmist.edu.in'), 'Should reject missing local user part');
   assert(!isValidSrmEmail(''), 'Should reject empty string');
+  assert(!isValidSrmEmail('   '), 'Should reject whitespace-only string');
   assert(!isValidSrmEmail(null), 'Should reject null');
+  assert(!isValidSrmEmail(undefined), 'Should reject undefined');
 });
 
 test('SRM Verification', 'Email is normalized and trimmed before validation', () => {
-  assert(isValidSrmEmail('  rahul.s@srmist.edu.in  '), 'Should accept email with leading/trailing whitespace');
+  assert(isValidSrmEmail('  abc123@srmist.edu.in  '), 'Should accept email with leading/trailing whitespace');
+  assert(isValidSrmEmail('student.name@srmist.edu.in'), 'Should accept dot username notation');
   assert(isValidSrmEmail('RAHUL.S@SRMIST.EDU.IN'), 'Should accept uppercase email case-insensitively');
 });
 

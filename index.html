@@ -68,7 +68,7 @@
         </div>
 
         <button type="button" id="btn-continue-srm" class="btn-gate-primary">
-          Verify SRM Student Access →
+          Sign in as SRM Student →
         </button>
       </div>
 
@@ -76,8 +76,8 @@
       <div id="gate-step-email" class="gate-step-block" style="display: none;">
         <button type="button" id="btn-email-back" class="btn-gate-back">← Back</button>
         
-        <h2 class="gate-step-title">Enter your SRM Email</h2>
-        <p class="gate-step-subtitle">We will send a one-time campus verification code to confirm your SRM student status.</p>
+        <h2 class="gate-step-title">Verify your SRM identity</h2>
+        <p class="gate-step-subtitle">Use your official SRM student email to access RExchange.</p>
 
         <form id="srm-email-form" class="gate-form" novalidate>
           <div class="gate-input-group">
@@ -88,80 +88,36 @@
                 type="email" 
                 id="srm-email-input" 
                 class="gate-input" 
-                placeholder="your.name@srmist.edu.in" 
+                placeholder="yourname@srmist.edu.in" 
                 autocomplete="email"
                 required
               >
             </div>
-            <span id="srm-email-error" class="gate-error-text" style="display: none;">Please use your official SRM institutional email.</span>
+            <span id="srm-email-error" class="gate-error-text" style="display: none;">Please use a valid @srmist.edu.in student email.</span>
             <span class="gate-hint-text">Must be a valid SRM student email address ending with @srmist.edu.in</span>
           </div>
 
           <button type="submit" id="btn-verify-email" class="btn-gate-primary">
-            <span id="btn-verify-email-text">Verify Email</span>
+            <span id="btn-verify-email-text">Continue</span>
           </button>
         </form>
       </div>
 
-      <!-- Step 3: Verification Code Input (Demo Simulation) -->
-      <div id="gate-step-code" class="gate-step-block" style="display: none;">
-        <button type="button" id="btn-code-back" class="btn-gate-back">← Back</button>
-
-        <h2 class="gate-step-title">Enter Verification Code</h2>
-        <p class="gate-step-subtitle">A 6-digit campus code was sent to <strong id="srm-target-email" class="text-green">student@srmist.edu.in</strong></p>
-
-        <div class="gate-demo-code-alert">
-          <div class="demo-code-info">
-            <span class="demo-pill">DEMO CODE</span>
-            <span class="demo-code-num">123456</span>
-          </div>
-          <button type="button" id="btn-autofill-code" class="btn-autofill">Autofill</button>
-        </div>
-
-        <form id="srm-code-form" class="gate-form" novalidate>
-          <div class="gate-input-group">
-            <label for="srm-code-input" class="gate-label">6-Digit Verification Code</label>
-            <div class="gate-input-wrapper">
-              <span class="gate-input-icon">🔑</span>
-              <input 
-                type="text" 
-                id="srm-code-input" 
-                class="gate-input gate-input-code" 
-                placeholder="123456" 
-                maxlength="6"
-                inputmode="numeric"
-                required
-              >
-            </div>
-            <span id="srm-code-error" class="gate-error-text" style="display: none;">Invalid verification code. Use demo code: 123456</span>
-          </div>
-
-          <button type="submit" id="btn-verify-code" class="btn-gate-primary">
-            <span id="btn-verify-code-text">Verify Code</span>
-          </button>
-        </form>
-
-        <div class="gate-resend-row">
-          <span class="gate-hint-text">Didn't receive code?</span>
-          <button type="button" id="btn-resend-code" class="btn-gate-link">Resend Demo Code</button>
-        </div>
-      </div>
-
-      <!-- Step 4: Verification Success Screen -->
+      <!-- Step 3: Verification Success Screen -->
       <div id="gate-step-success" class="gate-step-block" style="display: none;">
         <div class="gate-success-icon-wrap">
           <span class="success-check-icon">✓</span>
         </div>
         
-        <h2 class="gate-step-title">SRM Verification Complete</h2>
-        <p class="gate-step-subtitle">Welcome to the private SRM student exchange community!</p>
+        <h2 class="gate-step-title">✓ SRM Student Verified</h2>
+        <p class="gate-step-subtitle">Verified with institutional email</p>
 
         <div class="gate-verified-card">
           <div class="verified-card-top">
             <div class="verified-avatar-badge">SRM</div>
             <div class="verified-card-info">
-              <span class="verified-status-tag">✓ ACTIVE MEMBER</span>
-              <span class="verified-campus-name">SRM Institute of Science and Technology</span>
+              <span class="verified-status-tag">✓ VERIFIED SRM STUDENT</span>
+              <span class="verified-campus-name" id="srm-target-email">student@srmist.edu.in</span>
             </div>
           </div>
           <p class="verified-card-body">You now have full access to create listings, message verified classmates, save study materials, and access AI Match.</p>

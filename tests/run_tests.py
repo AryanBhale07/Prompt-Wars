@@ -44,15 +44,26 @@ def is_valid_srm_email(email):
     clean = email.strip().lower()
     return bool(re.match(r'^[a-zA-Z0-9._%+-]+@srmist\.edu\.in$', clean))
 
-# Tests A
+# Tests A: Verification Domain Matrix
+# 1. Valid Institutional Emails
+assert is_valid_srm_email("abc123@srmist.edu.in")
+assert is_valid_srm_email("student.name@srmist.edu.in")
 assert is_valid_srm_email("rahul.sharma@srmist.edu.in")
 assert is_valid_srm_email("priya_nair12@srmist.edu.in")
 assert is_valid_srm_email("  arjun.k@srmist.edu.in  ")
-assert not is_valid_srm_email("user@gmail.com")
-assert not is_valid_srm_email("student@srmist.com")
-assert not is_valid_srm_email("attacker@fake.srmist.edu.in.evil.com")
-assert not is_valid_srm_email("")
-assert not is_valid_srm_email(None)
+
+# 2. Strict Rejections
+assert not is_valid_srm_email("")                                      # Empty
+assert not is_valid_srm_email("   ")                                   # Whitespace
+assert not is_valid_srm_email(None)                                    # None
+assert not is_valid_srm_email("not-an-email")                          # Invalid format
+assert not is_valid_srm_email("@srmist.edu.in")                        # Missing username
+assert not is_valid_srm_email("student@gmail.com")                     # Gmail rejected
+assert not is_valid_srm_email("student@outlook.com")                   # Outlook rejected
+assert not is_valid_srm_email("student@srm.edu.in")                    # @srm.edu.in rejected
+assert not is_valid_srm_email("student@srmist.com")                    # @srmist.com rejected
+assert not is_valid_srm_email("student@srmist.ac.in")                  # @srmist.ac.in rejected
+assert not is_valid_srm_email("attacker@fake.srmist.edu.in.evil.com")  # Subdomain exploit
 log_pass("Unit Test [A] SRM Verification", "Verified institutional email acceptance and strict rejection of unauthorized domains.")
 
 # [B] HTML Sanitization & XSS Defense
