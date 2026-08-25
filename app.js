@@ -487,27 +487,128 @@ const DEFAULT_PROFILE = {
   year: '3rd Year',
   email: 'aryan.s@srmist.edu.in',
   bio: 'Passionate about full-stack web development, AI student tools, and UI prototyping. Active in campus hackathons and open to trading study resources!',
-  skills: ['Java', 'Python', 'UI/UX', 'Figma', 'React', 'Cybersecurity']
+  skills: ['Java', 'Python', 'UI/UX', 'Figma', 'React', 'Cybersecurity'],
+  github: '',
+  linkedin: ''
 };
 
 const STUDENT_REGISTRY = {
-  'Rahul Sharma': { initials: 'RS', grad: 'avatar-grad-blue', dept: '2nd Year CSE • Computer Science & Engineering', skills: ['DBMS', 'SQL', 'CS205', 'C++'] },
-  'Priya Nair': { initials: 'PN', grad: 'avatar-grad-purple', dept: '3rd Year CS • Computer Science', skills: ['Python', 'DSA', 'React', 'JavaScript'] },
-  'Arjun Kumar': { initials: 'AK', grad: 'avatar-grad-cyan', dept: '3rd Year CSE • Computer Science', skills: ['Hackathons', 'Frontend', 'React', 'Tailwind'] },
-  'Meera Shah': { initials: 'MS', grad: 'avatar-grad-amber', dept: '3rd Year Design • Human-Centered Design', skills: ['Figma', 'UI/UX', 'Prototypes', 'Design Systems'] },
-  'Rachel Torres': { initials: 'RT', grad: 'avatar-grad-rose', dept: '2nd Year SE • Software Engineering', skills: ['Operating Systems', 'Notes', 'C', 'Semaphores'] },
-  'Liam Patel': { initials: 'LP', grad: 'avatar-grad-amber', dept: '2nd Year IT • Information Technology', skills: ['Java', 'OOP', 'Software Architecture', 'Testing'] },
-  'Chloe Vance': { initials: 'CV', grad: 'avatar-grad-magenta', dept: '4th Year Design • Human-Centered Design', skills: ['UI/UX', 'User Research', 'Portfolios', 'Figma'] },
-  'David Kim': { initials: 'DK', grad: 'avatar-grad-violet', dept: '1st Year ECE • Electronics & Communication', skills: ['Calculus', 'Math', 'Linear Algebra', 'Physics'] },
-  'Jordan Miller': { initials: 'JM', grad: 'avatar-grad-teal', dept: '2nd Year ECE • Mathematics & Computing', skills: ['Arduino', 'Robotics', 'Circuits', 'Sensors'] },
-  'Aiden Scott': { initials: 'AS', grad: 'avatar-grad-teal', dept: '3rd Year CSE • Computer Science', skills: ['Cybersecurity', 'CTF', 'Linux', 'Networking'] },
-  'Karan Patel': { initials: 'KP', grad: 'avatar-grad-blue', dept: '2nd Year CSE • Computer Science', skills: ['Java', 'Spring Boot', 'Backend'] },
-  'Ananya Rao': { initials: 'AR', grad: 'avatar-grad-rose', dept: '3rd Year IT • Information Technology', skills: ['Web Development', 'React', 'UI/UX'] },
-  'Aryan Sharma': { initials: 'AS', grad: 'avatar-grad-emerald', dept: '3rd Year CSE • Computer Science & Engineering', skills: ['Java', 'Python', 'React', 'UI/UX'] }
+  'Rahul Sharma': {
+    initials: 'RS',
+    grad: 'avatar-grad-blue',
+    dept: '2nd Year CSE • Computer Science & Engineering',
+    skills: ['DBMS', 'SQL', 'CS205', 'C++'],
+    github: 'https://github.com/rahul-srm',
+    linkedin: 'https://www.linkedin.com/in/rahul-sharma-srm'
+  },
+  'Priya Nair': {
+    initials: 'PN',
+    grad: 'avatar-grad-purple',
+    dept: '3rd Year CS • Computer Science',
+    skills: ['Python', 'DSA', 'React', 'JavaScript'],
+    github: 'https://github.com/priya-nair-dev',
+    linkedin: 'https://www.linkedin.com/in/priya-nair-srm'
+  },
+  'Arjun Kumar': {
+    initials: 'AK',
+    grad: 'avatar-grad-cyan',
+    dept: '3rd Year CSE • Computer Science',
+    skills: ['Hackathons', 'Frontend', 'React', 'Tailwind'],
+    github: 'https://github.com/arjun-kumar-dev',
+    linkedin: 'https://www.linkedin.com/in/arjun-kumar-srm'
+  },
+  'Meera Shah': {
+    initials: 'MS',
+    grad: 'avatar-grad-amber',
+    dept: '3rd Year Design • Human-Centered Design',
+    skills: ['Figma', 'UI/UX', 'Prototypes', 'Design Systems'],
+    github: '',
+    linkedin: 'https://www.linkedin.com/in/meera-shah-design'
+  },
+  'Rachel Torres': {
+    initials: 'RT',
+    grad: 'avatar-grad-rose',
+    dept: '2nd Year SE • Software Engineering',
+    skills: ['Operating Systems', 'Notes', 'C', 'Semaphores'],
+    github: 'https://github.com/rachel-torres',
+    linkedin: ''
+  },
+  'Liam Patel': {
+    initials: 'LP',
+    grad: 'avatar-grad-amber',
+    dept: '2nd Year IT • Information Technology',
+    skills: ['Java', 'OOP', 'Software Architecture', 'Testing'],
+    github: 'https://github.com/liam-patel',
+    linkedin: 'https://www.linkedin.com/in/liam-patel-it'
+  },
+  'Chloe Vance': {
+    initials: 'CV',
+    grad: 'avatar-grad-magenta',
+    dept: '4th Year Design • Human-Centered Design',
+    skills: ['UI/UX', 'User Research', 'Portfolios', 'Figma'],
+    github: '',
+    linkedin: 'https://www.linkedin.com/in/chloe-vance-design'
+  },
+  'David Kim': {
+    initials: 'DK',
+    grad: 'avatar-grad-violet',
+    dept: '1st Year ECE • Electronics & Communication',
+    skills: ['Calculus', 'Math', 'Linear Algebra', 'Physics'],
+    github: '',
+    linkedin: ''
+  },
+  'Jordan Miller': {
+    initials: 'JM',
+    grad: 'avatar-grad-teal',
+    dept: '2nd Year ECE • Mathematics & Computing',
+    skills: ['Arduino', 'Robotics', 'Circuits', 'Sensors'],
+    github: 'https://github.com/jordan-miller-ece',
+    linkedin: ''
+  },
+  'Aiden Scott': {
+    initials: 'AS',
+    grad: 'avatar-grad-teal',
+    dept: '3rd Year CSE • Computer Science',
+    skills: ['Cybersecurity', 'CTF', 'Linux', 'Networking'],
+    github: 'https://github.com/aiden-scott-sec',
+    linkedin: ''
+  },
+  'Peter Parker': {
+    initials: 'PP',
+    grad: 'avatar-grad-blue',
+    dept: '2nd Year CSE • Web & Systems',
+    skills: ['Python', 'Web Development', 'Algorithms'],
+    github: 'https://github.com/peter-parker-srm',
+    linkedin: 'https://www.linkedin.com/in/peter-parker-srm'
+  },
+  'Tony Stark': {
+    initials: 'TS',
+    grad: 'avatar-grad-amber',
+    dept: '3rd Year ECE • Embedded Systems',
+    skills: ['Robotics', 'Hardware', 'Circuits'],
+    github: 'https://github.com/tony-stark-srm',
+    linkedin: 'https://www.linkedin.com/in/tony-stark-srm'
+  },
+  'Gwen Stacy': {
+    initials: 'GS',
+    grad: 'avatar-grad-magenta',
+    dept: '2nd Year CSE • UI/UX & Design',
+    skills: ['Figma', 'UI/UX', 'Design Systems'],
+    github: '',
+    linkedin: 'https://www.linkedin.com/in/gwen-stacy-design'
+  },
+  'Aryan Sharma': {
+    initials: 'AS',
+    grad: 'avatar-grad-emerald',
+    dept: '3rd Year CSE • Computer Science & Engineering',
+    skills: ['Java', 'Python', 'React', 'UI/UX'],
+    github: '',
+    linkedin: ''
+  }
 };
 
 function getStudentInfo(name) {
-  if (!name) return { initials: 'SR', grad: 'avatar-grad-default', dept: 'SRM Student', skills: ['Campus Exchange'] };
+  if (!name) return { initials: 'SR', grad: 'avatar-grad-default', dept: 'SRM Student', skills: ['Campus Exchange'], github: '', linkedin: '' };
   const trimmed = name.trim();
   if (STUDENT_REGISTRY[trimmed]) return STUDENT_REGISTRY[trimmed];
 
@@ -516,7 +617,7 @@ function getStudentInfo(name) {
   const grads = ['avatar-grad-blue', 'avatar-grad-purple', 'avatar-grad-cyan', 'avatar-grad-amber', 'avatar-grad-rose', 'avatar-grad-teal', 'avatar-grad-emerald'];
   const charCodeSum = trimmed.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   const grad = grads[charCodeSum % grads.length];
-  return { initials, grad, dept: 'SRM Student', skills: ['Campus Exchange'] };
+  return { initials, grad, dept: 'SRM Student', skills: ['Campus Exchange'], github: '', linkedin: '' };
 }
 
 function loadStoredSearchHistory() {
@@ -783,6 +884,12 @@ const profileVerifiedBadge = document.getElementById('profile-verified-badge');
 const btnEditProfile = document.getElementById('btn-edit-profile');
 const btnVerifyStatusBadge = document.getElementById('btn-verify-status-badge');
 
+const profileCredibilitySection = document.getElementById('profile-credibility-section');
+const credibilityGithubRow = document.getElementById('credibility-github-row');
+const credibilityGithubLink = document.getElementById('credibility-github-link');
+const credibilityLinkedinRow = document.getElementById('credibility-linkedin-row');
+const credibilityLinkedinLink = document.getElementById('credibility-linkedin-link');
+
 const profileStatListings = document.getElementById('profile-stat-listings');
 const profileStatSkills = document.getElementById('profile-stat-skills');
 const profileStatSaved = document.getElementById('profile-stat-saved');
@@ -809,6 +916,10 @@ const editProfileDept = document.getElementById('edit-profile-dept');
 const editProfileBio = document.getElementById('edit-profile-bio');
 const editProfileSkills = document.getElementById('edit-profile-skills');
 const editProfileEmail = document.getElementById('edit-profile-email');
+const editProfileGithub = document.getElementById('edit-profile-github');
+const editProfileLinkedin = document.getElementById('edit-profile-linkedin');
+const editGithubError = document.getElementById('edit-github-error');
+const editLinkedinError = document.getElementById('edit-linkedin-error');
 const btnCloseEditModal = document.getElementById('btn-close-edit-modal');
 const btnCancelEditProfile = document.getElementById('btn-cancel-edit-profile');
 
@@ -3754,6 +3865,84 @@ function getMyListings() {
   });
 }
 
+// ==========================================================================
+// 🔗 Student Credibility Links: Validation & Normalization Engine
+// ==========================================================================
+
+function validateAndNormalizeGithubUrl(input) {
+  if (!input || typeof input !== 'string') return { valid: true, url: '' };
+  let trimmed = input.trim();
+  if (!trimmed) return { valid: true, url: '' };
+
+  // Reject dangerous non-web schemes
+  if (/^(javascript|data|file|vbscript|about):/i.test(trimmed)) {
+    return { valid: false, error: 'Dangerous URL scheme rejected.' };
+  }
+
+  // Prepend https:// if protocol omitted
+  if (!/^https?:\/\//i.test(trimmed)) {
+    trimmed = 'https://' + trimmed;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { valid: false, error: 'Only HTTP and HTTPS URLs are allowed.' };
+    }
+
+    const host = parsed.hostname.toLowerCase();
+    if (host !== 'github.com' && host !== 'www.github.com') {
+      return { valid: false, error: 'Must be a valid GitHub URL (e.g. https://github.com/username).' };
+    }
+
+    const pathname = parsed.pathname.replace(/\/+$/, '');
+    if (!pathname || pathname === '/' || pathname.split('/').filter(Boolean).length === 0) {
+      return { valid: false, error: 'GitHub URL must include a profile username.' };
+    }
+
+    return { valid: true, url: `https://github.com${pathname}` };
+  } catch (e) {
+    return { valid: false, error: 'Invalid URL format.' };
+  }
+}
+
+function validateAndNormalizeLinkedinUrl(input) {
+  if (!input || typeof input !== 'string') return { valid: true, url: '' };
+  let trimmed = input.trim();
+  if (!trimmed) return { valid: true, url: '' };
+
+  // Reject dangerous non-web schemes
+  if (/^(javascript|data|file|vbscript|about):/i.test(trimmed)) {
+    return { valid: false, error: 'Dangerous URL scheme rejected.' };
+  }
+
+  // Prepend https:// if protocol omitted
+  if (!/^https?:\/\//i.test(trimmed)) {
+    trimmed = 'https://' + trimmed;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { valid: false, error: 'Only HTTP and HTTPS URLs are allowed.' };
+    }
+
+    const host = parsed.hostname.toLowerCase();
+    if (host !== 'linkedin.com' && !host.endsWith('.linkedin.com')) {
+      return { valid: false, error: 'Must be a valid LinkedIn URL (e.g. https://www.linkedin.com/in/username).' };
+    }
+
+    const pathname = parsed.pathname.replace(/\/+$/, '');
+    if (!pathname || pathname === '/' || pathname.split('/').filter(Boolean).length === 0) {
+      return { valid: false, error: 'LinkedIn URL must include a profile path.' };
+    }
+
+    return { valid: true, url: `https://www.linkedin.com${pathname}` };
+  } catch (e) {
+    return { valid: false, error: 'Invalid URL format.' };
+  }
+}
+
 function renderProfile() {
   if (!profileName) return;
 
@@ -3783,6 +3972,36 @@ function renderProfile() {
       .join('');
   }
 
+  // Student Credibility Links Rendering
+  const githubUrl = state.profile.github || '';
+  const linkedinUrl = state.profile.linkedin || '';
+
+  if (credibilityGithubRow) {
+    if (githubUrl) {
+      credibilityGithubRow.style.display = 'flex';
+      if (credibilityGithubLink) {
+        credibilityGithubLink.href = escapeHtml(githubUrl);
+        credibilityGithubLink.setAttribute('target', '_blank');
+        credibilityGithubLink.setAttribute('rel', 'noopener noreferrer');
+      }
+    } else {
+      credibilityGithubRow.style.display = 'none';
+    }
+  }
+
+  if (credibilityLinkedinRow) {
+    if (linkedinUrl) {
+      credibilityLinkedinRow.style.display = 'flex';
+      if (credibilityLinkedinLink) {
+        credibilityLinkedinLink.href = escapeHtml(linkedinUrl);
+        credibilityLinkedinLink.setAttribute('target', '_blank');
+        credibilityLinkedinLink.setAttribute('rel', 'noopener noreferrer');
+      }
+    } else {
+      credibilityLinkedinRow.style.display = 'none';
+    }
+  }
+
   renderProfileStats();
   renderProfileCompleteness();
   renderProfileActivity();
@@ -3797,9 +4016,10 @@ function renderProfileCompleteness() {
 
   let score = 55; // Base verified student profile
   const p = state.profile;
-  if (p.bio && p.bio.length > 20) score += 20;
-  if (p.skills && p.skills.length >= 3) score += 15;
-  if (getMyListings().length > 0) score += 10;
+  if (p.bio && p.bio.length > 20) score += 15;
+  if (p.skills && p.skills.length >= 3) score += 10;
+  if (p.github) score += 10;
+  if (p.linkedin) score += 10;
 
   score = Math.min(100, score);
 
@@ -3809,10 +4029,10 @@ function renderProfileCompleteness() {
   if (hint) {
     if (score === 100) {
       hint.textContent = '🌟 Your profile is 100% complete and fully verified on campus.';
+    } else if (!p.github || !p.linkedin) {
+      hint.textContent = 'Link your GitHub or LinkedIn profile to enhance campus credibility.';
     } else if (!p.skills || p.skills.length < 4) {
       hint.textContent = 'Add more skills to reach 100% profile completeness.';
-    } else if (getMyListings().length === 0) {
-      hint.textContent = 'Post a listing or offer a skill to reach 100% profile completeness.';
     } else {
       hint.textContent = 'Add a detailed campus bio to complete your verified student identity.';
     }
@@ -3935,12 +4155,17 @@ profileTabButtons.forEach((btn) => {
 // Profile Editing Modal Handlers
 if (btnEditProfile) {
   btnEditProfile.addEventListener('click', () => {
-    if (editProfileName) editProfileName.value = state.profile.name;
-    if (editProfileYear) editProfileYear.value = state.profile.year;
-    if (editProfileDept) editProfileDept.value = state.profile.department;
-    if (editProfileBio) editProfileBio.value = state.profile.bio;
+    if (editProfileName) editProfileName.value = state.profile.name || '';
+    if (editProfileYear) editProfileYear.value = state.profile.year || '';
+    if (editProfileDept) editProfileDept.value = state.profile.department || '';
+    if (editProfileBio) editProfileBio.value = state.profile.bio || '';
     if (editProfileSkills) editProfileSkills.value = (state.profile.skills || []).join(', ');
-    if (editProfileEmail) editProfileEmail.value = state.profile.email;
+    if (editProfileEmail) editProfileEmail.value = state.profile.email || '';
+    if (editProfileGithub) editProfileGithub.value = state.profile.github || '';
+    if (editProfileLinkedin) editProfileLinkedin.value = state.profile.linkedin || '';
+
+    if (editGithubError) editGithubError.style.display = 'none';
+    if (editLinkedinError) editLinkedinError.style.display = 'none';
 
     if (profileEditModal) {
       profileEditModal.style.display = 'flex';
@@ -3982,6 +4207,33 @@ if (profileEditForm) {
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
+    const rawGithub = editProfileGithub ? editProfileGithub.value.trim() : '';
+    const rawLinkedin = editProfileLinkedin ? editProfileLinkedin.value.trim() : '';
+
+    const githubCheck = validateAndNormalizeGithubUrl(rawGithub);
+    if (!githubCheck.valid) {
+      if (editGithubError) {
+        editGithubError.textContent = githubCheck.error || 'Must be a valid GitHub URL.';
+        editGithubError.style.display = 'block';
+      }
+      if (editProfileGithub) editProfileGithub.focus();
+      return;
+    } else {
+      if (editGithubError) editGithubError.style.display = 'none';
+    }
+
+    const linkedinCheck = validateAndNormalizeLinkedinUrl(rawLinkedin);
+    if (!linkedinCheck.valid) {
+      if (editLinkedinError) {
+        editLinkedinError.textContent = linkedinCheck.error || 'Must be a valid LinkedIn URL.';
+        editLinkedinError.style.display = 'block';
+      }
+      if (editProfileLinkedin) editProfileLinkedin.focus();
+      return;
+    } else {
+      if (editLinkedinError) editLinkedinError.style.display = 'none';
+    }
+
     const initials = name
       .split(' ')
       .filter(Boolean)
@@ -3997,7 +4249,9 @@ if (profileEditForm) {
       year,
       department,
       bio,
-      skills: skills.length > 0 ? skills : ['Java', 'Python', 'UI/UX', 'Figma']
+      skills: skills.length > 0 ? skills : ['Java', 'Python', 'UI/UX', 'Figma'],
+      github: githubCheck.url,
+      linkedin: linkedinCheck.url
     };
 
     saveStoredProfile();
@@ -5171,6 +5425,104 @@ function initRotatingPlaceholders() {
   placeholderIntervalId = setInterval(cyclePlaceholder, 3800);
 }
 
+// ==========================================================================
+// Student Profile Hover Card (Peer Credibility & Mini-Profile Preview)
+// ==========================================================================
+function setupStudentHoverCards() {
+  const hoverCard = document.getElementById('student-hover-card');
+  const hoverAvatar = document.getElementById('hover-avatar');
+  const hoverName = document.getElementById('hover-name');
+  const hoverDept = document.getElementById('hover-dept');
+  const hoverSkills = document.getElementById('hover-skills');
+  const hoverCredibility = document.getElementById('hover-credibility');
+  const btnHoverViewProfile = document.getElementById('btn-hover-view-profile');
+
+  if (!hoverCard) return;
+
+  let hoverTimeout = null;
+
+  function showHoverCard(targetEl, studentName) {
+    if (!studentName) return;
+    const isOwnProfile = studentName.toLowerCase() === (state.profile.name || '').toLowerCase() || studentName.toLowerCase().includes('you');
+    const info = isOwnProfile
+      ? {
+          initials: state.profile.avatar || 'AS',
+          grad: 'avatar-grad-emerald',
+          dept: `${state.profile.year} • ${state.profile.department}`,
+          skills: state.profile.skills || ['Campus Exchange'],
+          github: state.profile.github || '',
+          linkedin: state.profile.linkedin || ''
+        }
+      : getStudentInfo(studentName);
+
+    if (hoverAvatar) {
+      hoverAvatar.textContent = info.initials;
+      hoverAvatar.className = `hover-card-avatar ${info.grad || 'avatar-grad-blue'}`;
+    }
+    if (hoverName) hoverName.textContent = studentName;
+    if (hoverDept) hoverDept.textContent = info.dept;
+
+    if (hoverSkills) {
+      hoverSkills.innerHTML = (info.skills || ['Campus Exchange'])
+        .slice(0, 4)
+        .map((s) => `<span class="profile-skill-chip">${escapeHtml(s)}</span>`)
+        .join('');
+    }
+
+    if (hoverCredibility) {
+      let credHtml = `<span class="hover-cred-chip srm-chip">🎓 SRM Verified</span>`;
+      if (info.github) {
+        credHtml += `<a href="${escapeHtml(info.github)}" class="hover-cred-chip" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">💻 GitHub</a>`;
+      }
+      if (info.linkedin) {
+        credHtml += `<a href="${escapeHtml(info.linkedin)}" class="hover-cred-chip" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">💼 LinkedIn</a>`;
+      }
+      hoverCredibility.innerHTML = credHtml;
+      hoverCredibility.style.display = 'flex';
+    }
+
+    const rect = targetEl.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY + 8;
+    const left = Math.max(12, Math.min(window.innerWidth - 290, rect.left + window.scrollX - 40));
+
+    hoverCard.style.top = `${top}px`;
+    hoverCard.style.left = `${left}px`;
+    hoverCard.style.display = 'block';
+
+    if (btnHoverViewProfile) {
+      btnHoverViewProfile.onclick = (e) => {
+        e.stopPropagation();
+        hoverCard.style.display = 'none';
+        openProfileDrawer();
+      };
+    }
+  }
+
+  function hideHoverCard() {
+    hoverTimeout = setTimeout(() => {
+      if (hoverCard) hoverCard.style.display = 'none';
+    }, 280);
+  }
+
+  hoverCard.addEventListener('mouseenter', () => {
+    if (hoverTimeout) clearTimeout(hoverTimeout);
+  });
+  hoverCard.addEventListener('mouseleave', hideHoverCard);
+
+  document.querySelectorAll('.student-avatar-wrap, .card-author-name').forEach((el) => {
+    if (el.hasAttribute('data-hover-bound')) return;
+    el.setAttribute('data-hover-bound', 'true');
+
+    el.addEventListener('mouseenter', () => {
+      if (hoverTimeout) clearTimeout(hoverTimeout);
+      const studentName = el.getAttribute('data-student-name') || el.textContent.trim();
+      showHoverCard(el, studentName);
+    });
+
+    el.addEventListener('mouseleave', hideHoverCard);
+  });
+}
+
 // Global Keyboard Escape Key Handler for all Modals and Drawers
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -5179,6 +5531,7 @@ window.addEventListener('keydown', (e) => {
     if (srmProtectionModal && srmProtectionModal.style.display === 'flex') closeSRMProtectionModal();
     if (exchangeRequestModal && exchangeRequestModal.style.display === 'flex') closeExchangeRequestModal();
     if (matchDetailsModal && matchDetailsModal.style.display === 'flex') closeMatchDetailsModal();
+    if (profileEditModal && profileEditModal.style.display === 'flex') closeProfileEditModal();
     if (savedDrawer && savedDrawer.classList.contains('open')) closeSavedDrawer();
     if (inboxDrawer && inboxDrawer.classList.contains('open')) closeInboxDrawer();
     if (profileDrawer && profileDrawer.classList.contains('open')) closeProfileDrawer();
@@ -5214,6 +5567,13 @@ window.calculateDistanceKm = calculateDistanceKm;
 window.formatDistance = formatDistance;
 window.CAMPUS_LOCATIONS = CAMPUS_LOCATIONS;
 window.SRM_CAMPUS_CENTER = SRM_CAMPUS_CENTER;
+window.validateAndNormalizeGithubUrl = validateAndNormalizeGithubUrl;
+window.validateAndNormalizeLinkedinUrl = validateAndNormalizeLinkedinUrl;
+window.STUDENT_REGISTRY = STUDENT_REGISTRY;
+window.getStudentInfo = getStudentInfo;
+window.renderProfile = renderProfile;
+window.setupStudentHoverCards = setupStudentHoverCards;
 window.state = state;
+
 
 

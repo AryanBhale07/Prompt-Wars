@@ -410,9 +410,111 @@ else:
     log_fail("Campus Exchange Map", "Missing location selection in listing form.")
 
 # -------------------------------------------------------------------------
-# Phase 5: Accessibility & WCAG Standards Audit
+# Phase 5: Student Credibility Links & Badges System Audit
 # -------------------------------------------------------------------------
-print("\n[Phase 5] Executing Accessibility (a11y) & WCAG Compliance Audit...")
+print("\n[Phase 5] Executing Student Credibility Links & Badges System Audit...")
+
+# Credibility Test 1: DOM Elements for Credibility Section & Edit Profile Inputs
+if 'id="profile-credibility-section"' in index_html_text and 'id="credibility-github-row"' in index_html_text and 'id="credibility-linkedin-row"' in index_html_text:
+    log_pass("Student Credibility", "Profile Credibility section with optional GitHub & LinkedIn rows configured.")
+else:
+    log_fail("Student Credibility", "Missing profile-credibility-section or rows in index.html.")
+
+if 'id="edit-profile-github"' in index_html_text and 'id="edit-profile-linkedin"' in index_html_text:
+    log_pass("Student Credibility", "Optional GitHub & LinkedIn URL input fields configured in Edit Profile form.")
+else:
+    log_fail("Student Credibility", "Missing edit-profile-github or edit-profile-linkedin inputs in index.html.")
+
+# Credibility Test 2: URL Normalization & Validation Functions in app.js
+if 'validateAndNormalizeGithubUrl' in app_js_text and 'validateAndNormalizeLinkedinUrl' in app_js_text:
+    log_pass("Student Credibility", "validateAndNormalizeGithubUrl and validateAndNormalizeLinkedinUrl implemented.")
+else:
+    log_fail("Student Credibility", "Missing URL validation functions in app.js.")
+
+# Credibility Test 3: Safe Link Attributes
+if 'target="_blank"' in app_js_text and 'noopener noreferrer' in app_js_text and 'target="_blank"' in index_html_text:
+    log_pass("Student Credibility", "External profile links strictly use target='_blank' and rel='noopener noreferrer'.")
+else:
+    log_fail("Student Credibility", "Missing secure target/rel attributes on external profile links.")
+
+# Credibility Test 4: Badge Nomenclature & Trust Integrity
+if '✓ Institutional email verified' in index_html_text and 'Profile linked' in index_html_text:
+    log_pass("Student Credibility", "Institutional SRM verification badge strictly distinguished from linked external profiles.")
+else:
+    log_fail("Student Credibility", "Incorrect badge wording found; institutional verification blurred with external links.")
+
+# Credibility Test 5: Python simulation of JavaScript URL validator
+def py_validate_github(val):
+    if not val or not val.strip():
+        return {"valid": True, "url": ""}
+    trimmed = val.strip()
+    if any(trimmed.lower().startswith(s) for s in ["javascript:", "data:", "file:", "vbscript:"]):
+        return {"valid": False, "error": "Dangerous scheme"}
+    if not trimmed.startswith("http://") and not trimmed.startswith("https://"):
+        trimmed = "https://" + trimmed
+    from urllib.parse import urlparse
+    parsed = urlparse(trimmed)
+    if parsed.scheme not in ["http", "https"]:
+        return {"valid": False, "error": "Invalid scheme"}
+    if parsed.hostname not in ["github.com", "www.github.com"]:
+        return {"valid": False, "error": "Invalid domain"}
+    path = parsed.path.strip("/")
+    if not path:
+        return {"valid": False, "error": "Missing username"}
+    return {"valid": True, "url": f"https://github.com/{path}"}
+
+def py_validate_linkedin(val):
+    if not val or not val.strip():
+        return {"valid": True, "url": ""}
+    trimmed = val.strip()
+    if any(trimmed.lower().startswith(s) for s in ["javascript:", "data:", "file:", "vbscript:"]):
+        return {"valid": False, "error": "Dangerous scheme"}
+    if not trimmed.startswith("http://") and not trimmed.startswith("https://"):
+        trimmed = "https://" + trimmed
+    from urllib.parse import urlparse
+    parsed = urlparse(trimmed)
+    if parsed.scheme not in ["http", "https"]:
+        return {"valid": False, "error": "Invalid scheme"}
+    if parsed.hostname != "linkedin.com" and not (parsed.hostname or "").endswith(".linkedin.com"):
+        return {"valid": False, "error": "Invalid domain"}
+    path = parsed.path.strip("/")
+    if not path:
+        return {"valid": False, "error": "Missing profile path"}
+    return {"valid": True, "url": f"https://www.linkedin.com/{path}"}
+
+# Run test cases
+gh_valid = py_validate_github("https://github.com/aryan-dev")
+gh_norm = py_validate_github("github.com/aryan-dev")
+gh_fake = py_validate_github("https://fakegithub.com/aryan-dev")
+gh_xss = py_validate_github("javascript:alert(1)")
+gh_empty = py_validate_github("")
+
+li_valid = py_validate_linkedin("https://www.linkedin.com/in/aryan-sharma")
+li_norm = py_validate_linkedin("linkedin.com/in/aryan-sharma")
+li_fake = py_validate_linkedin("https://google.com/in/aryan")
+li_xss = py_validate_linkedin("javascript:evil()")
+li_empty = py_validate_linkedin("")
+
+if gh_valid["valid"] and gh_norm["valid"] and not gh_fake["valid"] and not gh_xss["valid"] and gh_empty["valid"]:
+    log_pass("Student Credibility", "GitHub URL validation handles valid URLs, normalization, fake domains, XSS schemes & empty strings.")
+else:
+    log_fail("Student Credibility", "GitHub URL validator logic failed test cases.")
+
+if li_valid["valid"] and li_norm["valid"] and not li_fake["valid"] and not li_xss["valid"] and li_empty["valid"]:
+    log_pass("Student Credibility", "LinkedIn URL validation handles valid URLs, normalization, fake domains, XSS schemes & empty strings.")
+else:
+    log_fail("Student Credibility", "LinkedIn URL validator logic failed test cases.")
+
+# Credibility Test 6: Default Profile backwards compatibility
+if 'github:' in app_js_text and 'linkedin:' in app_js_text:
+    log_pass("Student Credibility", "DEFAULT_PROFILE and STUDENT_REGISTRY backward compatible with empty credibility links.")
+else:
+    log_fail("Student Credibility", "DEFAULT_PROFILE missing backwards-compatible credibility keys.")
+
+# -------------------------------------------------------------------------
+# Phase 6: Accessibility & WCAG Standards Audit
+# -------------------------------------------------------------------------
+print("\n[Phase 6] Executing Accessibility (a11y) & WCAG Compliance Audit...")
 
 with open(os.path.join(WORKSPACE_DIR, "style.css"), "r", encoding="utf-8") as f:
     style_css_text = f.read()

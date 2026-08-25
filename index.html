@@ -1186,6 +1186,45 @@
               </div>
             </div>
 
+            <!-- Student Credibility Section -->
+            <div class="profile-credibility-section" id="profile-credibility-section">
+              <span class="profile-subhead-label">CREDIBILITY</span>
+              <div class="profile-credibility-list" id="profile-credibility-list">
+                <!-- 1. SRM Institutional Verification (Official Auth) -->
+                <div class="credibility-row">
+                  <div class="credibility-info">
+                    <div class="credibility-title-row">
+                      <span class="credibility-icon">🎓</span>
+                      <span class="credibility-name">SRM Student</span>
+                    </div>
+                    <span class="credibility-status verified">✓ Institutional email verified</span>
+                  </div>
+                </div>
+                <!-- 2. GitHub Profile Row (Only when provided) -->
+                <div class="credibility-row" id="credibility-github-row" style="display: none;">
+                  <div class="credibility-info">
+                    <div class="credibility-title-row">
+                      <span class="credibility-icon">💻</span>
+                      <span class="credibility-name">GitHub</span>
+                    </div>
+                    <span class="credibility-status linked">Profile linked</span>
+                  </div>
+                  <a href="#" id="credibility-github-link" class="btn-credibility-action" target="_blank" rel="noopener noreferrer">View GitHub ↗</a>
+                </div>
+                <!-- 3. LinkedIn Profile Row (Only when provided) -->
+                <div class="credibility-row" id="credibility-linkedin-row" style="display: none;">
+                  <div class="credibility-info">
+                    <div class="credibility-title-row">
+                      <span class="credibility-icon">💼</span>
+                      <span class="credibility-name">LinkedIn</span>
+                    </div>
+                    <span class="credibility-status linked">Profile linked</span>
+                  </div>
+                  <a href="#" id="credibility-linkedin-link" class="btn-credibility-action" target="_blank" rel="noopener noreferrer">View LinkedIn ↗</a>
+                </div>
+              </div>
+            </div>
+
             <!-- Profile Actions -->
             <div class="profile-actions-row">
               <button type="button" id="btn-edit-profile" class="btn-profile-edit">
@@ -1556,6 +1595,19 @@
           <input type="text" id="edit-profile-skills" placeholder="e.g. Java, Python, UI/UX, Figma, React, Cybersecurity">
         </div>
 
+        <div class="post-form-grid">
+          <div class="form-group">
+            <label for="edit-profile-github">GitHub Profile URL <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Optional)</span></label>
+            <input type="url" id="edit-profile-github" placeholder="https://github.com/username">
+            <span id="edit-github-error" class="error-hint" style="display:none; color:#ef4444; font-size:0.75rem; margin-top:4px;">Must be a valid GitHub URL (e.g. https://github.com/username)</span>
+          </div>
+          <div class="form-group">
+            <label for="edit-profile-linkedin">LinkedIn Profile URL <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Optional)</span></label>
+            <input type="url" id="edit-profile-linkedin" placeholder="https://www.linkedin.com/in/username">
+            <span id="edit-linkedin-error" class="error-hint" style="display:none; color:#ef4444; font-size:0.75rem; margin-top:4px;">Must be a valid LinkedIn URL (e.g. https://www.linkedin.com/in/username)</span>
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="edit-profile-email">Verified Institutional Email (Locked)</label>
           <input type="email" id="edit-profile-email" readonly disabled style="opacity: 0.6; cursor: not-allowed;">
@@ -1701,6 +1753,7 @@
         <span class="profile-skill-chip">DBMS</span>
         <span class="profile-skill-chip">SQL</span>
       </div>
+      <div class="hover-card-credibility" id="hover-credibility" style="display: none;"></div>
       <button type="button" id="btn-hover-view-profile" class="btn-hover-view-profile">View Profile →</button>
     </div>
   </div>
