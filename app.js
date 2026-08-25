@@ -770,11 +770,25 @@ const aiDismissBtn = document.getElementById('ai-dismiss-btn');
 // Toast Notification
 const toast = document.getElementById('toast');
 
-// Safe HTML String Escaper
+// ==========================================================================
+// Robust HTML Sanitization & XSS Defense
+// ==========================================================================
 function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str || '';
-  return div.innerHTML;
+  if (str === null || str === undefined) return '';
+  const s = String(str);
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function sanitizeText(str, maxLength = 2000) {
+  if (str === null || str === undefined) return '';
+  let s = String(str).trim();
+  if (s.length > maxLength) s = s.slice(0, maxLength);
+  return escapeHtml(s);
 }
 
 let toastTimer = null;
