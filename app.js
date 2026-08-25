@@ -1,4 +1,8 @@
-// 6 Realistic Demo Listings as requested
+// ==========================================================================
+// RExchange — Core Application Logic
+// ==========================================================================
+
+// Seed Data — 6 Realistic Campus Listings matching Items, Skills, Opportunities
 const INITIAL_LISTINGS = [
   {
     id: 'listing-demo-1',
@@ -6,7 +10,7 @@ const INITIAL_LISTINGS = [
     category: 'Item',
     description: 'Offering an old Database Management Systems (DBMS) 7th edition textbook in great condition. No highlights or missing pages. Willing to trade for a Python data science book or give it away for free to anyone taking CS205.',
     contact: 'alex.chen@campus.edu / Discord @alex_chen',
-    createdAt: new Date(Date.now() - 1000 * 60 * 25)
+    createdAt: new Date(Date.now() - 1000 * 60 * 25) // 25 mins ago
   },
   {
     id: 'listing-demo-2',
@@ -14,7 +18,7 @@ const INITIAL_LISTINGS = [
     category: 'Skill',
     description: 'Junior CS major offering 1-on-1 peer tutoring in Python, JavaScript, React, and Data Structures. Looking to exchange for Spanish conversational practice or beginner guitar lessons. Available in the library or online.',
     contact: 'sarah.m@campus.edu',
-    createdAt: new Date(Date.now() - 1000 * 60 * 95)
+    createdAt: new Date(Date.now() - 1000 * 60 * 95) // 1.5 hours ago
   },
   {
     id: 'listing-demo-3',
@@ -22,7 +26,7 @@ const INITIAL_LISTINGS = [
     category: 'Item',
     description: 'Complete Arduino Uno starter kit with breadboard, jumper wires, LED pack, and ultrasonic sensors. Used for one robotics lab, in perfect working order. Open to trading for Raspberry Pi accessories.',
     contact: 'david.k@campus.edu',
-    createdAt: new Date(Date.now() - 1000 * 60 * 180)
+    createdAt: new Date(Date.now() - 1000 * 60 * 180) // 3 hours ago
   },
   {
     id: 'listing-demo-4',
@@ -30,7 +34,7 @@ const INITIAL_LISTINGS = [
     category: 'Opportunity',
     description: 'Our 3-person team (2 backend engineers + 1 product designer) is looking for a frontend developer familiar with React/Tailwind for the upcoming 36-hour campus hackathon. Goal is building an AI student study tool!',
     contact: 'marcus.dev@campus.edu / @marcus_hacks',
-    createdAt: new Date(Date.now() - 1000 * 60 * 360)
+    createdAt: new Date(Date.now() - 1000 * 60 * 360) // 6 hours ago
   },
   {
     id: 'listing-demo-5',
@@ -38,7 +42,7 @@ const INITIAL_LISTINGS = [
     category: 'Item',
     description: 'Comprehensive handwritten & typed study notes covering OS processes, threads, virtual memory, scheduling algorithms, and file systems. Free to good home or exchange for Algorithms study materials.',
     contact: 'rachel.t@campus.edu',
-    createdAt: new Date(Date.now() - 1000 * 60 * 720)
+    createdAt: new Date(Date.now() - 1000 * 60 * 720) // 12 hours ago
   },
   {
     id: 'listing-demo-6',
@@ -46,11 +50,11 @@ const INITIAL_LISTINGS = [
     category: 'Skill',
     description: 'Senior design student offering 1-on-1 mentorship in Figma, wireframing, interactive prototyping, and design systems. Willing to trade for frontend web development help or calculus tutoring.',
     contact: 'chloe.design@campus.edu',
-    createdAt: new Date(Date.now() - 1000 * 60 * 1440)
+    createdAt: new Date(Date.now() - 1000 * 60 * 1440) // 1 day ago
   }
 ];
 
-// State to store listings, active filter, search query, and AI suggestion
+// App State
 const state = {
   listings: [...INITIAL_LISTINGS],
   activeFilter: 'All',
@@ -137,7 +141,7 @@ function getBadgeClass(category) {
   }
 }
 
-// Update category count indicators
+// Update category count badges
 function updateCategoryCounts() {
   const itemsCount = state.listings.filter((l) => l.category === 'Item').length;
   const skillsCount = state.listings.filter((l) => l.category === 'Skill').length;
@@ -174,7 +178,7 @@ function renderListings() {
     return matchesCategory && matchesSearch;
   });
 
-  // Update listing count indicators
+  // Update listing count indicator
   if (listingCountTag) {
     listingCountTag.textContent = `${filteredListings.length} Active Listing${filteredListings.length === 1 ? '' : 's'}`;
   }
@@ -359,7 +363,6 @@ function animatePulseCounters() {
     function updateCounter(currentTime) {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
       const easeOut = 1 - Math.pow(1 - progress, 3);
       const currentVal = Math.floor(easeOut * target);
 
@@ -376,7 +379,6 @@ function animatePulseCounters() {
   });
 }
 
-// Observe when Campus Pulse section enters the viewport
 const pulseSection = document.getElementById('pulse');
 if (pulseSection && 'IntersectionObserver' in window) {
   let counterAnimated = false;
@@ -393,7 +395,6 @@ if (pulseSection && 'IntersectionObserver' in window) {
   );
   observer.observe(pulseSection);
 } else {
-  // Fallback if IntersectionObserver is not supported
   animatePulseCounters();
 }
 
@@ -429,26 +430,10 @@ function generateFallbackAiSuggestion(roughText) {
     { name: 'OOP / Java', regex: /\boop\b|object oriented/i },
     { name: 'Calculus', regex: /\bcalculus\b|\bcalc\b/i },
     { name: 'Linear Algebra', regex: /\blinear algebra\b/i },
-    { name: 'Organic Chemistry', regex: /\borganic chem(istry)?\b|\borgo\b/i },
-    { name: 'Chemistry', regex: /\bchem(istry)?\b/i },
-    { name: 'Physics', regex: /\bphysics\b/i },
-    { name: 'Biology', regex: /\bbiology\b|\bbio\b/i },
-    { name: 'Economics', regex: /\becon(omics)?\b/i },
-    { name: 'Psychology', regex: /\bpsych(ology)?\b/i },
     { name: 'Python', regex: /\bpython\b/i },
     { name: 'Figma / UI/UX', regex: /\bfigma\b|ui\/ux|ui design/i },
     { name: 'JavaScript / Web Dev', regex: /\bjavascript\b|\bjs\b|\bweb dev\b|\breact\b/i },
-    { name: 'Machine Learning / AI', regex: /\bmachine learning\b|\bml\b|\bai\b/i },
-    { name: 'Guitar', regex: /\bguitar\b/i },
-    { name: 'Piano', regex: /\bpiano\b/i },
-    { name: 'TI-84 Graphing Calculator', regex: /\bti-?84\b|\bgraphing calculator\b/i },
-    { name: 'Mini Fridge', regex: /\b(mini )?fridge\b|\brefrigerator\b/i },
-    { name: 'Bicycle', regex: /\b(road |mountain )?bike\b|\bbicycle\b/i },
-    { name: 'Computer Monitor', regex: /\bmonitor\b|\bdisplay\b/i },
-    { name: 'MacBook / Laptop', regex: /\bmacbook\b|\blaptop\b/i },
-    { name: 'iPad / Tablet', regex: /\bipad\b|\btablet\b/i },
-    { name: 'Dorm Furniture', regex: /\b(desk|chair|lamp|fan|mattress|bed frame|mirror|furniture)\b/i },
-    { name: 'Campus Event Ticket', regex: /\b(homecoming|concert|football|event) tickets?\b/i }
+    { name: 'TI-84 Graphing Calculator', regex: /\bti-?84\b|\bgraphing calculator\b/i }
   ];
 
   let detectedSubject = null;
@@ -459,92 +444,37 @@ function generateFallbackAiSuggestion(roughText) {
     }
   }
 
-  // Extract Trade Target if any (e.g. "trade for a Python book")
   const tradeMatch = textLower.match(/\btrade (?:it )?(?:for|with) (?:a |an )?([^,.\n]+?)(?=\s+(?:or|and|for free|give|to)\b|[.,;]|$)/i);
   let tradeTarget = tradeMatch ? tradeMatch[1].trim() : null;
-  if (tradeTarget && tradeTarget.length > 30) {
-    tradeTarget = tradeTarget.substring(0, 30).trim();
-  }
 
   const isGiveaway = /\b(give (it )?away|giving away|free|free to good home|don't need)\b/i.test(textLower);
-  const isSale = /\b(selling|for sale|\$\d+)\b/i.test(textLower);
 
   let title = '';
   let description = '';
 
   if (category === 'Item') {
-    const itemNoun = /\btextbook\b/i.test(textLower) ? 'Textbook' : (/\bbook\b/i.test(textLower) ? 'Book' : (/\bnotes\b/i.test(textLower) ? 'Notes' : (/\bcalculator\b/i.test(textLower) ? 'Calculator' : (/\bkit\b/i.test(textLower) ? 'Kit' : null))));
-
-    let baseTitle = 'Campus Item';
-    if (detectedSubject) {
-      if (itemNoun && !detectedSubject.toLowerCase().includes(itemNoun.toLowerCase())) {
-        baseTitle = `${detectedSubject} ${itemNoun}`;
-      } else {
-        baseTitle = detectedSubject;
-      }
-    } else if (itemNoun) {
-      baseTitle = `Course ${itemNoun}`;
-    } else {
-      const stopWords = /^(i|have|an?|the|my|don't|need|it|some|giving|give|away|for|free|selling|sell|want|to|trade|looking|old|used)$/i;
-      const words = textClean.split(/\s+/).filter(w => !stopWords.test(w.replace(/[.,;:!?]/g, '')));
-      baseTitle = words.slice(0, 3).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Campus Item';
-    }
-
+    const baseTitle = detectedSubject || 'Campus Item';
     if (tradeTarget && isGiveaway) {
-      const formattedTarget = tradeTarget.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      title = `${baseTitle} (Trade for ${formattedTarget} or Giveaway)`;
+      title = `${baseTitle} (Trade for ${tradeTarget} or Giveaway)`;
     } else if (tradeTarget) {
-      const formattedTarget = tradeTarget.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      title = `${baseTitle} (Trade for ${formattedTarget})`;
+      title = `${baseTitle} (Trade for ${tradeTarget})`;
     } else if (isGiveaway) {
       title = `${baseTitle} (Free Giveaway)`;
-    } else if (isSale) {
-      title = `${baseTitle} (For Sale / Trade)`;
     } else {
       title = `${baseTitle} for Exchange`;
     }
-
-    if (isGiveaway && tradeTarget) {
-      description = `Offering this ${baseTitle.toLowerCase()} in good condition. Willing to trade for a ${tradeTarget} or give it away for free to any student who needs it. Open for quick on-campus pickup or exchange.`;
-    } else if (isGiveaway) {
-      description = `Giving away ${baseTitle.toLowerCase()} for free to any student who needs it. In good condition. Please reach out for on-campus pickup.`;
-    } else if (tradeTarget) {
-      description = `Available for exchange: ${baseTitle}. Looking to trade for ${tradeTarget} or comparable course materials. Contact for on-campus meetup.`;
-    } else {
-      description = `${baseTitle} available for campus trade or exchange. ${textClean} Reach out if interested!`;
-    }
+    description = `Offering this ${baseTitle.toLowerCase()} in good condition. ${textClean} Open for quick on-campus pickup or exchange.`;
   } else if (category === 'Skill') {
     const subj = detectedSubject || 'Peer';
-    if (tradeTarget) {
-      const formattedTarget = tradeTarget.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      title = `${subj} Tutoring & Coaching (Trade for ${formattedTarget})`;
-      description = `Offering peer tutoring and collaborative study sessions in ${subj}. Open to trading for ${tradeTarget} or other skills. Flexible scheduling on campus or online.`;
-    } else {
-      title = `${subj} Tutoring & Skill Sharing`;
-      description = `Offering 1-on-1 peer tutoring and guidance in ${subj}. Happy to exchange for help in other subjects or campus resources. Reach out to connect!`;
-    }
-  } else { // Opportunity
+    title = `${subj} Tutoring & Skill Sharing`;
+    description = `Offering 1-on-1 peer tutoring and guidance in ${subj}. ${textClean} Reach out to connect!`;
+  } else {
     const subj = detectedSubject || 'Campus Project';
-    const roleMatch = textLower.match(/\b(developer|dev|designer|frontend|backend|engineer|roommate|co-founder)\b/i);
-    const role = roleMatch ? roleMatch[1].charAt(0).toUpperCase() + roleMatch[1].slice(1) : 'Teammates';
-
-    if (/hackathon/i.test(textLower)) {
-      title = `Hackathon Team: ${role} Needed (${subj})`;
-    } else if (/startup|project/i.test(textLower)) {
-      title = `${subj} Project — Seeking ${role}`;
-    } else {
-      title = `${subj} Opportunity: Looking for ${role}`;
-    }
-
+    title = `${subj} Collaboration Opportunity`;
     description = `Looking for motivated student collaborators to team up on ${subj}. ${textClean} Reach out if you'd like to collaborate and build together!`;
   }
 
-  return {
-    title,
-    category,
-    description,
-    source: 'smart_fallback'
-  };
+  return { title, category, description, source: 'smart_fallback' };
 }
 
 // Display AI Suggestions card
@@ -560,19 +490,17 @@ function displayAiSuggestions(suggestion) {
   aiSuggestionBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// Hide AI Suggestions card
 function hideAiSuggestions() {
   aiSuggestionBox.style.display = 'none';
   state.currentAiSuggestion = null;
 }
 
-// Handle AI Assist button click
 if (aiAssistBtn) {
   aiAssistBtn.addEventListener('click', async () => {
     const rawDescription = descriptionInput.value.trim();
 
     if (!rawDescription) {
-      aiFeedbackMsg.textContent = '💡 Please type a rough description first (e.g., "selling my calc 2 book for 20 or trade for notes")';
+      aiFeedbackMsg.textContent = '💡 Please type a rough description first (e.g. "trading my DBMS book for python notes")';
       aiFeedbackMsg.style.display = 'block';
       descriptionInput.focus();
       return;
@@ -606,7 +534,6 @@ if (aiAssistBtn) {
   });
 }
 
-// Apply AI suggestions to form inputs
 if (aiApplyBtn) {
   aiApplyBtn.addEventListener('click', () => {
     if (!state.currentAiSuggestion) return;
@@ -617,7 +544,6 @@ if (aiApplyBtn) {
     categorySelect.value = category;
     descriptionInput.value = description;
 
-    // Trigger visual pulse animation on auto-filled inputs
     [titleInput, categorySelect, descriptionInput].forEach((el) => {
       el.classList.remove('field-flash');
       void el.offsetWidth;
@@ -629,16 +555,10 @@ if (aiApplyBtn) {
   });
 }
 
-// Dismiss / Ignore AI suggestions
-if (aiIgnoreBtn) {
-  aiIgnoreBtn.addEventListener('click', hideAiSuggestions);
-}
+if (aiIgnoreBtn) aiIgnoreBtn.addEventListener('click', hideAiSuggestions);
+if (aiDismissBtn) aiDismissBtn.addEventListener('click', hideAiSuggestions);
 
-if (aiDismissBtn) {
-  aiDismissBtn.addEventListener('click', hideAiSuggestions);
-}
-
-// Handle form submission
+// Form Validation & Submission
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -647,7 +567,6 @@ form.addEventListener('submit', (e) => {
   const description = descriptionInput.value.trim();
   const contact = contactInput.value.trim();
 
-  // Validate fields
   const error = validateForm(title, category, description, contact);
   if (error) {
     errorMessage.textContent = error;
@@ -656,11 +575,9 @@ form.addEventListener('submit', (e) => {
     return;
   }
 
-  // Clear any existing error message
   errorMessage.textContent = '';
   errorMessage.style.display = 'none';
 
-  // Create new listing object
   const newListing = {
     id: `listing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     title,
@@ -670,28 +587,22 @@ form.addEventListener('submit', (e) => {
     createdAt: new Date()
   };
 
-  // Add listing to the beginning of the list (newest first)
   state.listings.unshift(newListing);
 
-  // If the active filter would hide the new listing, reset filter to 'All'
   if (state.activeFilter !== 'All' && state.activeFilter !== category) {
     setActiveFilter('All');
   } else {
     renderListings();
   }
 
-  // Hide AI suggestions if open
   hideAiSuggestions();
-
-  // Reset form
   form.reset();
 
-  // Scroll smoothly to feed to show the newly posted listing
   const feedSection = document.getElementById('explore');
   if (feedSection) {
     feedSection.scrollIntoView({ behavior: 'smooth' });
   }
 });
 
-// Initial render
+// Initial Render
 renderListings();

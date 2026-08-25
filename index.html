@@ -32,6 +32,8 @@
   <!-- Hero Section -->
   <header class="hero-section">
     <div class="hero-container">
+      
+      <!-- Left Hero Column -->
       <div class="hero-content">
         <div class="hero-badge">
           <span class="pulse-dot"></span>
@@ -53,7 +55,7 @@
           <a href="#post" class="btn-hero-secondary">+ Post Something</a>
         </div>
 
-        <!-- Large AI-Powered Search Bar -->
+        <!-- Real AI-Powered Search Component -->
         <div class="hero-search-wrapper">
           <div class="hero-search-box">
             <span class="hero-search-sparkle">✨</span>
@@ -70,29 +72,38 @@
         </div>
       </div>
 
-      <!-- Connected Campus Ecosystem Illustration (Pure CSS / SVG / HTML) -->
+      <!-- Right Hero Column: Connected Campus Visual (Small Floating Cards) -->
       <div class="hero-visual" aria-hidden="true">
         <div class="ecosystem-container">
-          <!-- Animated SVG Connection Lines -->
-          <svg class="connection-svg" viewBox="0 0 460 420" fill="none">
-            <path class="conn-line conn-line-1" d="M120,70 Q230,120 340,90" />
-            <path class="conn-line conn-line-2" d="M120,70 Q160,210 130,280" />
-            <path class="conn-line conn-line-3" d="M340,90 Q310,210 330,290" />
-            <path class="conn-line conn-line-4" d="M130,280 Q230,240 330,290" />
-            <path class="conn-line conn-line-5" d="M230,160 Q230,250 230,350" />
-            <path class="conn-line conn-line-6" d="M120,70 Q230,160 330,290" />
+          <!-- Subtle Animated SVG Connection Lines -->
+          <svg class="connection-svg" viewBox="0 0 420 340" fill="none">
+            <path class="conn-line conn-line-1" d="M190,50 Q110,130 90,140" />
+            <path class="conn-line conn-line-2" d="M230,50 Q310,120 320,140" />
+            <path class="conn-line conn-line-3" d="M90,160 Q170,220 180,230" />
+            <path class="conn-line conn-line-4" d="M320,160 Q260,220 220,230" />
+            <path class="conn-line conn-line-5" d="M180,250 Q250,290 290,300" />
             <!-- Pulse Nodes -->
-            <circle class="pulse-node" cx="230" cy="180" r="4" />
-            <circle class="pulse-node" cx="190" cy="120" r="3" />
-            <circle class="pulse-node" cx="280" cy="240" r="3" />
+            <circle class="pulse-node" cx="210" cy="50" r="3" />
+            <circle class="pulse-node" cx="90" cy="140" r="3" />
+            <circle class="pulse-node" cx="320" cy="140" r="3" />
+            <circle class="pulse-node" cx="200" cy="230" r="3" />
+            <circle class="pulse-node" cx="290" cy="300" r="3" />
           </svg>
 
-          <!-- Floating Ecosystem Node Cards representing Books, Skills, Events, Opportunities, Students -->
+          <!-- Floating Node Cards -->
           <div class="eco-card eco-card-books">
             <div class="eco-icon-wrap icon-item">📚</div>
             <div class="eco-info">
               <span class="eco-title">Textbooks</span>
-              <span class="eco-tag">DBMS, Calc, OS Notes</span>
+              <span class="eco-tag">DBMS, Calc & Notes</span>
+            </div>
+          </div>
+
+          <div class="eco-card eco-card-skills">
+            <div class="eco-icon-wrap icon-skill">🧠</div>
+            <div class="eco-info">
+              <span class="eco-title">Skills</span>
+              <span class="eco-tag">Python, React, Figma</span>
             </div>
           </div>
 
@@ -101,14 +112,6 @@
             <div class="eco-info">
               <span class="eco-title">Students</span>
               <span class="eco-tag tag-green">31 Active Matches</span>
-            </div>
-          </div>
-
-          <div class="eco-card eco-card-skills">
-            <div class="eco-icon-wrap icon-skill">💻</div>
-            <div class="eco-info">
-              <span class="eco-title">Skills</span>
-              <span class="eco-tag">Python, React, Figma</span>
             </div>
           </div>
 
@@ -129,6 +132,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </header>
 
@@ -333,12 +337,9 @@
               <div class="feed-count-tag" id="listing-count-tag">6 Active Listings</div>
             </div>
 
-            <!-- Search Box -->
+            <!-- Search Box (Strictly bounded icon) -->
             <div class="search-box">
-              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
+              <span class="search-icon-text">🔍</span>
               <input type="text" id="search-input" class="search-input" placeholder="Search by title, subject, or description..." aria-label="Search listings by title or description">
               <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;" aria-label="Clear search">✕</button>
             </div>
