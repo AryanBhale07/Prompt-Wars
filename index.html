@@ -180,19 +180,17 @@
        ========================================================================= -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="#" class="brand-logo">
+      <a href="javascript:void(0)" class="brand-logo" id="brand-logo-btn" title="RExchange Home">
         <span class="logo-accent">RE</span><span>xchange</span>
       </a>
       <div class="nav-links">
-        <a href="#explore" class="nav-link active">Explore</a>
-        <a href="#ai-match" class="nav-link" id="nav-ai-match-link"><span style="color:var(--accent-green);">✨</span> AI Match</a>
-        <a href="javascript:void(0)" class="nav-link" id="nav-saved-link">Saved <span id="saved-count-badge" class="saved-nav-badge" style="display: none;">0</span></a>
-        <a href="javascript:void(0)" class="nav-link" id="nav-inbox-link">Inbox <span id="inbox-unread-badge" class="inbox-nav-badge" style="display: none;">2</span></a>
-        <a href="javascript:void(0)" class="nav-link" id="nav-profile-link">Profile</a>
-        <a href="#activity" class="nav-link" id="nav-activity-link">Activity</a>
-        <a href="#categories" class="nav-link">Categories</a>
-        <a href="#pulse" class="nav-link">Campus Pulse</a>
-        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="javascript:void(0)" class="nav-link active" id="nav-home-link" data-view="home">Home</a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-explore-link" data-view="explore">Explore</a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-ai-match-link" data-view="ai-match"><span style="color:var(--accent-green);">✨</span> AI Match</a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-post-link" data-action="post">Post</a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-inbox-link" data-action="inbox">Inbox <span id="inbox-unread-badge" class="inbox-nav-badge" style="display: none;">2</span></a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-saved-link" data-action="saved">Saved <span id="saved-count-badge" class="saved-nav-badge" style="display: none;">0</span></a>
+        <a href="javascript:void(0)" class="nav-link" id="nav-profile-link" data-action="profile">Profile</a>
       </div>
       <div class="nav-actions">
         <!-- Notification Bell & Floating Dropdown -->
@@ -217,7 +215,7 @@
             </div>
 
             <div class="notif-dropdown-footer">
-              <a href="#activity" id="btn-view-all-notifs" class="btn-notif-view-all">View all activity →</a>
+              <a href="javascript:void(0)" id="btn-view-all-notifs" class="btn-notif-view-all">View all activity →</a>
             </div>
           </div>
         </div>
@@ -235,565 +233,591 @@
   </nav>
 
   <!-- =========================================================================
-       Homepage Hero Section
+       MAIN APPLICATION VIEWS (Single-Page View Switching)
        ========================================================================= -->
-  <header class="hero-section">
-    <div class="hero-container">
+  <main id="app-main-views">
+
+    <!-- =======================================================================
+         VIEW 1: HOME VIEW
+         ======================================================================= -->
+    <div id="view-home" class="app-view active-view">
       
-      <!-- Left Hero Column -->
-      <div class="hero-content">
-        <div class="hero-eyebrow">
-          <span class="pulse-dot"></span>
-          <span>SRM CAMPUS PEER NETWORK</span>
-        </div>
-
-        <h1 class="hero-title">
-          Exchange Value.<br>
-          <span class="hero-title-highlight">Empower Campus.</span>
-        </h1>
-
-        <p class="hero-subtitle">
-          Everything your campus has. Everything your campus needs. The private peer-to-peer exchange for verified SRM students to trade textbooks, share skills, and discover student opportunities.
-        </p>
-
-        <!-- Futuristic AI Search Bar -->
-        <div class="hero-ai-search-box">
-          <div class="ai-input-wrapper">
-            <span class="ai-sparkle-icon">✨</span>
-            <input 
-              type="text" 
-              id="hero-ai-search" 
-              class="hero-ai-input" 
-              placeholder="What do you need? e.g., Python tutor, DBMS book, Arduino kit"
-              aria-label="Search campus exchange with AI"
-            >
-            <button type="button" id="hero-search-btn" class="hero-search-btn" aria-label="Run search">
-              <span>Find Matches</span>
-              <span class="btn-arrow">→</span>
-            </button>
-          </div>
-
-          <!-- Suggested Prompt Chips -->
-          <div class="prompt-chips-row">
-            <span class="prompt-label">Try:</span>
-            <button type="button" class="prompt-chip" data-query="Python tutor">🐍 Python tutor</button>
-            <button type="button" class="prompt-chip" data-query="DBMS textbook">📖 DBMS book</button>
-            <button type="button" class="prompt-chip" data-query="Hackathon teammate">🚀 Hackathon team</button>
-            <button type="button" class="prompt-chip" data-query="Arduino kit">⚡ Arduino kit</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right Hero Column: Live Campus Card -->
-      <div class="hero-visual-card">
-        <div class="feature-metric-card">
-          <div class="metric-top-row">
-            <span class="live-indicator-pill">
-              <span class="live-dot"></span> 100% VERIFIED CAMPUS
-            </span>
-            <span class="metric-stat-mono">SRMIST.EDU.IN</span>
-          </div>
-
-          <div class="hero-card-core">
-            <div class="hero-big-number">12</div>
-            <div class="hero-big-label">Active Campus Exchanges Available Today</div>
-          </div>
-
-          <div class="mini-activity-stream">
-            <div class="activity-row">
-              <span class="act-icon">📖</span>
-              <span class="act-text">Rahul listed <strong>DBMS 7th Ed Textbook</strong></span>
-              <span class="act-time">25m ago</span>
-            </div>
-            <div class="activity-row">
-              <span class="act-icon">🐍</span>
-              <span class="act-text">Priya offered <strong>Python 1-on-1 Tutoring</strong></span>
-              <span class="act-time">45m ago</span>
-            </div>
-            <div class="activity-row">
-              <span class="act-icon">🚀</span>
-              <span class="act-text">Arjun posted <strong>Hackathon Frontend Collab</strong></span>
-              <span class="act-time">30m ago</span>
-            </div>
-          </div>
-
-          <div class="hero-card-footer">
-            <a href="#explore" class="hero-footer-link">Explore all listings →</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </header>
-
-  <!-- =========================================================================
-       Categories Section (Items, Skills, Opportunities)
-       ========================================================================= -->
-  <section id="categories" class="categories-section reveal-on-scroll">
-    <div class="site-container">
-      <div class="section-header">
-        <div class="section-header-badge">CAMPUS PILLARS</div>
-        <h2>Everything You Need, Directly From Classmates</h2>
-        <span class="section-hint">Click any category to filter campus listings instantly</span>
-      </div>
-
-      <div class="feature-categories-grid">
-        <!-- Card 1: Items -->
-        <div class="feature-cat-card" data-category="Item" role="button" tabindex="0">
-          <div class="cat-card-header">
-            <div class="cat-icon-badge">
-              <span class="cat-emoji">📦</span>
-            </div>
-            <span class="cat-count-badge" id="count-items">4 Listings</span>
-          </div>
-          <h3 class="cat-card-title">Physical Items</h3>
-          <p class="cat-card-desc">Course textbooks, handwritten exam notes, calculators, lab hardware, electronics, and dorm essentials.</p>
-          <div class="cat-card-action">
-            <span>Browse Items</span>
-            <span class="arrow-icon">→</span>
-          </div>
-        </div>
-
-        <!-- Card 2: Skills -->
-        <div class="feature-cat-card" data-category="Skill" role="button" tabindex="0">
-          <div class="cat-card-header">
-            <div class="cat-icon-badge">
-              <span class="cat-emoji">🧠</span>
-            </div>
-            <span class="cat-count-badge" id="count-skills">4 Listings</span>
-          </div>
-          <h3 class="cat-card-title">Skills & Tutoring</h3>
-          <p class="cat-card-desc">Peer tutoring in Python, Java, DSA, UI/UX design reviews, Figma prototyping, and academic mentoring.</p>
-          <div class="cat-card-action">
-            <span>Browse Skills</span>
-            <span class="arrow-icon">→</span>
-          </div>
-        </div>
-
-        <!-- Card 3: Opportunities -->
-        <div class="feature-cat-card" data-category="Opportunity" role="button" tabindex="0">
-          <div class="cat-card-header">
-            <div class="cat-icon-badge">
-              <span class="cat-emoji">🚀</span>
-            </div>
-            <span class="cat-count-badge" id="count-opportunities">4 Listings</span>
-          </div>
-          <h3 class="cat-card-title">Projects & Events</h3>
-          <p class="cat-card-desc">Discover hackathon teammates, startup collaborators, workshops, and campus event opportunities.</p>
-          <div class="cat-card-action">
-            <span>Browse Opportunities</span>
-            <span class="arrow-icon">→</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       Smart User Recommendations (Students You May Want to Connect With)
-       ========================================================================= -->
-  <section id="student-recommendations-section" class="student-rec-section reveal-on-scroll">
-    <div class="site-container">
-      <div class="student-rec-header">
-        <div class="student-rec-title-group">
-          <span class="section-eyebrow">CAMPUS NETWORK</span>
-          <h3 class="student-rec-title">Students you may want to connect with</h3>
-        </div>
-        <span class="rec-badge-mono">PEER MATCHES</span>
-      </div>
-
-      <div class="student-rec-cards-stream" id="student-rec-stream">
-        <!-- Populated dynamically by JS -->
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       Explore Directory Section
-       ========================================================================= -->
-  <section id="explore" class="explore-section reveal-on-scroll">
-    <div class="site-container">
-      
-      <!-- Page Header -->
-      <div class="explore-header">
-        <span class="section-eyebrow">CAMPUS DIRECTORY</span>
-        <h2 class="explore-title">Discover your campus</h2>
-        <p class="explore-subtitle">Find useful things, talented people and opportunities shared by students.</p>
-      </div>
-
-      <!-- Search Bar + AI Assist Button -->
-      <div class="explore-search-wrapper">
-        <div class="explore-search-box">
-          <span class="search-icon-text">🔍</span>
-          <input type="text" id="search-input" class="explore-search-input" placeholder="Search items, skills and opportunities..." aria-label="Search items, skills and opportunities">
-          <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;" aria-label="Clear search">✕</button>
-          <button type="button" id="explore-ai-btn" class="btn-explore-ai" title="AI Search Assistant">
-            <span class="ai-sparkle">✨</span> Ask RExchange AI
-          </button>
-        </div>
-      </div>
-
-      <!-- Category Filter Bar (ALL, ITEMS, SKILLS, OPPORTUNITIES) -->
-      <div class="explore-filters-container">
-        <div class="category-filters-row" id="filter-bar" role="tablist" aria-label="Filter listings by category">
-          <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">ALL</button>
-          <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">ITEMS</button>
-          <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">SKILLS</button>
-          <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">OPPORTUNITIES</button>
-        </div>
-
-        <!-- Secondary Filters (Newest, Most Relevant, Free, Available) -->
-        <div class="secondary-filters-row">
-          <div class="sec-filters-left">
-            <span class="sec-filter-label">Sort:</span>
-            <button type="button" class="sec-filter-btn active" data-sort="newest">Newest</button>
-            <button type="button" class="sec-filter-btn" data-sort="relevant">Most Relevant</button>
-            <span class="sec-filter-divider">|</span>
-            <span class="sec-filter-label">Filter:</span>
-            <button type="button" class="sec-filter-btn" data-filter-type="free">Free</button>
-            <button type="button" class="sec-filter-btn" data-filter-type="available">Available</button>
-          </div>
-          <div class="feed-count-tag" id="listing-count-tag">12 Listings</div>
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div id="empty-state" class="empty-state" style="display: none;">
-        <div class="empty-icon">📦</div>
-        <h3 id="empty-title" class="empty-title">No matches found</h3>
-        <p id="empty-desc" class="empty-desc">Try searching for textbooks, tutoring, events or opportunities.</p>
-        <button type="button" id="clear-search-btn" class="btn-clear-search">Clear Search</button>
-      </div>
-
-      <!-- Responsive Listing Grid (3 col desktop, 2 col tablet, 1 col mobile) -->
-      <div id="listings-feed" class="listings-grid"></div>
-
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       AI Match Center Section (Inline Interactive Neural Search)
-       ========================================================================= -->
-  <section id="ai-match" class="ai-match-section reveal-on-scroll">
-    <div class="site-container">
-      
-      <!-- Page Header -->
-      <div class="ai-match-header">
-        <div class="ai-match-header-badge">
-          <span class="ai-sparkle-glow">✨</span>
-          <span>REXCHANGE AI INTELLIGENCE</span>
-        </div>
-        <h2 class="ai-match-title">Find what you need.</h2>
-        <p class="ai-match-subtitle">Tell RExchange what you're looking for and we'll find the most relevant things, skills and opportunities on your campus.</p>
-      </div>
-
-      <!-- Large Futuristic AI Search Box -->
-      <div class="ai-search-card">
-        <form id="ai-match-form" class="ai-search-form" novalidate>
-          <div class="ai-search-input-wrapper">
-            <span class="ai-search-leading-icon">✨</span>
-            <input 
-              type="text" 
-              id="ai-match-input" 
-              class="ai-match-input" 
-              placeholder="What are you looking for? (e.g., I need someone who can teach me Java OOP)" 
-              aria-label="Ask RExchange AI"
-              autocomplete="off"
-            >
-            <button type="submit" id="btn-run-ai-match" class="btn-ai-match-submit">
-              <span class="btn-text-content">Find Matches</span>
-              <span class="btn-arrow-content">→</span>
-            </button>
-          </div>
-        </form>
-
-        <!-- Suggested Prompt Chips -->
-        <div class="ai-suggestions-row">
-          <span class="ai-suggestions-label">Suggestions:</span>
-          <div class="ai-chips-list" id="ai-chips-list">
-            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find a Python tutor">Find a Python tutor</button>
-            <button type="button" class="ai-prompt-chip" data-ai-prompt="Show me free textbooks">Show me free textbooks</button>
-            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find hackathon teammates">Find hackathon teammates</button>
-            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find UI/UX help">Find UI/UX help</button>
-            <button type="button" class="ai-prompt-chip" data-ai-prompt="Find cybersecurity opportunities">Find cybersecurity opportunities</button>
-            <button type="button" class="ai-prompt-chip" data-ai-prompt="I need OS study material">I need OS study material</button>
-          </div>
-        </div>
-
-        <!-- Recent Searches & Search History Bar -->
-        <div class="ai-history-bar" id="ai-history-bar" style="display: none;">
-          <div class="ai-history-left">
-            <span class="history-label-icon">🕒</span>
-            <span class="history-label-text">Recent searches:</span>
-            <div class="history-chips-stream" id="history-chips-stream">
-              <!-- Populated dynamically -->
-            </div>
-          </div>
-          <button type="button" id="btn-clear-ai-history" class="btn-clear-history-text" title="Clear search history">Clear</button>
-        </div>
-      </div>
-
-      <!-- AI Processing Animation State -->
-      <div id="ai-processing-state" class="ai-processing-panel" style="display: none;">
-        <div class="ai-scanner-line"></div>
-        <div class="ai-proc-core">
-          <div class="ai-proc-icon-pulse">
-            <span class="pulse-sparkle">✨</span>
-          </div>
-          <div class="ai-proc-text-col">
-            <span class="ai-proc-brand">✨ RExchange AI</span>
-            <h4 id="ai-proc-status" class="ai-proc-status-text">Understanding your request...</h4>
-          </div>
-        </div>
-        <div class="ai-loading-dots-bar">
-          <span class="dot-step dot-1 active"></span>
-          <span class="dot-step dot-2"></span>
-          <span class="dot-step dot-3"></span>
-        </div>
-      </div>
-
-      <!-- Match Results Area -->
-      <div id="ai-results-area" class="ai-results-wrapper" style="display: none;">
-        
-        <!-- Results Header & Controls -->
-        <div class="ai-results-header-bar">
-          <div class="results-title-group">
-            <h3 id="ai-results-count-title" class="results-heading">✨ We found 3 potential matches.</h3>
-            <span id="ai-query-echo" class="query-echo-tag">Query: "..."</span>
-          </div>
-
-          <div class="ai-results-controls">
-            <!-- Category Filter for Matches -->
-            <div class="ai-cat-filters" id="ai-cat-filters" role="tablist">
-              <button type="button" class="ai-cat-btn active" data-cat="all" role="tab" aria-selected="true">All</button>
-              <button type="button" class="ai-cat-btn" data-cat="Item" role="tab" aria-selected="false">Items</button>
-              <button type="button" class="ai-cat-btn" data-cat="Skill" role="tab" aria-selected="false">Skills</button>
-              <button type="button" class="ai-cat-btn" data-cat="Opportunity" role="tab" aria-selected="false">Opportunities</button>
-            </div>
-
-            <!-- Sort By Selector -->
-            <div class="ai-sort-wrapper">
-              <label for="ai-sort-select" class="sort-label">Sort:</label>
-              <select id="ai-sort-select" class="ai-sort-dropdown" aria-label="Sort match results">
-                <option value="best-match" selected>Best Match</option>
-                <option value="newest">Newest</option>
-              </select>
-            </div>
-
-            <!-- Collapse Results Button -->
-            <button type="button" id="btn-collapse-ai-results" class="btn-collapse-ai" title="Collapse match results">
-              ✕ Collapse
-            </button>
-          </div>
-        </div>
-
-        <!-- Results Grid -->
-        <div id="ai-matches-grid" class="ai-matches-grid">
-          <!-- Rendered dynamically -->
-        </div>
-
-        <!-- Empty Match State -->
-        <div id="ai-empty-matches" class="empty-state" style="display: none;">
-          <div class="empty-icon">🤖</div>
-          <h3 class="empty-title">RExchange couldn't find a strong match.</h3>
-          <p class="empty-desc">Try broadening your search keywords or explore recommended campus categories below.</p>
-          <div class="ai-empty-suggestions">
-            <span style="font-size:0.8rem; color:var(--text-muted);">Try searching:</span>
-            <div class="empty-chips-row">
-              <button type="button" class="ai-prompt-chip" data-ai-prompt="Find programming help">Find programming help</button>
-              <button type="button" class="ai-prompt-chip" data-ai-prompt="Show study materials">Show study materials</button>
-              <button type="button" class="ai-prompt-chip" data-ai-prompt="Find opportunities">Find opportunities</button>
-            </div>
-          </div>
-          <a href="#explore" class="btn-clear-search" style="text-decoration: none; display: inline-block; margin-top: 14px;">Browse All Listings</a>
-        </div>
-
-      </div>
-
-      <!-- Personalized Section: Recommended For You -->
-      <div id="ai-recommended-section" class="ai-recommended-container" style="display: none;">
-        <div class="recommended-header">
-          <div class="rec-title-wrap">
-            <span class="rec-badge">RECOMMENDED FOR YOU</span>
-            <h4 id="rec-reason-text" class="rec-heading">Because of your campus interests & activity...</h4>
-          </div>
-        </div>
-        <div id="ai-recommended-feed" class="listings-grid">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       Campus Activity Center Section (Inline Telemetry)
-       ========================================================================= -->
-  <section id="activity" class="activity-section reveal-on-scroll">
-    <div class="site-container">
-      
-      <!-- Section Header -->
-      <div class="activity-section-header">
-        <div class="activity-header-left">
-          <span class="section-eyebrow">CAMPUS ACTIVITY CENTER</span>
-          <h2 class="activity-main-title">Activity</h2>
-          <p class="activity-main-subtitle">Stay up to date with what's happening around your campus.</p>
-        </div>
-        <div class="activity-header-actions">
-          <button type="button" id="btn-page-mark-all-read" class="btn-gate-secondary">Mark all as read</button>
-        </div>
-      </div>
-
-      <!-- Activity Split Layout: Left Feed & Right Live Campus Stream -->
-      <div class="activity-layout-grid">
-        
-        <!-- Left Column: Filterable Notification & Activity Stream -->
-        <div class="activity-feed-panel">
+      <!-- Homepage Hero Section -->
+      <header class="hero-section">
+        <div class="hero-container">
           
-          <!-- Filter Tabs: All, Unread, Messages, Matches, Listings, Opportunities -->
-          <div class="activity-filters-bar" id="activity-filters-bar" role="tablist">
-            <button type="button" class="activity-filter-btn active" data-activity-filter="all" role="tab" aria-selected="true">All</button>
-            <button type="button" class="activity-filter-btn" data-activity-filter="unread" role="tab" aria-selected="false">Unread</button>
-            <button type="button" class="activity-filter-btn" data-activity-filter="messages" role="tab" aria-selected="false">Messages</button>
-            <button type="button" class="activity-filter-btn" data-activity-filter="matches" role="tab" aria-selected="false">Matches</button>
-            <button type="button" class="activity-filter-btn" data-activity-filter="listings" role="tab" aria-selected="false">Listings</button>
-            <button type="button" class="activity-filter-btn" data-activity-filter="opportunities" role="tab" aria-selected="false">Opportunities</button>
+          <!-- Left Hero Column -->
+          <div class="hero-content">
+            <div class="hero-eyebrow">
+              <span class="pulse-dot"></span>
+              <span>SRM CAMPUS PEER NETWORK</span>
+            </div>
+
+            <h1 class="hero-title">
+              Exchange Value.<br>
+              <span class="hero-title-highlight">Empower Campus.</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              Everything your campus has. Everything your campus needs. The private peer-to-peer exchange for verified SRM students to trade textbooks, share skills, and discover student opportunities.
+            </p>
+
+            <!-- Futuristic AI Search Bar -->
+            <div class="hero-ai-search-box">
+              <div class="ai-input-wrapper">
+                <span class="ai-sparkle-icon">✨</span>
+                <input 
+                  type="text" 
+                  id="hero-ai-search" 
+                  class="hero-ai-input" 
+                  placeholder="What do you need? e.g., Python tutor, DBMS book, Arduino kit"
+                  aria-label="Search campus exchange with AI"
+                >
+                <button type="button" id="hero-search-btn" class="hero-search-btn" aria-label="Run search">
+                  <span>Find Matches</span>
+                  <span class="btn-arrow">→</span>
+                </button>
+              </div>
+
+              <!-- Suggested Prompt Chips -->
+              <div class="prompt-chips-row">
+                <span class="prompt-label">Try:</span>
+                <button type="button" class="prompt-chip" data-query="Python tutor">🐍 Python tutor</button>
+                <button type="button" class="prompt-chip" data-query="DBMS textbook">📖 DBMS book</button>
+                <button type="button" class="prompt-chip" data-query="Hackathon teammate">🚀 Hackathon team</button>
+                <button type="button" class="prompt-chip" data-query="Arduino kit">⚡ Arduino kit</button>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Notification Feed Stream -->
-          <div id="activity-feed-list" class="activity-feed-list" role="list">
+          <!-- Right Hero Column: Live Campus Card -->
+          <div class="hero-visual-card">
+            <div class="feature-metric-card">
+              <div class="metric-top-row">
+                <span class="live-indicator-pill">
+                  <span class="live-dot"></span> 100% VERIFIED CAMPUS
+                </span>
+                <span class="metric-stat-mono">SRMIST.EDU.IN</span>
+              </div>
+
+              <div class="hero-card-core">
+                <div class="hero-big-number">12</div>
+                <div class="hero-big-label">Active Campus Exchanges Available Today</div>
+              </div>
+
+              <div class="mini-activity-stream">
+                <div class="activity-row">
+                  <span class="act-icon">📖</span>
+                  <span class="act-text">Rahul listed <strong>DBMS 7th Ed Textbook</strong></span>
+                  <span class="act-time">25m ago</span>
+                </div>
+                <div class="activity-row">
+                  <span class="act-icon">🐍</span>
+                  <span class="act-text">Priya offered <strong>Python 1-on-1 Tutoring</strong></span>
+                  <span class="act-time">45m ago</span>
+                </div>
+                <div class="activity-row">
+                  <span class="act-icon">🚀</span>
+                  <span class="act-text">Arjun posted <strong>Hackathon Frontend Collab</strong></span>
+                  <span class="act-time">30m ago</span>
+                </div>
+              </div>
+
+              <div class="hero-card-footer">
+                <button type="button" id="btn-hero-explore-link" class="hero-footer-link" style="background:none; border:none; cursor:pointer;">Explore all listings →</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Categories Section (Items, Skills, Opportunities) -->
+      <section id="categories" class="categories-section reveal-on-scroll">
+        <div class="site-container">
+          <div class="section-header">
+            <div class="section-header-badge">CAMPUS PILLARS</div>
+            <h2>Everything You Need, Directly From Classmates</h2>
+            <span class="section-hint">Click any category to filter campus listings instantly</span>
+          </div>
+
+          <div class="feature-categories-grid">
+            <!-- Card 1: Items -->
+            <div class="feature-cat-card" data-category="Item" role="button" tabindex="0">
+              <div class="cat-card-header">
+                <div class="cat-icon-badge">
+                  <span class="cat-emoji">📦</span>
+                </div>
+                <span class="cat-count-badge" id="count-items">4 Listings</span>
+              </div>
+              <h3 class="cat-card-title">Physical Items</h3>
+              <p class="cat-card-desc">Course textbooks, handwritten exam notes, calculators, lab hardware, electronics, and dorm essentials.</p>
+              <div class="cat-card-action">
+                <span>Browse Items</span>
+                <span class="arrow-icon">→</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Skills -->
+            <div class="feature-cat-card" data-category="Skill" role="button" tabindex="0">
+              <div class="cat-card-header">
+                <div class="cat-icon-badge">
+                  <span class="cat-emoji">🧠</span>
+                </div>
+                <span class="cat-count-badge" id="count-skills">4 Listings</span>
+              </div>
+              <h3 class="cat-card-title">Skills & Tutoring</h3>
+              <p class="cat-card-desc">Peer tutoring in Python, Java, DSA, UI/UX design reviews, Figma prototyping, and academic mentoring.</p>
+              <div class="cat-card-action">
+                <span>Browse Skills</span>
+                <span class="arrow-icon">→</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Opportunities -->
+            <div class="feature-cat-card" data-category="Opportunity" role="button" tabindex="0">
+              <div class="cat-card-header">
+                <div class="cat-icon-badge">
+                  <span class="cat-emoji">🚀</span>
+                </div>
+                <span class="cat-count-badge" id="count-opportunities">4 Listings</span>
+              </div>
+              <h3 class="cat-card-title">Projects & Events</h3>
+              <p class="cat-card-desc">Discover hackathon teammates, startup collaborators, workshops, and campus event opportunities.</p>
+              <div class="cat-card-action">
+                <span>Browse Opportunities</span>
+                <span class="arrow-icon">→</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured Campus Listings on Home -->
+      <section id="home-featured-listings-section" class="home-featured-section site-container reveal-on-scroll">
+        <div class="section-header-row">
+          <div>
+            <span class="section-eyebrow">CAMPUS FEED</span>
+            <h2 class="section-main-heading">Featured Campus Listings</h2>
+          </div>
+          <button type="button" id="btn-home-view-all-explore" class="btn-view-all-link">View All in Explore →</button>
+        </div>
+        <div id="home-featured-grid" class="listings-grid">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </section>
+
+      <!-- Smart User Recommendations (Students You May Want to Connect With) -->
+      <section id="student-recommendations-section" class="student-rec-section reveal-on-scroll">
+        <div class="site-container">
+          <div class="student-rec-header">
+            <div class="student-rec-title-group">
+              <span class="section-eyebrow">CAMPUS NETWORK</span>
+              <h3 class="student-rec-title">Students you may want to connect with</h3>
+            </div>
+            <span class="rec-badge-mono">PEER MATCHES</span>
+          </div>
+
+          <div class="student-rec-cards-stream" id="student-rec-stream">
             <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section & Campus Pulse (High-Velocity Exchange) -->
+      <section id="how-it-works" class="how-it-works-section reveal-on-scroll">
+        <div class="site-container">
+          <div class="section-title-wrap">
+            <h2 class="section-heading">High-Velocity Exchange</h2>
+            <p class="section-subtext">A streamlined process designed for student life.</p>
+          </div>
+
+          <div class="steps-layout-grid">
+            <!-- Step 01 -->
+            <div class="step-card-modern step-card-glow">
+              <span class="step-big-num">01</span>
+              <h3 class="step-title">List & Detail</h3>
+              <p class="step-desc">Write a quick description or use AI Assist to set your exchange terms in under 30 seconds.</p>
+            </div>
+
+            <!-- Step 02 -->
+            <div class="step-card-modern">
+              <div class="step-card-top">
+                <span class="step-big-num">02</span>
+                <div class="step-connect-badge">
+                  <span>👤</span><span class="connect-dash"></span><span>👥</span>
+                </div>
+              </div>
+              <h3 class="step-title">Connect & Exchange</h3>
+              <p class="step-desc">Match with peers locally. Reach out directly with verified student contact info until you meet on campus.</p>
+            </div>
+
+            <!-- Step 03 with Live Stats (Campus Pulse integration) -->
+            <div class="step-card-modern step-span-2">
+              <div class="step-03-content">
+                <span class="step-big-num">03</span>
+                <h3 class="step-title">Save & Thrive</h3>
+                <p class="step-desc">Keep money in your pocket and reduce campus waste. Build a reputation as a reliable community member.</p>
+              </div>
+
+              <div id="pulse" class="pulse-stats-row">
+                <div class="pulse-stat-pill" title="Books and study materials are currently the most active item type.">
+                  <span class="stat-value text-green" id="pulse-new-listings">12</span>
+                  <span class="stat-label">Items & Listings</span>
+                </div>
+                <div class="pulse-stat-pill" title="Python, Java OOP, and UI/UX reviews are the top requested skills.">
+                  <span class="stat-value text-green" id="pulse-skills-shared">4</span>
+                  <span class="stat-label">Skills Shared</span>
+                </div>
+                <div class="pulse-stat-pill" title="Hackathon teams and campus coding workshops currently open for collaboration.">
+                  <span class="stat-value text-green" id="pulse-opportunities">4</span>
+                  <span class="stat-label">Active Opportunities</span>
+                </div>
+                <div class="pulse-stat-pill" style="display: none;">
+                  <span class="stat-value" id="pulse-potential-matches">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- =======================================================================
+         VIEW 2: EXPLORE CAMPUS VIEW
+         ======================================================================= -->
+    <div id="view-explore" class="app-view">
+      <section id="explore" class="explore-section">
+        <div class="site-container">
+          
+          <!-- Page Header -->
+          <div class="explore-header">
+            <span class="section-eyebrow">CAMPUS DIRECTORY</span>
+            <h2 class="explore-title">Explore Campus</h2>
+            <p class="explore-subtitle">Discover what students across your campus are sharing.</p>
+          </div>
+
+          <!-- Search Bar + AI Assist Button -->
+          <div class="explore-search-wrapper">
+            <div class="explore-search-box">
+              <span class="search-icon-text">🔍</span>
+              <input type="text" id="search-input" class="explore-search-input" placeholder="Search items, skills and opportunities..." aria-label="Search items, skills and opportunities">
+              <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;" aria-label="Clear search">✕</button>
+              <button type="button" id="explore-ai-btn" class="btn-explore-ai" title="AI Search Assistant">
+                <span class="ai-sparkle">✨</span> Ask RExchange AI
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Filter Bar (ALL, ITEMS, SKILLS, OPPORTUNITIES) -->
+          <div class="explore-filters-container">
+            <div class="category-filters-row" id="filter-bar" role="tablist" aria-label="Filter listings by category">
+              <button type="button" class="filter-btn active" data-filter="All" role="tab" aria-selected="true">ALL</button>
+              <button type="button" class="filter-btn" data-filter="Item" role="tab" aria-selected="false">ITEMS</button>
+              <button type="button" class="filter-btn" data-filter="Skill" role="tab" aria-selected="false">SKILLS</button>
+              <button type="button" class="filter-btn" data-filter="Opportunity" role="tab" aria-selected="false">OPPORTUNITIES</button>
+            </div>
+
+            <!-- Secondary Filters (Newest, Most Relevant, Free, Available) -->
+            <div class="secondary-filters-row">
+              <div class="sec-filters-left">
+                <span class="sec-filter-label">Sort:</span>
+                <button type="button" class="sec-filter-btn active" data-sort="newest">Newest</button>
+                <button type="button" class="sec-filter-btn" data-sort="relevant">Most Relevant</button>
+                <span class="sec-filter-divider">|</span>
+                <span class="sec-filter-label">Filter:</span>
+                <button type="button" class="sec-filter-btn" data-filter-type="free">Free</button>
+                <button type="button" class="sec-filter-btn" data-filter-type="available">Available</button>
+              </div>
+              <div class="feed-count-tag" id="listing-count-tag">12 Listings</div>
+            </div>
           </div>
 
           <!-- Empty State -->
-          <div id="activity-empty-state" class="empty-state" style="display: none;">
-            <div class="empty-icon">🔔</div>
-            <h3 class="empty-title">You're all caught up.</h3>
-            <p class="empty-desc">No new activity right now. Check back later or explore what students are sharing!</p>
-            <a href="#explore" class="btn-clear-search" style="text-decoration: none; display: inline-block;">Explore Campus</a>
+          <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-icon">📦</div>
+            <h3 id="empty-title" class="empty-title">No matches found</h3>
+            <p id="empty-desc" class="empty-desc">Try searching for textbooks, tutoring, events or opportunities.</p>
+            <button type="button" id="clear-search-btn" class="btn-clear-search">Clear Search</button>
           </div>
+
+          <!-- Responsive Listing Grid (3 col desktop, 2 col tablet, 1 col mobile) -->
+          <div id="listings-feed" class="listings-grid"></div>
 
         </div>
-
-        <!-- Right Column: Live Campus Activity Stream (Mock telemetry) -->
-        <div class="campus-live-panel">
-          <div class="live-panel-header">
-            <div class="live-status-row">
-              <span class="live-pulse-dot"></span>
-              <span class="live-title-text">Campus Activity</span>
-            </div>
-            <span class="live-tag-mono">LIVE FEED</span>
-          </div>
-
-          <div class="campus-live-cards-stream" id="campus-live-stream">
-            <!-- Staggered realistic campus event cards -->
-            <div class="live-activity-card">
-              <span class="live-card-icon">🐍</span>
-              <div class="live-card-body">
-                <span class="live-card-text">Someone just posted a <strong>Python tutoring</strong> listing.</span>
-                <span class="live-card-time">2 mins ago • Computer Science</span>
-              </div>
-            </div>
-
-            <div class="live-activity-card">
-              <span class="live-card-icon">📖</span>
-              <div class="live-card-body">
-                <span class="live-card-text">3 students saved <strong>DBMS textbook</strong>.</span>
-                <span class="live-card-time">8 mins ago • 2nd Year CSE</span>
-              </div>
-            </div>
-
-            <div class="live-activity-card">
-              <span class="live-card-icon">🚀</span>
-              <div class="live-card-body">
-                <span class="live-card-text">A new <strong>hackathon opportunity</strong> was added.</span>
-                <span class="live-card-time">14 mins ago • Developer Society</span>
-              </div>
-            </div>
-
-            <div class="live-activity-card">
-              <span class="live-card-icon">✨</span>
-              <div class="live-card-body">
-                <span class="live-card-text">RExchange found <strong>2 new potential matches</strong> for study groups.</span>
-                <span class="live-card-time">22 mins ago • AI Match</span>
-              </div>
-            </div>
-
-            <div class="live-activity-card">
-              <span class="live-card-icon">⚡</span>
-              <div class="live-card-body">
-                <span class="live-card-text">David Kim offered an <strong>Arduino Starter Kit</strong>.</span>
-                <span class="live-card-time">35 mins ago • Electronics</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
+      </section>
     </div>
-  </section>
 
-  <!-- =========================================================================
-       How It Works Section & Campus Pulse (High-Velocity Exchange)
-       ========================================================================= -->
-  <section id="how-it-works" class="how-it-works-section reveal-on-scroll">
-    <div class="site-container">
-      <div class="section-title-wrap">
-        <h2 class="section-heading">High-Velocity Exchange</h2>
-        <p class="section-subtext">A streamlined process designed for student life.</p>
-      </div>
-
-      <div class="steps-layout-grid">
-        <!-- Step 01 -->
-        <div class="step-card-modern step-card-glow">
-          <span class="step-big-num">01</span>
-          <h3 class="step-title">List & Detail</h3>
-          <p class="step-desc">Write a quick description or use AI Assist to set your exchange terms in under 30 seconds.</p>
-        </div>
-
-        <!-- Step 02 -->
-        <div class="step-card-modern">
-          <div class="step-card-top">
-            <span class="step-big-num">02</span>
-            <div class="step-connect-badge">
-              <span>👤</span><span class="connect-dash"></span><span>👥</span>
+    <!-- =======================================================================
+         VIEW 3: AI MATCH CENTER VIEW
+         ======================================================================= -->
+    <div id="view-ai-match" class="app-view">
+      <section id="ai-match" class="ai-match-section">
+        <div class="site-container">
+          
+          <!-- Page Header -->
+          <div class="ai-match-header">
+            <div class="ai-match-header-badge">
+              <span class="ai-sparkle-glow">✨</span>
+              <span>REXCHANGE AI INTELLIGENCE</span>
             </div>
-          </div>
-          <h3 class="step-title">Connect & Exchange</h3>
-          <p class="step-desc">Match with peers locally. Reach out directly with verified student contact info until you meet on campus.</p>
-        </div>
-
-        <!-- Step 03 with Live Stats (Campus Pulse integration) -->
-        <div class="step-card-modern step-span-2">
-          <div class="step-03-content">
-            <span class="step-big-num">03</span>
-            <h3 class="step-title">Save & Thrive</h3>
-            <p class="step-desc">Keep money in your pocket and reduce campus waste. Build a reputation as a reliable community member.</p>
+            <h2 class="ai-match-title">Find what you need.</h2>
+            <p class="ai-match-subtitle">Tell RExchange what you're looking for and we'll find the most relevant things, skills and opportunities on your campus.</p>
           </div>
 
-          <div id="pulse" class="pulse-stats-row">
-            <div class="pulse-stat-pill" title="Books and study materials are currently the most active item type.">
-              <span class="stat-value text-green" id="pulse-new-listings">12</span>
-              <span class="stat-label">Items & Listings</span>
+          <!-- Large Futuristic AI Search Box -->
+          <div class="ai-search-card">
+            <form id="ai-match-form" class="ai-search-form" novalidate>
+              <div class="ai-search-input-wrapper">
+                <span class="ai-search-leading-icon">✨</span>
+                <input 
+                  type="text" 
+                  id="ai-match-input" 
+                  class="ai-match-input" 
+                  placeholder="What are you looking for? (e.g., I need someone who can teach me Java OOP)" 
+                  aria-label="Ask RExchange AI"
+                  autocomplete="off"
+                >
+                <button type="submit" id="btn-run-ai-match" class="btn-ai-match-submit">
+                  <span class="btn-text-content">Find Matches</span>
+                  <span class="btn-arrow-content">→</span>
+                </button>
+              </div>
+            </form>
+
+            <!-- Suggested Prompt Chips -->
+            <div class="ai-suggestions-row">
+              <span class="ai-suggestions-label">Suggestions:</span>
+              <div class="ai-chips-list" id="ai-chips-list">
+                <button type="button" class="ai-prompt-chip" data-ai-prompt="Find a Python tutor">Find a Python tutor</button>
+                <button type="button" class="ai-prompt-chip" data-ai-prompt="Show me free textbooks">Show me free textbooks</button>
+                <button type="button" class="ai-prompt-chip" data-ai-prompt="Find hackathon teammates">Find hackathon teammates</button>
+                <button type="button" class="ai-prompt-chip" data-ai-prompt="Find UI/UX help">Find UI/UX help</button>
+                <button type="button" class="ai-prompt-chip" data-ai-prompt="Find cybersecurity opportunities">Find cybersecurity opportunities</button>
+                <button type="button" class="ai-prompt-chip" data-ai-prompt="I need OS study material">I need OS study material</button>
+              </div>
             </div>
-            <div class="pulse-stat-pill" title="Python, Java OOP, and UI/UX reviews are the top requested skills.">
-              <span class="stat-value text-green" id="pulse-skills-shared">4</span>
-              <span class="stat-label">Skills Shared</span>
-            </div>
-            <div class="pulse-stat-pill" title="Hackathon teams and campus coding workshops currently open for collaboration.">
-              <span class="stat-value text-green" id="pulse-opportunities">4</span>
-              <span class="stat-label">Active Opportunities</span>
-            </div>
-            <div class="pulse-stat-pill" style="display: none;">
-              <span class="stat-value" id="pulse-potential-matches">0</span>
+
+            <!-- Recent Searches & Search History Bar -->
+            <div class="ai-history-bar" id="ai-history-bar" style="display: none;">
+              <div class="ai-history-left">
+                <span class="history-label-icon">🕒</span>
+                <span class="history-label-text">Recent searches:</span>
+                <div class="history-chips-stream" id="history-chips-stream">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+              <button type="button" id="btn-clear-ai-history" class="btn-clear-history-text" title="Clear search history">Clear</button>
             </div>
           </div>
+
+          <!-- AI Processing Animation State -->
+          <div id="ai-processing-state" class="ai-processing-panel" style="display: none;">
+            <div class="ai-scanner-line"></div>
+            <div class="ai-proc-core">
+              <div class="ai-proc-icon-pulse">
+                <span class="pulse-sparkle">✨</span>
+              </div>
+              <div class="ai-proc-text-col">
+                <span class="ai-proc-brand">✨ RExchange AI</span>
+                <h4 id="ai-proc-status" class="ai-proc-status-text">Understanding your request...</h4>
+              </div>
+            </div>
+            <div class="ai-loading-dots-bar">
+              <span class="dot-step dot-1 active"></span>
+              <span class="dot-step dot-2"></span>
+              <span class="dot-step dot-3"></span>
+            </div>
+          </div>
+
+          <!-- Match Results Area -->
+          <div id="ai-results-area" class="ai-results-wrapper" style="display: none;">
+            
+            <!-- Results Header & Controls -->
+            <div class="ai-results-header-bar">
+              <div class="results-title-group">
+                <h3 id="ai-results-count-title" class="results-heading">✨ We found 3 potential matches.</h3>
+                <span id="ai-query-echo" class="query-echo-tag">Query: "..."</span>
+              </div>
+
+              <div class="ai-results-controls">
+                <!-- Category Filter for Matches -->
+                <div class="ai-cat-filters" id="ai-cat-filters" role="tablist">
+                  <button type="button" class="ai-cat-btn active" data-cat="all" role="tab" aria-selected="true">All</button>
+                  <button type="button" class="ai-cat-btn" data-cat="Item" role="tab" aria-selected="false">Items</button>
+                  <button type="button" class="ai-cat-btn" data-cat="Skill" role="tab" aria-selected="false">Skills</button>
+                  <button type="button" class="ai-cat-btn" data-cat="Opportunity" role="tab" aria-selected="false">Opportunities</button>
+                </div>
+
+                <!-- Sort By Selector -->
+                <div class="ai-sort-wrapper">
+                  <label for="ai-sort-select" class="sort-label">Sort:</label>
+                  <select id="ai-sort-select" class="ai-sort-dropdown" aria-label="Sort match results">
+                    <option value="best-match" selected>Best Match</option>
+                    <option value="newest">Newest</option>
+                  </select>
+                </div>
+
+                <!-- Collapse Results Button -->
+                <button type="button" id="btn-collapse-ai-results" class="btn-collapse-ai" title="Collapse match results">
+                  ✕ Collapse
+                </button>
+              </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div id="ai-matches-grid" class="ai-matches-grid">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Empty Match State -->
+            <div id="ai-empty-matches" class="empty-state" style="display: none;">
+              <div class="empty-icon">🤖</div>
+              <h3 class="empty-title">RExchange couldn't find a strong match.</h3>
+              <p class="empty-desc">Try broadening your search keywords or explore recommended campus categories below.</p>
+              <div class="ai-empty-suggestions">
+                <span style="font-size:0.8rem; color:var(--text-muted);">Try searching:</span>
+                <div class="empty-chips-row">
+                  <button type="button" class="ai-prompt-chip" data-ai-prompt="Find programming help">Find programming help</button>
+                  <button type="button" class="ai-prompt-chip" data-ai-prompt="Show study materials">Show study materials</button>
+                  <button type="button" class="ai-prompt-chip" data-ai-prompt="Find opportunities">Find opportunities</button>
+                </div>
+              </div>
+              <button type="button" id="btn-ai-browse-explore" class="btn-clear-search" style="display: inline-block; margin-top: 14px;">Browse All Listings</button>
+            </div>
+
+          </div>
+
+          <!-- Personalized Section: Recommended For You -->
+          <div id="ai-recommended-section" class="ai-recommended-container" style="display: none;">
+            <div class="recommended-header">
+              <div class="rec-title-wrap">
+                <span class="rec-badge">RECOMMENDED FOR YOU</span>
+                <h4 id="rec-reason-text" class="rec-heading">Because of your campus interests & activity...</h4>
+              </div>
+            </div>
+            <div id="ai-recommended-feed" class="listings-grid">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
         </div>
-      </div>
+      </section>
     </div>
-  </section>
+
+    <!-- =======================================================================
+         VIEW 4: CAMPUS ACTIVITY CENTER VIEW
+         ======================================================================= -->
+    <div id="view-activity" class="app-view">
+      <section id="activity" class="activity-section">
+        <div class="site-container">
+          
+          <!-- Section Header -->
+          <div class="activity-section-header">
+            <div class="activity-header-left">
+              <span class="section-eyebrow">CAMPUS ACTIVITY CENTER</span>
+              <h2 class="activity-main-title">Activity</h2>
+              <p class="activity-main-subtitle">Stay up to date with what's happening around your campus.</p>
+            </div>
+            <div class="activity-header-actions">
+              <button type="button" id="btn-page-mark-all-read" class="btn-gate-secondary">Mark all as read</button>
+            </div>
+          </div>
+
+          <!-- Activity Split Layout: Left Feed & Right Live Campus Stream -->
+          <div class="activity-layout-grid">
+            
+            <!-- Left Column: Filterable Notification & Activity Stream -->
+            <div class="activity-feed-panel">
+              
+              <!-- Filter Tabs: All, Unread, Messages, Matches, Listings, Opportunities -->
+              <div class="activity-filters-bar" id="activity-filters-bar" role="tablist">
+                <button type="button" class="activity-filter-btn active" data-activity-filter="all" role="tab" aria-selected="true">All</button>
+                <button type="button" class="activity-filter-btn" data-activity-filter="unread" role="tab" aria-selected="false">Unread</button>
+                <button type="button" class="activity-filter-btn" data-activity-filter="messages" role="tab" aria-selected="false">Messages</button>
+                <button type="button" class="activity-filter-btn" data-activity-filter="matches" role="tab" aria-selected="false">Matches</button>
+                <button type="button" class="activity-filter-btn" data-activity-filter="listings" role="tab" aria-selected="false">Listings</button>
+                <button type="button" class="activity-filter-btn" data-activity-filter="opportunities" role="tab" aria-selected="false">Opportunities</button>
+              </div>
+
+              <!-- Notification Feed Stream -->
+              <div id="activity-feed-list" class="activity-feed-list" role="list">
+                <!-- Populated dynamically by JS -->
+              </div>
+
+              <!-- Empty State -->
+              <div id="activity-empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">🔔</div>
+                <h3 class="empty-title">You're all caught up.</h3>
+                <p class="empty-desc">No new activity right now. Check back later or explore what students are sharing!</p>
+                <button type="button" id="btn-activity-explore-link" class="btn-clear-search" style="display: inline-block;">Explore Campus</button>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Live Campus Activity Stream (Mock telemetry) -->
+            <div class="campus-live-panel">
+              <div class="live-panel-header">
+                <div class="live-status-row">
+                  <span class="live-pulse-dot"></span>
+                  <span class="live-title-text">Campus Activity</span>
+                </div>
+                <span class="live-tag-mono">LIVE FEED</span>
+              </div>
+
+              <div class="campus-live-cards-stream" id="campus-live-stream">
+                <!-- Staggered realistic campus event cards -->
+                <div class="live-activity-card">
+                  <span class="live-card-icon">🐍</span>
+                  <div class="live-card-body">
+                    <span class="live-card-text">Someone just posted a <strong>Python tutoring</strong> listing.</span>
+                    <span class="live-card-time">2 mins ago • Computer Science</span>
+                  </div>
+                </div>
+
+                <div class="live-activity-card">
+                  <span class="live-card-icon">📖</span>
+                  <div class="live-card-body">
+                    <span class="live-card-text">3 students saved <strong>DBMS textbook</strong>.</span>
+                    <span class="live-card-time">8 mins ago • 2nd Year CSE</span>
+                  </div>
+                </div>
+
+                <div class="live-activity-card">
+                  <span class="live-card-icon">🚀</span>
+                  <div class="live-card-body">
+                    <span class="live-card-text">A new <strong>hackathon opportunity</strong> was added.</span>
+                    <span class="live-card-time">14 mins ago • Developer Society</span>
+                  </div>
+                </div>
+
+                <div class="live-activity-card">
+                  <span class="live-card-icon">✨</span>
+                  <div class="live-card-body">
+                    <span class="live-card-text">RExchange found <strong>2 new potential matches</strong> for study groups.</span>
+                    <span class="live-card-time">22 mins ago • AI Match</span>
+                  </div>
+                </div>
+
+                <div class="live-activity-card">
+                  <span class="live-card-icon">⚡</span>
+                  <div class="live-card-body">
+                    <span class="live-card-text">David Kim offered an <strong>Arduino Starter Kit</strong>.</span>
+                    <span class="live-card-time">35 mins ago • Electronics</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+  </main>
 
   <!-- =========================================================================
        DRAWER 1: Saved Listings Right Slide-Out Drawer

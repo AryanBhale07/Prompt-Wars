@@ -847,6 +847,21 @@ function closeDrawer(drawerEl) {
   }, 280);
 }
 
+function closeAllDrawers() {
+  [savedDrawer, inboxDrawer, profileDrawer].forEach((d) => {
+    if (d && d.classList.contains('open')) {
+      d.classList.remove('open');
+      d.style.display = 'none';
+    }
+  });
+  if (postModal && postModal.style.display === 'flex') {
+    postModal.style.display = 'none';
+  }
+  if (!document.querySelector('.drawer-overlay.open') && !document.querySelector('.modal-backdrop[style*="display: flex"]')) {
+    document.body.style.overflow = 'auto';
+  }
+}
+
 // Saved Drawer
 function openSavedDrawer() {
   renderSavedListings();
@@ -891,6 +906,86 @@ function closePostModal() {
   }
 }
 
+// ==========================================================================
+// SINGLE-PAGE VIEW SWITCHING (250ms Smooth Section Transitions)
+// ==========================================================================
+
+function switchView(viewName) {
+  const views = {
+    'home': document.getElementById('view-home'),
+    'explore': document.getElementById('view-explore'),
+    'ai-match': document.getElementById('view-ai-match'),
+    'activity': document.getElementById('view-activity')
+  };
+
+  const navLinks = {
+    'home': document.getElementById('nav-home-link'),
+    'explore': document.getElementById('nav-explore-link'),
+    'ai-match': document.getElementById('nav-ai-match-link')
+  };
+
+  closeAllDrawers();
+
+  const targetView = views[viewName] || views['home'];
+  const currentActive = document.querySelector('.app-view.active-view');
+
+  if (currentActive === targetView) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  // Update navbar active link
+  document.querySelectorAll('.nav-links .nav-link').forEach((l) => l.classList.remove('active'));
+  if (navLinks[viewName]) {
+    navLinks[viewName].classList.add('active');
+  }
+
+  if (currentActive) {
+    currentActive.classList.add('view-anim-out');
+    setTimeout(() => {
+      currentActive.classList.remove('active-view', 'view-anim-out');
+      currentActive.style.display = 'none';
+
+      targetView.style.display = 'block';
+      void targetView.offsetWidth;
+      targetView.classList.add('active-view');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 140);
+  } else {
+    Object.values(views).forEach((v) => {
+      if (v) {
+        v.classList.remove('active-view');
+        v.style.display = 'none';
+      }
+    });
+    targetView.style.display = 'block';
+    targetView.classList.add('active-view');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (viewName === 'home') {
+    renderHomeFeatured();
+    updateAllMetrics();
+  } else if (viewName === 'explore') {
+    renderListings();
+  } else if (viewName === 'ai-match') {
+    if (state.aiCurrentMatches.length > 0) {
+      renderAiMatchResults();
+    }
+  } else if (viewName === 'activity') {
+    renderActivityFeed();
+  }
+}
+window.switchView = switchView;
+
+function renderHomeFeatured() {
+  const homeGrid = document.getElementById('home-featured-grid');
+  if (!homeGrid) return;
+  const featured = state.listings.slice(0, 3);
+  homeGrid.innerHTML = featured.map(createListingCardHTML).join('');
+  attachCardListeners(homeGrid);
+}
+
 // Attach overlay backdrop click dismissers
 [savedDrawer, inboxDrawer, profileDrawer].forEach((drawer) => {
   if (drawer) {
@@ -911,12 +1006,96 @@ if (postModal) {
 }
 if (postCloseBtn) postCloseBtn.addEventListener('click', closePostModal);
 
-// Navbar Button Listeners
-if (navSavedLink) navSavedLink.addEventListener('click', (e) => { e.preventDefault(); openSavedDrawer(); });
-if (navInboxLink) navInboxLink.addEventListener('click', (e) => { e.preventDefault(); openInboxDrawer(); });
-if (navProfileLink) navProfileLink.addEventListener('click', (e) => { e.preventDefault(); openProfileDrawer(); });
+// Navigation Button Listeners
+const brandLogoBtn = document.getElementById('brand-logo-btn');
+const navHomeLink = document.getElementById('nav-home-link');
+const navExploreLink = document.getElementById('nav-explore-link');
+const navPostLink = document.getElementById('nav-post-link');
+
+if (brandLogoBtn) brandLogoBtn.addEventListener('click', () => switchView('home'));
+if (navHomeLink) navHomeLink.addEventListener('click', () => switchView('home'));
+if (navExploreLink) navExploreLink.addEventListener('click', () => switchView('explore'));
+if (navAiMatchLink) navAiMatchLink.addEventListener('click', () => switchView('ai-match'));
+if (navPostLink) navPostLink.addEventListener('click', openPostModal);
+if (navSavedLink) navSavedLink.addEventListener('click', openSavedDrawer);
+if (navInboxLink) navInboxLink.addEventListener('click', openInboxDrawer);
+if (navProfileLink) navProfileLink.addEventListener('click', openProfileDrawer);
 if (navPostBtn) navPostBtn.addEventListener('click', openPostModal);
 if (profileEmptyBtn) profileEmptyBtn.addEventListener('click', openPostModal);
+
+// Inter-View Navigation Buttons
+const btnHeroExploreLink = document.getElementById('btn-hero-explore-link');
+const btnHomeViewAllExplore = document.getElementById('btn-home-view-all-explore');
+const btnAiBrowseExplore = document.getElementById('btn-ai-browse-explore');
+const btnActivityExploreLink = document.getElementById('btn-activity-explore-link');
+
+if (btnHeroExploreLink) btnHeroExploreLink.addEventListener('click', () => switchView('explore'));
+if (btnHomeViewAllExplore) btnHomeViewAllExplore.addEventListener('click', () => switchView('explore'));
+if (btnAiBrowseExplore) btnAiBrowseExplore.addEventListener('click', () => switchView('explore'));
+if (btnActivityExploreLink) btnActivityExploreLink.addEventListener('click', () => switchView('explore'));
+if (btnViewAllNotifs) {
+  btnViewAllNotifs.addEventListener('click', () => {
+    if (notifDropdown) notifDropdown.style.display = 'none';
+    switchView('activity');
+  });
+}
+
+// Category Cards on Home
+categoryFeatureCards.forEach((card) => {
+  card.addEventListener('click', () => {
+    const cat = card.getAttribute('data-category');
+    if (cat) {
+      switchView('explore');
+      setActiveFilter(cat);
+    }
+  });
+});
+
+// Hero AI Search and prompt chips
+if (heroSearchBtn && heroAiSearch) {
+  heroSearchBtn.addEventListener('click', () => {
+    const q = heroAiSearch.value.trim();
+    if (q) {
+      switchView('ai-match');
+      if (aiMatchInput) aiMatchInput.value = q;
+      runAiMatch(q);
+    }
+  });
+  heroAiSearch.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const q = heroAiSearch.value.trim();
+      if (q) {
+        switchView('ai-match');
+        if (aiMatchInput) aiMatchInput.value = q;
+        runAiMatch(q);
+      }
+    }
+  });
+}
+
+promptChips.forEach((chip) => {
+  chip.addEventListener('click', () => {
+    const query = chip.getAttribute('data-query') || chip.textContent.replace(/^[^\w\s]+/, '').trim();
+    if (heroAiSearch) heroAiSearch.value = query;
+    if (aiMatchInput) aiMatchInput.value = query;
+    switchView('ai-match');
+    runAiMatch(query);
+  });
+});
+
+if (exploreAiBtn) {
+  exploreAiBtn.addEventListener('click', () => {
+    const q = searchInput ? searchInput.value.trim() : '';
+    switchView('ai-match');
+    if (q) {
+      if (aiMatchInput) aiMatchInput.value = q;
+      runAiMatch(q);
+    } else {
+      if (aiMatchInput) aiMatchInput.focus();
+    }
+  });
+}
 
 // Keyboard Escape Key dismisser
 document.addEventListener('keydown', (e) => {
@@ -1911,6 +2090,49 @@ function setActiveFilter(filterName) {
   renderListings();
 }
 
+function getListingVisualTheme(listing) {
+  const cat = listing.category;
+  const t = (listing.title + ' ' + (listing.tags || []).join(' ')).toLowerCase();
+
+  if (cat === 'Item') {
+    if (t.includes('book') || t.includes('dbms') || t.includes('notes') || t.includes('textbook')) {
+      return { themeClass: 'banner-item-theme', icon: '📖', label: 'ACADEMIC MATERIAL' };
+    }
+    if (t.includes('calc') || t.includes('ti-84') || t.includes('math')) {
+      return { themeClass: 'banner-item-theme', icon: '🧮', label: 'HARDWARE & LAB' };
+    }
+    if (t.includes('arduino') || t.includes('sensor') || t.includes('circuit') || t.includes('kit')) {
+      return { themeClass: 'banner-item-theme', icon: '⚡', label: 'IOT & EMBEDDED' };
+    }
+    return { themeClass: 'banner-item-theme', icon: listing.icon || '📦', label: 'PHYSICAL ITEM' };
+  }
+
+  if (cat === 'Skill') {
+    if (t.includes('python') || t.includes('java') || t.includes('dsa') || t.includes('code') || t.includes('program')) {
+      return { themeClass: 'banner-skill-theme', icon: '🐍', label: 'PROGRAMMING & DSA' };
+    }
+    if (t.includes('ui') || t.includes('ux') || t.includes('figma') || t.includes('design')) {
+      return { themeClass: 'banner-skill-theme', icon: '🎨', label: 'UI/UX & DESIGN' };
+    }
+    if (t.includes('cyber') || t.includes('security') || t.includes('linux')) {
+      return { themeClass: 'banner-skill-theme', icon: '🛡️', label: 'CYBERSECURITY' };
+    }
+    return { themeClass: 'banner-skill-theme', icon: listing.icon || '🧠', label: 'PEER TUTORING' };
+  }
+
+  if (cat === 'Opportunity') {
+    if (t.includes('hackathon') || t.includes('collab') || t.includes('frontend') || t.includes('dev')) {
+      return { themeClass: 'banner-opp-theme', icon: '🚀', label: 'HACKATHON TEAM' };
+    }
+    if (t.includes('workshop') || t.includes('git') || t.includes('open source')) {
+      return { themeClass: 'banner-opp-theme', icon: '💻', label: 'CAMPUS WORKSHOP' };
+    }
+    return { themeClass: 'banner-opp-theme', icon: listing.icon || '🏆', label: 'STUDENT PROJECT' };
+  }
+
+  return { themeClass: 'banner-item-theme', icon: listing.icon || '✨', label: 'CAMPUS EXCHANGE' };
+}
+
 function createListingCardHTML(listing) {
   const safeId = escapeHtml(listing.id);
   const safeTitle = escapeHtml(listing.title);
@@ -1927,12 +2149,25 @@ function createListingCardHTML(listing) {
   const safeAvatar = escapeHtml(studentInfo.initials);
   const avatarGrad = studentInfo.grad;
 
+  const visual = getListingVisualTheme(listing);
+  const statusPill = listing.isFree
+    ? '<span class="card-media-chip">🎁 FREE / TRADE</span>'
+    : `<span class="card-media-chip">🟢 ${safeAvail}</span>`;
+
   const tagsHtml = (listing.tags || ['#srm', `#${listing.category.toLowerCase()}`])
     .map((tag) => `<span class="tag-pill" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`)
     .join('');
 
   return `
     <article class="listing-card-modern" data-id="${safeId}">
+      <div class="card-media-banner ${visual.themeClass}">
+        <span class="card-media-icon">${visual.icon}</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+          <span class="card-media-watermark">${visual.label}</span>
+          ${statusPill}
+        </div>
+      </div>
+
       <div class="card-author-header">
         <div class="card-author-left">
           <div class="student-avatar-wrap" data-student-name="${safeAuthor}" data-student-dept="${safeDept}">
@@ -1944,7 +2179,7 @@ function createListingCardHTML(listing) {
               <span class="card-author-name" data-student-name="${safeAuthor}">${safeAuthor}</span>
               <span class="badge-srm-verified" title="Verified SRM Student">✓ SRM Verified</span>
             </div>
-            <span class="author-time">${formattedTime} • 🟢 ${safeAvail}</span>
+            <span class="author-time">${formattedTime} • ${safeDept}</span>
           </div>
         </div>
         <button type="button" class="btn-card-save ${isSaved ? 'is-saved' : ''}" data-id="${safeId}" title="${isSaved ? 'Saved' : 'Save listing'}" aria-label="Save listing">
@@ -3529,6 +3764,7 @@ window.addEventListener('keydown', (e) => {
 
 // Initialize on Load
 initSRMVerification();
+renderHomeFeatured();
 renderListings();
 renderSavedListings();
 renderProfile();
@@ -3540,3 +3776,4 @@ renderStudentRecommendations();
 setupStudentHoverCards();
 initScrollReveal();
 initPulseAnimation();
+
