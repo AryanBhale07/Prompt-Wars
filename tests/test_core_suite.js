@@ -48,91 +48,55 @@ console.log('=================================================================\n
 // -------------------------------------------------------------------------
 // [A] SRM Verification Unit Tests
 // -------------------------------------------------------------------------
-console.log('--- [A] Testing SRM Verification Logic ---');
+console.log('--- [A] Testing Google OAuth Authentication Logic ---');
 
-function isValidSrmEmail(email) {
+function isValidEmail(email) {
   if (!email || typeof email !== 'string') return false;
   const cleanEmail = email.trim().toLowerCase();
-  const srmRegex = /^[a-zA-Z0-9._%+-]+@srmist\.edu\.in$/i;
-  return srmRegex.test(cleanEmail);
+  return cleanEmail.length > 3 && cleanEmail.includes('@') && cleanEmail.includes('.');
 }
 
-test('SRM Verification', 'Valid SRM student email is accepted', () => {
-  assert(isValidSrmEmail('rahul.sharma@srmist.edu.in'), 'Should accept valid student email');
-  assert(isValidSrmEmail('priya_nair12@srmist.edu.in'), 'Should accept valid email with numbers/underscores');
-  assert(isValidSrmEmail('arjun.k+study@srmist.edu.in'), 'Should accept valid email with plus tag');
+test('Google OAuth Logic', 'Valid Google email format is accepted', () => {
+  assert(isValidEmail('student@gmail.com'), 'Should accept valid Gmail address');
+  assert(isValidEmail('rahul.sharma@srmist.edu.in'), 'Should accept valid institutional address');
+  assert(isValidEmail('user@customdomain.org'), 'Should accept valid custom domain address');
+  assert(isValidEmail('alex.developer+study@outlook.com'), 'Should accept valid email with plus tag');
 });
 
-test('SRM Verification', 'Invalid and non-SRM emails are strictly rejected', () => {
-  assert(!isValidSrmEmail('user@gmail.com'), 'Should reject gmail.com');
-  assert(!isValidSrmEmail('student@outlook.com'), 'Should reject outlook.com');
-  assert(!isValidSrmEmail('student@srm.edu.in'), 'Should reject @srm.edu.in');
-  assert(!isValidSrmEmail('student@srmist.com'), 'Should reject @srmist.com');
-  assert(!isValidSrmEmail('student@srmist.ac.in'), 'Should reject @srmist.ac.in');
-  assert(!isValidSrmEmail('attacker@fake-srmist.edu.in.evil.com'), 'Should reject spoofed subdomains');
-  assert(!isValidSrmEmail('plainaddress'), 'Should reject missing @ and domain');
-  assert(!isValidSrmEmail('@srmist.edu.in'), 'Should reject missing local user part');
-  assert(!isValidSrmEmail(''), 'Should reject empty string');
-  assert(!isValidSrmEmail('   '), 'Should reject whitespace-only string');
-  assert(!isValidSrmEmail(null), 'Should reject null');
-  assert(!isValidSrmEmail(undefined), 'Should reject undefined');
+test('Google OAuth Logic', 'Malformed emails are rejected', () => {
+  assert(!isValidEmail('plainaddress'), 'Should reject missing @ and domain');
+  assert(!isValidEmail(''), 'Should reject empty string');
+  assert(!isValidEmail('   '), 'Should reject whitespace-only string');
+  assert(!isValidEmail(null), 'Should reject null');
+  assert(!isValidEmail(undefined), 'Should reject undefined');
 });
 
-test('SRM Verification', 'Email is normalized and trimmed before validation', () => {
-  assert(isValidSrmEmail('  abc123@srmist.edu.in  '), 'Should accept email with leading/trailing whitespace');
-  assert(isValidSrmEmail('student.name@srmist.edu.in'), 'Should accept dot username notation');
-  assert(isValidSrmEmail('RAHUL.S@SRMIST.EDU.IN'), 'Should accept uppercase email case-insensitively');
-});
-
-test('Google OAuth Session', 'Accepts authenticated SRM student session and sets verification state', () => {
+test('Google OAuth Session', 'Accepts any authenticated Google account and sets verification state', () => {
   const mockStorage = { data: {}, setItem(k, v) { this.data[k] = v; }, removeItem(k) { delete this.data[k]; } };
   let signedOut = false;
   const mockClient = { signOut() { signedOut = true; } };
 
   function handleSession(email) {
-    if (isValidSrmEmail(email)) {
+    if (isValidEmail(email)) {
       mockStorage.setItem('isSRMVerified', 'true');
-      return { allowed: true };
+      return { allowed: true, email };
     } else {
       mockClient.signOut();
       mockStorage.removeItem('isSRMVerified');
-      return { allowed: false, error: 'Access restricted to SRM students.' };
-    }
-  }
-
-  const srmRes = handleSession('student@srmist.edu.in');
-  assertEqual(srmRes.allowed, true, 'Valid SRM email must be allowed');
-  assertEqual(mockStorage.data.isSRMVerified, 'true', 'isSRMVerified must be true in storage');
-  assertEqual(signedOut, false, 'Should not sign out valid SRM user');
-});
-
-test('Google OAuth Session', 'Rejects non-SRM Google account, signs out, and purges session', () => {
-  const mockStorage = { data: { isSRMVerified: 'true' }, setItem(k, v) { this.data[k] = v; }, removeItem(k) { delete this.data[k]; } };
-  let signedOut = false;
-  const mockClient = { signOut() { signedOut = true; } };
-
-  function handleSession(email) {
-    if (isValidSrmEmail(email)) {
-      mockStorage.setItem('isSRMVerified', 'true');
-      return { allowed: true };
-    } else {
-      mockClient.signOut();
-      mockStorage.removeItem('isSRMVerified');
-      return { allowed: false, error: 'Access restricted to SRM students.' };
+      return { allowed: false, error: 'Invalid Google session' };
     }
   }
 
   const gmailRes = handleSession('student@gmail.com');
-  assertEqual(gmailRes.allowed, false, 'Gmail account must be rejected');
-  assertEqual(signedOut, true, 'Non-SRM account must be signed out immediately');
-  assertEqual(mockStorage.data.isSRMVerified, undefined, 'Verification flag must be purged');
-  assert(gmailRes.error.includes('Access restricted to SRM students'), 'Must provide exact denial message');
+  assertEqual(gmailRes.allowed, true, 'Gmail account must be allowed');
+  assertEqual(mockStorage.data.isSRMVerified, 'true', 'isSRMVerified must be true in storage');
+  assertEqual(signedOut, false, 'Should not sign out valid Google user');
 
-  const srmistComRes = handleSession('student@srmist.com');
-  assertEqual(srmistComRes.allowed, false, '@srmist.com must be rejected');
+  const srmRes = handleSession('rahul@srmist.edu.in');
+  assertEqual(srmRes.allowed, true, 'SRM Google account must also be allowed');
 
-  const fakeDomainRes = handleSession('attacker@srmist.edu.in.fake.com');
-  assertEqual(fakeDomainRes.allowed, false, 'Fake subdomains must be rejected');
+  const customRes = handleSession('developer@tech.io');
+  assertEqual(customRes.allowed, true, 'Custom domain Google account must be allowed');
 });
 
 // -------------------------------------------------------------------------

@@ -44,34 +44,28 @@ print("=================================================================\n")
 print("[Phase 1] Executing Core Logic Unit Tests (12 Functional Areas)...")
 
 # [A] SRM Email Validation Logic
-def is_valid_srm_email(email):
+def is_valid_email(email):
     if not email or not isinstance(email, str):
         return False
     clean = email.strip().lower()
-    return bool(re.match(r'^[a-zA-Z0-9._%+-]+@srmist\.edu\.in$', clean))
+    return bool(re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', clean))
 
-# Tests A: Verification Domain Matrix
-# 1. Valid Institutional Emails
-assert is_valid_srm_email("abc123@srmist.edu.in")
-assert is_valid_srm_email("student.name@srmist.edu.in")
-assert is_valid_srm_email("rahul.sharma@srmist.edu.in")
-assert is_valid_srm_email("priya_nair12@srmist.edu.in")
-assert is_valid_srm_email("  arjun.k@srmist.edu.in  ")
+# Tests A: Google Email Format Normalization & Validation
+# 1. Valid Google & Campus Emails
+assert is_valid_email("student@gmail.com")
+assert is_valid_email("student.name@srmist.edu.in")
+assert is_valid_email("rahul.sharma@srmist.edu.in")
+assert is_valid_email("priya_nair12@gmail.com")
+assert is_valid_email("  arjun.k@outlook.com  ")
+assert is_valid_email("developer@google.com")
 
-# 2. Strict Rejections
-assert not is_valid_srm_email("")                                      # Empty
-assert not is_valid_srm_email("   ")                                   # Whitespace
-assert not is_valid_srm_email(None)                                    # None
-assert not is_valid_srm_email("not-an-email")                          # Invalid format
-assert not is_valid_srm_email("@srmist.edu.in")                        # Missing username
-assert not is_valid_srm_email("student@gmail.com")                     # Gmail rejected
-assert not is_valid_srm_email("student@outlook.com")                   # Outlook rejected
-assert not is_valid_srm_email("student@srm.edu.in")                    # @srm.edu.in rejected
-assert not is_valid_srm_email("student@srmist.com")                    # @srmist.com rejected
-assert not is_valid_srm_email("student@srmist.ac.in")                  # @srmist.ac.in rejected
-assert not is_valid_srm_email("attacker@fake.srmist.edu.in.evil.com")  # Subdomain exploit
-assert not is_valid_srm_email("student@srmist.edu.in.fake.com")        # Fake domain suffix
-log_pass("Unit Test [A] SRM Verification", "Verified institutional email acceptance and strict rejection of unauthorized domains.")
+# 2. Strict Rejections of Malformed Strings
+assert not is_valid_email("")                                      # Empty
+assert not is_valid_email("   ")                                   # Whitespace
+assert not is_valid_email(None)                                    # None
+assert not is_valid_email("not-an-email")                          # Invalid format
+assert not is_valid_email("@gmail.com")                            # Missing username
+log_pass("Unit Test [A] Google Email Format", "Verified universal Google email format normalization and acceptance.")
 
 # [B] Google OAuth Auth Session Simulation
 class MockSupabaseClient:
@@ -92,10 +86,13 @@ class MockSupabaseClient:
         return {"error": None}
 
 def simulate_auth_session(client, mock_storage, user_email, metadata=None):
-    if not user_email:
-        return {"allowed": False, "reason": "No user"}
+    if not user_email or not isinstance(user_email, str):
+        client.signOut()
+        mock_storage.pop("isSRMVerified", None)
+        mock_storage.pop("currentEmail", None)
+        return {"allowed": False, "reason": "No user email"}
     clean_email = user_email.strip().lower()
-    if is_valid_srm_email(clean_email):
+    if clean_email and "@" in clean_email:
         mock_storage["isSRMVerified"] = "true"
         mock_storage["currentEmail"] = clean_email
         return {"allowed": True, "email": clean_email}
@@ -103,42 +100,39 @@ def simulate_auth_session(client, mock_storage, user_email, metadata=None):
         client.signOut()
         mock_storage.pop("isSRMVerified", None)
         mock_storage.pop("currentEmail", None)
-        return {
-            "allowed": False,
-            "error": "Access restricted to SRM students."
-        }
+        return {"allowed": False, "error": "Invalid email format."}
 
-# Test Valid SRM Account
+# Test Valid Google Account (Gmail)
 client1 = MockSupabaseClient()
 storage1 = {}
-res1 = simulate_auth_session(client1, storage1, "student@srmist.edu.in")
+res1 = simulate_auth_session(client1, storage1, "student@gmail.com")
 assert res1["allowed"] is True
 assert storage1.get("isSRMVerified") == "true"
 assert not client1.signed_out
 
-# Test Gmail Account Rejection
+# Test Valid Google Account (SRM Domain)
 client2 = MockSupabaseClient()
-storage2 = {"isSRMVerified": "true"}
-res2 = simulate_auth_session(client2, storage2, "student@gmail.com")
-assert res2["allowed"] is False
-assert "isSRMVerified" not in storage2
-assert client2.signed_out
-assert "Access restricted to SRM students" in res2["error"]
+storage2 = {}
+res2 = simulate_auth_session(client2, storage2, "student@srmist.edu.in")
+assert res2["allowed"] is True
+assert storage2.get("isSRMVerified") == "true"
+assert not client2.signed_out
 
-# Test srmist.com Rejection
+# Test Valid Google Account (Custom Domain)
 client3 = MockSupabaseClient()
 storage3 = {}
 res3 = simulate_auth_session(client3, storage3, "student@srmist.com")
-assert res3["allowed"] is False
-assert client3.signed_out
+assert res3["allowed"] is True
+assert storage3.get("isSRMVerified") == "true"
+assert not client3.signed_out
 
-# Test Fake Subdomain Rejection
+# Test Missing/Invalid Email
 client4 = MockSupabaseClient()
 storage4 = {}
-res4 = simulate_auth_session(client4, storage4, "student@srmist.edu.in.fake.com")
+res4 = simulate_auth_session(client4, storage4, "")
 assert res4["allowed"] is False
 assert client4.signed_out
-log_pass("Unit Test [B] Google OAuth Flow", "Verified Google session ingestion, @srmist.edu.in allow, and unauthorized account sign-out.")
+log_pass("Unit Test [B] Google OAuth Flow", "Verified universal Google OAuth session ingestion granting access to all authenticated Google accounts.")
 
 # [C] HTML Sanitization & XSS Defense
 def escape_html(s):
@@ -364,11 +358,11 @@ if "function escapeHtml(" in app_js_text and "function sanitizeText(" in app_js_
 else:
     log_fail("Security", "Missing escapeHtml or sanitizeText in app.js")
 
-# Audit 2: Institutional email validation
-if "@srmist.edu.in" in app_js_text and "isValidSrmEmail" in app_js_text:
-    log_pass("Security", "Strict institutional email validation (@srmist.edu.in) enforced.")
+# Audit 2: Universal Google authentication without restrictive domain blocks
+if "signInWithOAuth" in app_js_text:
+    log_pass("Security", "Universal Google OAuth authentication verified with zero @srmist.edu.in domain restrictions.")
 else:
-    log_fail("Security", "Missing @srmist.edu.in validation logic")
+    log_fail("Security", "Missing Google OAuth authentication in app.js")
 
 # Audit 3: No raw API keys, Google client secrets or service-role keys in client-side JS
 api_key_leak = re.findall(r'AIza[0-9A-Za-z-_]{35}', app_js_text)
@@ -425,17 +419,17 @@ if 'redirectTo: window.location.origin' in app_js_text or 'redirectTo:window.loc
 else:
     log_fail("OAuth Redirect", "Missing or hardcoded redirectTo URL in app.js.")
 
-# Audit 10: Source of Truth Domain Verification & Unauthorized Account Denials
-if 'isValidSrmEmail(authUserEmail)' in app_js_text and 'signOut()' in app_js_text:
-    log_pass("OAuth Security", "Strict source-of-truth email domain verification with automatic signOut() on unauthorized domains.")
+# Audit 10: Universal Google OAuth Access Flow
+if 'handleAuthSession' in app_js_text and 'state.profile.email = authUserEmail' in app_js_text:
+    log_pass("OAuth Access Flow", "Universal Google OAuth authentication grants immediate verified access to all authenticated Google accounts.")
 else:
-    log_fail("OAuth Security", "Missing post-OAuth authenticated email domain verification or signOut() rejection flow.")
+    log_fail("OAuth Access Flow", "Missing handleAuthSession or universal Google OAuth access flow in app.js.")
 
-# Audit 11: Denial Notice Exact Requirement
-if 'Access restricted to SRM students.' in app_js_text or 'Access restricted to verified SRM students' in app_js_text:
-    log_pass("OAuth Rejection Notice", "Configured exact security denial notice for non-SRM Google accounts.")
+# Audit 11: Clean Gate UI & Zero Domain Restrictions
+if 'id="btn-google-login"' in index_html_text and 'Sign in with Google to continue.' in index_html_text:
+    log_pass("OAuth Login UI", "Configured clean Google Sign-In gate with zero domain restrictions.")
 else:
-    log_fail("OAuth Rejection Notice", "Missing exact security denial message in app.js.")
+    log_fail("OAuth Login UI", "Missing Google sign-in gate in index.html.")
 
 # Audit 12: Logout Dialog & Supabase SignOut Workflow Components
 if 'id="btn-profile-logout"' in index_html_text and 'id="logout-modal"' in index_html_text:

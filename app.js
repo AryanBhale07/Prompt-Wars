@@ -2113,15 +2113,6 @@ function getSupabaseClient() {
   return null;
 }
 
-function isValidSrmEmail(email) {
-  if (!email || typeof email !== 'string') return false;
-  const cleanEmail = email.trim().toLowerCase();
-  
-  // Must have local username part and end strictly with @srmist.edu.in
-  const srmRegex = /^[a-zA-Z0-9._%+-]+@srmist\.edu\.in$/i;
-  return srmRegex.test(cleanEmail);
-}
-
 function isSRMVerified() {
   return localStorage.getItem('isSRMVerified') === 'true';
 }
@@ -2174,57 +2165,34 @@ async function handleGoogleSignIn() {
 }
 
 async function handleAuthSession(session) {
-  const client = getSupabaseClient();
   if (!session || !session.user) return false;
 
   const authUserEmail = (session.user.email || '').toLowerCase().trim();
+  if (!authUserEmail) return false;
 
-  // Critical Security Check: authenticated email MUST end with @srmist.edu.in
-  if (isValidSrmEmail(authUserEmail)) {
-    localStorage.setItem('isSRMVerified', 'true');
-    state.currentSrmEmail = authUserEmail;
-    state.profile.email = authUserEmail;
+  // Universal Google Authentication: Any authenticated Google account is granted access
+  localStorage.setItem('isSRMVerified', 'true');
+  state.currentSrmEmail = authUserEmail;
+  state.profile.email = authUserEmail;
 
-    if (session.user.user_metadata) {
-      if (session.user.user_metadata.full_name) {
-        state.profile.name = session.user.user_metadata.full_name;
-      } else if (session.user.user_metadata.name) {
-        state.profile.name = session.user.user_metadata.name;
-      }
-      const rawName = state.profile.name || 'SRM Student';
-      const parts = rawName.trim().split(/\s+/);
-      state.profile.avatar = parts.length > 1 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : rawName.slice(0, 2).toUpperCase();
+  if (session.user.user_metadata) {
+    if (session.user.user_metadata.full_name) {
+      state.profile.name = session.user.user_metadata.full_name;
+    } else if (session.user.user_metadata.name) {
+      state.profile.name = session.user.user_metadata.name;
     }
-    saveStoredProfile();
-
-    if (srmAccessGate) srmAccessGate.style.display = 'none';
-    if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
-    clearGateAuthError();
-    document.body.style.overflow = 'auto';
-    renderProfile();
-    return true;
-  } else {
-    // Rejection Flow: Authenticated Google account is NOT an SRM address!
-    console.warn('[RExchange Security] Non-SRM Google Account Denied:', authUserEmail);
-    if (client) {
-      try {
-        await client.auth.signOut();
-      } catch (e) {
-        console.warn('[Supabase SignOut Error on Rejection]', e);
-      }
-    }
-    localStorage.removeItem('isSRMVerified');
-    state.currentSrmEmail = '';
-
-    if (srmAccessGate) srmAccessGate.style.display = 'flex';
-    if (navSrmBadge) navSrmBadge.style.display = 'none';
-    document.body.style.overflow = 'hidden';
-
-    const denialMessage = 'Access restricted to SRM students.';
-    showGateAuthError(denialMessage);
-    renderProfile();
-    return false;
+    const rawName = state.profile.name || 'Campus Student';
+    const parts = rawName.trim().split(/\s+/);
+    state.profile.avatar = parts.length > 1 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : rawName.slice(0, 2).toUpperCase();
   }
+  saveStoredProfile();
+
+  if (srmAccessGate) srmAccessGate.style.display = 'none';
+  if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
+  clearGateAuthError();
+  document.body.style.overflow = 'auto';
+  renderProfile();
+  return true;
 }
 
 async function initSRMVerification() {

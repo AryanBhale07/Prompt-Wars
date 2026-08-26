@@ -1,9 +1,15 @@
 # Verification test suite for RExchange Single-Page Multi-View Interactive Experience
+import os
+import sys
 import urllib.request
 import json
-import time
+import socket
+import threading
+import socketserver
 
-BASE_URL = "http://127.0.0.1:8080"
+WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, WORKSPACE_DIR)
+os.chdir(WORKSPACE_DIR)
 
 print("=================================================================")
 print("RExchange Single-Page Multi-Section Verification Suite")
@@ -11,9 +17,42 @@ print("=================================================================")
 
 # 1. Test Server Connectivity & Static Files
 print("\n[1] Testing Static Assets on Local HTTP Server...")
+
+test_server = None
+base_url = "http://127.0.0.1:8000"
+
+def get_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
+
+server_running = False
+try:
+    with urllib.request.urlopen(f"{base_url}/", timeout=1) as resp:
+        if resp.status == 200:
+            server_running = True
+except Exception:
+    server_running = False
+
+if not server_running:
+    try:
+        from server import RExchangeHandler
+        test_port = get_free_port()
+        base_url = f"http://127.0.0.1:{test_port}"
+        
+        class TestTCPServer(socketserver.TCPServer):
+            allow_reuse_address = True
+
+        test_server = TestTCPServer(("", test_port), RExchangeHandler)
+        server_thread = threading.Thread(target=test_server.serve_forever, daemon=True)
+        server_thread.start()
+        server_running = True
+    except Exception as e:
+        print(f"  [Notice] Could not start in-process server: {e}")
+
 for path in ["/", "/style.css", "/app.js"]:
-    url = f"{BASE_URL}{path}"
-    with urllib.request.urlopen(url, timeout=3) as resp:
+    url = f"{base_url}{path}"
+    with urllib.request.urlopen(url, timeout=4) as resp:
         content = resp.read()
         assert resp.status == 200, f"Failed GET {path}"
         print(f"[PASS] [{resp.status}] {path:14} -> OK ({len(content)} bytes)")
@@ -22,7 +61,7 @@ for path in ["/", "/style.css", "/app.js"]:
 print("\n[2] Testing AI Assist API...")
 payload = json.dumps({"description": "I have old java books for first year students"}).encode("utf-8")
 req = urllib.request.Request(
-    f"{BASE_URL}/api/ai-assist",
+    f"{base_url}/api/ai-assist",
     data=payload,
     headers={"Content-Type": "application/json"}
 )
@@ -31,6 +70,10 @@ with urllib.request.urlopen(req, timeout=5) as resp:
     data = json.loads(resp.read().decode("utf-8"))
     assert "title" in data and "category" in data and "description" in data
     print(f"[PASS] AI Assist response: Title='{data['title']}', Category='{data['category']}'")
+
+if test_server:
+    test_server.shutdown()
+    test_server.server_close()
 
 # 3. Test HTML Structure & Elements
 print("\n[3] Testing HTML Structure & Single-Page Multi-View Components...")

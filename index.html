@@ -27,23 +27,23 @@
   <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
 
   <!-- =========================================================================
-       SRM Student Verification & Access Gate (Full-Screen Shield Overlay)
+       Student Authentication & Access Gate (Full-Screen Shield Overlay)
        ========================================================================= -->
   <div id="srm-access-gate" class="srm-gate-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="gate-main-heading">
     <div class="srm-gate-container">
       
-      <!-- SRM Gate Header Identity -->
+      <!-- Gate Header Identity -->
       <div class="srm-gate-badge">
         <span class="shield-icon">🛡️</span>
-        <span class="badge-mono-text">EXCLUSIVE CAMPUS ACCESS</span>
+        <span class="badge-mono-text">CAMPUS ACCESS</span>
       </div>
 
       <!-- Google Sign-In Gate Block -->
       <div id="gate-step-welcome" class="gate-step-block">
         <h1 id="gate-main-heading" class="gate-title">Welcome to <span class="text-gradient-green">RExchange.</span></h1>
-        <p class="gate-subtitle">Sign in with your SRM Google account to continue.</p>
+        <p class="gate-subtitle">Sign in with Google to continue.</p>
         <p class="gate-description">
-          RExchange is a trusted campus network where verified SRM students exchange textbooks, share technical skills, and collaborate on student projects and hackathons.
+          RExchange is a trusted campus network where students exchange textbooks, share technical skills, and collaborate on student projects and hackathons.
         </p>
 
         <div class="gate-perks-grid">
@@ -51,7 +51,7 @@
             <span class="perk-icon">✓</span>
             <div class="perk-text">
               <strong>100% Student Verified</strong>
-              <span>Restricted exclusively to active @srmist.edu.in accounts</span>
+              <span>Direct peer-to-peer campus exchange network</span>
             </div>
           </div>
           <div class="gate-perk-item">
@@ -70,7 +70,7 @@
           </div>
         </div>
 
-        <!-- Auth Error Banner (e.g. non-SRM account rejection) -->
+        <!-- Auth Error Banner -->
         <div id="gate-auth-error" class="gate-error-banner" style="display: none;" role="alert"></div>
 
         <!-- Google OAuth Primary Button -->
@@ -83,10 +83,6 @@
           </svg>
           <span>Continue with Google</span>
         </button>
-
-        <p class="gate-restriction-text">
-          🔒 Access is restricted to <span class="badge-srm-domain">@srmist.edu.in</span> accounts.
-        </p>
       </div>
 
     </div>
@@ -137,12 +133,12 @@
           </div>
         </div>
 
-        <!-- SRM Verified Status Badge in Navbar -->
-        <div id="nav-srm-badge" class="nav-srm-verified-badge" style="display: none;" title="Verified SRM Student Member">
-          <span class="srm-badge-icon">✓</span> <span class="srm-badge-text">SRM Verified</span>
+        <!-- Verified Status Badge in Navbar -->
+        <div id="nav-srm-badge" class="nav-srm-verified-badge" style="display: none;" title="Verified Student Member">
+          <span class="srm-badge-icon">✓</span> <span class="srm-badge-text">✓ Verified</span>
         </div>
-        <button type="button" id="btn-reset-srm-demo" class="btn-demo-reset" title="Reset SRM Access Gate to test verification flow again">
-          🔒 Reset SRM Demo
+        <button type="button" id="btn-reset-srm-demo" class="btn-demo-reset" title="Sign In / Switch Account">
+          🔒 Sign In / Gate
         </button>
         <button type="button" id="nav-post-btn" class="nav-btn-primary">+ Post Something</button>
       </div>
@@ -1531,16 +1527,16 @@
   </div>
 
   <!-- =========================================================================
-       MODAL 4: SRM Verification Required Protection Modal
+       MODAL 4: Google Sign-In Required Protection Modal
        ========================================================================= -->
   <div id="srm-protection-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="protection-heading">
     <div class="modal-card srm-protection-card">
       <div class="gate-success-icon-wrap" style="background: rgba(0, 255, 133, 0.1); border: 1px solid var(--accent-green-border);">
         <span style="font-size: 2rem;">🛡️</span>
       </div>
-      <h2 id="protection-heading" class="modal-heading" style="text-align: center; margin-top: 14px;">SRM verification required</h2>
+      <h2 id="protection-heading" class="modal-heading" style="text-align: center; margin-top: 14px;">Google sign-in required</h2>
       <p class="gate-subtitle" style="text-align: center; margin-bottom: 20px;">
-        To protect campus safety and prevent spam, posting listings and messaging peers is restricted exclusively to verified SRM students.
+        To protect campus safety and prevent spam, posting listings and messaging peers requires signing in with Google.
       </p>
 
       <div class="profile-edit-actions" style="justify-content: center; gap: 12px;">
