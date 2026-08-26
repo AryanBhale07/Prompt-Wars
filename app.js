@@ -761,30 +761,8 @@ const state = {
 
 // SRM Access Gate Elements
 const srmAccessGate = document.getElementById('srm-access-gate');
-const gateStepWelcome = document.getElementById('gate-step-welcome');
-const gateStepEmail = document.getElementById('gate-step-email');
-const gateStepCode = document.getElementById('gate-step-code');
-const gateStepSuccess = document.getElementById('gate-step-success');
-
-const btnContinueSrm = document.getElementById('btn-continue-srm');
-const btnEmailBack = document.getElementById('btn-email-back');
-const srmEmailForm = document.getElementById('srm-email-form');
-const srmEmailInput = document.getElementById('srm-email-input');
-const srmEmailError = document.getElementById('srm-email-error');
-const btnVerifyEmail = document.getElementById('btn-verify-email');
-const btnVerifyEmailText = document.getElementById('btn-verify-email-text');
-
-const btnCodeBack = document.getElementById('btn-code-back');
-const srmTargetEmail = document.getElementById('srm-target-email');
-const srmCodeForm = document.getElementById('srm-code-form');
-const srmCodeInput = document.getElementById('srm-code-input');
-const srmCodeError = document.getElementById('srm-code-error');
-const btnVerifyCode = document.getElementById('btn-verify-code');
-const btnVerifyCodeText = document.getElementById('btn-verify-code-text');
-const btnResendCode = document.getElementById('btn-resend-code');
-const resendCountdown = document.getElementById('resend-countdown');
-
-const btnEnterRexchange = document.getElementById('btn-enter-rexchange');
+const gateAuthError = document.getElementById('gate-auth-error');
+const btnGoogleLogin = document.getElementById('btn-google-login');
 const navSrmBadge = document.getElementById('nav-srm-badge');
 const btnResetSrmDemo = document.getElementById('btn-reset-srm-demo');
 const inboxUnreadBadge = document.getElementById('inbox-unread-badge');
@@ -2107,20 +2085,20 @@ activityFilterButtons.forEach((btn) => {
 });
 
 // ==========================================================================
-// SRM Student Sign-In & Supabase Email OTP Verification (@srmist.edu.in)
+// SRM Student Sign-In & Supabase Google OAuth (@srmist.edu.in)
 // --------------------------------------------------------------------------
 // SECURITY ARCHITECTURE:
-// 1. Step 1: Pre-validation of typed institutional email ending in @srmist.edu.in.
-// 2. Step 2: Real Supabase signInWithOtp({ email, options: { shouldCreateUser: true } }).
-// 3. Step 3: 30-second resend cooldown timer to prevent spam.
-// 4. Step 4: Real Supabase verifyOtp({ email, token, type: 'email' }).
-// 5. Step 5 (Source of Truth): Verify authenticated email from session.user.email.
-//    If not @srmist.edu.in, immediately signOut() and deny entry.
-// 6. Zero client secrets exposed in frontend code.
+// 1. Google OAuth initiated via Supabase (provider: 'google', redirectTo: window.location.origin).
+// 2. Authenticated user's actual email is retrieved from Supabase session (getSession / onAuthStateChange).
+//    Frontend never trusts user-typed email inputs.
+// 3. Strict Domain Validation: User is only granted access if email ends with @srmist.edu.in.
+// 4. Unauthorized domain rejection: If non-SRM email (@gmail.com, @srmist.com, fake subdomains):
+//    - Immediately call Supabase signOut()
+//    - Clear local session & state
+//    - Return to login screen
+//    - Display "Access restricted to verified SRM students. Please use your SRM Google account."
+// 5. Zero exposed secrets or client credentials in frontend code.
 // ==========================================================================
-
-let resendTimerId = null;
-let resendSecondsRemaining = 0;
 
 function getSupabaseClient() {
   if (window.supabase && window.supabase.createClient && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.anonKey) {
@@ -2133,15 +2111,6 @@ function getSupabaseClient() {
     return window._supabaseClientInstance;
   }
   return null;
-}
-
-function switchGateStep(activeStepElement) {
-  [gateStepWelcome, gateStepEmail, gateStepCode, gateStepSuccess].forEach((el) => {
-    if (el) el.style.display = 'none';
-  });
-  if (activeStepElement) {
-    activeStepElement.style.display = 'block';
-  }
 }
 
 function isValidSrmEmail(email) {
@@ -2157,6 +2126,167 @@ function isSRMVerified() {
   return localStorage.getItem('isSRMVerified') === 'true';
 }
 
+function showGateAuthError(message) {
+  if (gateAuthError) {
+    gateAuthError.textContent = message;
+    gateAuthError.style.display = 'block';
+  }
+  showToast(`❌ ${message}`);
+}
+
+function clearGateAuthError() {
+  if (gateAuthError) {
+    gateAuthError.textContent = '';
+    gateAuthError.style.display = 'none';
+  }
+}
+
+async function handleGoogleSignIn() {
+  const client = getSupabaseClient();
+  clearGateAuthError();
+
+  if (!client) {
+    showGateAuthError('Authentication service is initializing. Please try again.');
+    return;
+  }
+
+  try {
+    const { data, error } = await client.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) {
+      console.error('[Supabase Google OAuth Error]', error);
+      showGateAuthError(error.message || 'Google Sign-In failed. Please try again.');
+      return;
+    }
+
+    if (data && data.url) {
+      window.location.href = data.url;
+    }
+  } catch (err) {
+    console.error('[Supabase Google OAuth Exception]', err);
+    showGateAuthError('Unable to connect to Google authentication. Please try again.');
+  }
+}
+
+async function handleAuthSession(session) {
+  const client = getSupabaseClient();
+  if (!session || !session.user) return false;
+
+  const authUserEmail = (session.user.email || '').toLowerCase().trim();
+
+  // Critical Security Check: authenticated email MUST end with @srmist.edu.in
+  if (isValidSrmEmail(authUserEmail)) {
+    localStorage.setItem('isSRMVerified', 'true');
+    state.currentSrmEmail = authUserEmail;
+    state.profile.email = authUserEmail;
+
+    if (session.user.user_metadata) {
+      if (session.user.user_metadata.full_name) {
+        state.profile.name = session.user.user_metadata.full_name;
+      } else if (session.user.user_metadata.name) {
+        state.profile.name = session.user.user_metadata.name;
+      }
+      const rawName = state.profile.name || 'SRM Student';
+      const parts = rawName.trim().split(/\s+/);
+      state.profile.avatar = parts.length > 1 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : rawName.slice(0, 2).toUpperCase();
+    }
+    saveStoredProfile();
+
+    if (srmAccessGate) srmAccessGate.style.display = 'none';
+    if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
+    clearGateAuthError();
+    document.body.style.overflow = 'auto';
+    renderProfile();
+    return true;
+  } else {
+    // Rejection Flow: Authenticated Google account is NOT an SRM address!
+    console.warn('[RExchange Security] Non-SRM Google Account Denied:', authUserEmail);
+    if (client) {
+      try {
+        await client.auth.signOut();
+      } catch (e) {
+        console.warn('[Supabase SignOut Error on Rejection]', e);
+      }
+    }
+    localStorage.removeItem('isSRMVerified');
+    state.currentSrmEmail = '';
+
+    if (srmAccessGate) srmAccessGate.style.display = 'flex';
+    if (navSrmBadge) navSrmBadge.style.display = 'none';
+    document.body.style.overflow = 'hidden';
+
+    const denialMessage = 'Access restricted to SRM students.';
+    showGateAuthError(denialMessage);
+    renderProfile();
+    return false;
+  }
+}
+
+async function initSRMVerification() {
+  const client = getSupabaseClient();
+
+  if (client) {
+    // Register real-time auth state listener once
+    if (!window._supabaseAuthListenerAttached) {
+      window._supabaseAuthListenerAttached = true;
+      try {
+        client.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' && session && session.user) {
+            await handleAuthSession(session);
+          } else if (event === 'SIGNED_OUT') {
+            localStorage.removeItem('isSRMVerified');
+            state.currentSrmEmail = '';
+            if (srmAccessGate) srmAccessGate.style.display = 'flex';
+            if (navSrmBadge) navSrmBadge.style.display = 'none';
+            document.body.style.overflow = 'hidden';
+            renderProfile();
+          }
+        });
+      } catch (err) {
+        console.warn('[RExchange Auth Listener Warning]', err);
+      }
+    }
+
+    try {
+      const { data, error } = await client.auth.getSession();
+      if (data && data.session && data.session.user) {
+        const isAllowed = await handleAuthSession(data.session);
+        if (isAllowed) return;
+      } else {
+        // No active Supabase session -> show login screen
+        localStorage.removeItem('isSRMVerified');
+        state.currentSrmEmail = '';
+        if (srmAccessGate) srmAccessGate.style.display = 'flex';
+        if (navSrmBadge) navSrmBadge.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+        renderProfile();
+        return;
+      }
+    } catch (err) {
+      console.warn('[RExchange Auth getSession Warning]', err);
+    }
+  }
+
+  // Fallback check (for offline/standalone test mock environments)
+  const verified = isSRMVerified();
+  if (verified) {
+    if (srmAccessGate) srmAccessGate.style.display = 'none';
+    if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
+    document.body.style.overflow = 'auto';
+  } else {
+    if (srmAccessGate) srmAccessGate.style.display = 'flex';
+    if (navSrmBadge) navSrmBadge.style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  }
+
+  renderProfile();
+}
+
 function requireSRMVerification(featureName = 'this feature') {
   if (isSRMVerified()) return true;
 
@@ -2169,353 +2299,39 @@ function requireSRMVerification(featureName = 'this feature') {
   return false;
 }
 
-function startResendCooldown() {
-  if (resendTimerId) clearInterval(resendTimerId);
-  resendSecondsRemaining = 30;
-
-  const resendBtn = document.getElementById('btn-resend-code');
-  const resendCountdown = document.getElementById('resend-countdown');
-
-  if (resendBtn) {
-    resendBtn.disabled = true;
-    resendBtn.style.opacity = '0.5';
-    resendBtn.style.cursor = 'not-allowed';
-    resendBtn.textContent = 'Resend code in';
-  }
-  if (resendCountdown) {
-    resendCountdown.style.display = 'inline';
-    resendCountdown.textContent = `(${resendSecondsRemaining}s)`;
-  }
-
-  resendTimerId = setInterval(() => {
-    resendSecondsRemaining--;
-    if (resendSecondsRemaining > 0) {
-      if (resendCountdown) resendCountdown.textContent = `(${resendSecondsRemaining}s)`;
-    } else {
-      clearInterval(resendTimerId);
-      resendTimerId = null;
-      if (resendBtn) {
-        resendBtn.disabled = false;
-        resendBtn.style.opacity = '1';
-        resendBtn.style.cursor = 'pointer';
-        resendBtn.textContent = 'Resend Code';
-      }
-      if (resendCountdown) {
-        resendCountdown.style.display = 'none';
-      }
-    }
-  }, 1000);
-}
-
-async function initSRMVerification() {
-  const client = getSupabaseClient();
-  
-  if (client) {
-    try {
-      const { data, error } = await client.auth.getSession();
-      if (data && data.session && data.session.user) {
-        const authUserEmail = (data.session.user.email || '').toLowerCase().trim();
-        
-        // Critical Security Check: authenticated email MUST end with @srmist.edu.in
-        if (isValidSrmEmail(authUserEmail)) {
-          localStorage.setItem('isSRMVerified', 'true');
-          state.currentSrmEmail = authUserEmail;
-          state.profile.email = authUserEmail;
-          
-          if (data.session.user.user_metadata && data.session.user.user_metadata.full_name) {
-            state.profile.name = data.session.user.user_metadata.full_name;
-          }
-          saveStoredProfile();
-          
-          if (srmAccessGate) srmAccessGate.style.display = 'none';
-          if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
-          document.body.style.overflow = 'auto';
-          renderProfile();
-          return;
-        } else {
-          // Rejection Flow: Authenticated account is NOT an SRM address!
-          console.warn('[RExchange Security] Unauthorized Account:', authUserEmail);
-          await client.auth.signOut();
-          localStorage.removeItem('isSRMVerified');
-          
-          if (srmEmailError) {
-            srmEmailError.textContent = 'Access restricted to verified SRM students.';
-            srmEmailError.style.display = 'block';
-          }
-          
-          if (srmAccessGate) srmAccessGate.style.display = 'flex';
-          if (navSrmBadge) navSrmBadge.style.display = 'none';
-          document.body.style.overflow = 'hidden';
-          switchGateStep(gateStepEmail);
-          showToast('❌ Access restricted to verified SRM students (@srmist.edu.in).');
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn('[RExchange Auth]', err);
-    }
-  }
-
-  const verified = isSRMVerified();
-
-  if (verified) {
-    if (srmAccessGate) srmAccessGate.style.display = 'none';
-    if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
-    document.body.style.overflow = 'auto';
-  } else {
-    if (srmAccessGate) srmAccessGate.style.display = 'flex';
-    if (navSrmBadge) navSrmBadge.style.display = 'none';
-    document.body.style.overflow = 'hidden';
-    switchGateStep(gateStepWelcome);
-  }
-
-  renderProfile();
-}
-
-if (btnContinueSrm) {
-  btnContinueSrm.addEventListener('click', () => {
-    switchGateStep(gateStepEmail);
-    if (srmEmailInput) {
-      srmEmailInput.value = '';
-      srmEmailInput.focus();
-    }
-    if (srmEmailError) srmEmailError.style.display = 'none';
-  });
-}
-
-if (btnEmailBack) {
-  btnEmailBack.addEventListener('click', () => {
-    switchGateStep(gateStepWelcome);
-  });
-}
-
-if (btnCodeBack) {
-  btnCodeBack.addEventListener('click', () => {
-    switchGateStep(gateStepEmail);
-    if (srmEmailInput) srmEmailInput.focus();
-    if (srmEmailError) srmEmailError.style.display = 'none';
-  });
-}
-
-async function requestEmailOtp(email) {
-  const client = getSupabaseClient();
-  const cleanEmail = email.trim().toLowerCase();
-
-  if (btnVerifyEmail) btnVerifyEmail.disabled = true;
-  if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Sending code...';
-  if (srmEmailError) srmEmailError.style.display = 'none';
-
-  if (!client) {
-    if (srmEmailError) {
-      srmEmailError.textContent = 'Authentication service is initializing. Please try again.';
-      srmEmailError.style.display = 'block';
-    }
-    if (btnVerifyEmail) btnVerifyEmail.disabled = false;
-    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
-    return false;
-  }
-
-  try {
-    const { data, error } = await client.auth.signInWithOtp({
-      email: cleanEmail,
-      options: {
-        shouldCreateUser: true
-      }
-    });
-
-    if (error) {
-      console.error('[Supabase OTP Send Error]', error);
-      if (srmEmailError) {
-        srmEmailError.textContent = error.message || 'Unable to send verification code. Please check your email and try again.';
-        srmEmailError.style.display = 'block';
-      }
-      if (btnVerifyEmail) btnVerifyEmail.disabled = false;
-      if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
-      return false;
-    }
-
-    // Success: transition to OTP Code Entry step
-    state.currentSrmEmail = cleanEmail;
-    if (srmTargetEmail) srmTargetEmail.textContent = cleanEmail;
-    
-    if (btnVerifyEmail) btnVerifyEmail.disabled = false;
-    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
-
-    switchGateStep(gateStepCode);
-    startResendCooldown();
-
-    if (srmCodeInput) {
-      srmCodeInput.value = '';
-      srmCodeInput.focus();
-    }
-    if (srmCodeError) srmCodeError.style.display = 'none';
-    showToast('✉️ Verification code sent to your SRM email!');
-    return true;
-  } catch (err) {
-    console.error('[Supabase OTP Send Exception]', err);
-    if (srmEmailError) {
-      srmEmailError.textContent = 'Network error while contacting verification service.';
-      srmEmailError.style.display = 'block';
-    }
-    if (btnVerifyEmail) btnVerifyEmail.disabled = false;
-    if (btnVerifyEmailText) btnVerifyEmailText.textContent = 'Send Verification Code';
-    return false;
-  }
-}
-
-if (srmEmailForm) {
-  srmEmailForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const rawEmail = (srmEmailInput.value || '').trim();
-
-    if (!isValidSrmEmail(rawEmail)) {
-      if (srmEmailError) {
-        srmEmailError.textContent = 'Please use your SRM institutional email (@srmist.edu.in).';
-        srmEmailError.style.display = 'block';
-      }
-      srmEmailInput.focus();
-      return;
-    }
-
-    if (srmEmailError) srmEmailError.style.display = 'none';
-    await requestEmailOtp(rawEmail);
-  });
-}
-
-if (btnResendCode) {
-  btnResendCode.addEventListener('click', async () => {
-    if (resendSecondsRemaining > 0) return;
-    if (state.currentSrmEmail && isValidSrmEmail(state.currentSrmEmail)) {
-      await requestEmailOtp(state.currentSrmEmail);
-    } else {
-      switchGateStep(gateStepEmail);
-    }
-  });
-}
-
-if (srmCodeForm) {
-  srmCodeForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const token = (srmCodeInput ? srmCodeInput.value : '').trim();
-    const email = state.currentSrmEmail;
-
-    if (!token || token.length < 6) {
-      if (srmCodeError) {
-        srmCodeError.textContent = 'Please enter the 6-digit code received on your SRM email.';
-        srmCodeError.style.display = 'block';
-      }
-      if (srmCodeInput) srmCodeInput.focus();
-      return;
-    }
-
-    if (srmCodeError) srmCodeError.style.display = 'none';
-    if (btnVerifyCode) btnVerifyCode.disabled = true;
-    if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verifying...';
-
-    const client = getSupabaseClient();
-    if (!client) {
-      if (srmCodeError) {
-        srmCodeError.textContent = 'Authentication service is initializing. Please try again.';
-        srmCodeError.style.display = 'block';
-      }
-      if (btnVerifyCode) btnVerifyCode.disabled = false;
-      if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
-      return;
-    }
-
-    try {
-      const { data, error } = await client.auth.verifyOtp({
-        email: email,
-        token: token,
-        type: 'email'
-      });
-
-      if (error) {
-        console.error('[Supabase OTP Verification Error]', error);
-        if (srmCodeError) {
-          srmCodeError.textContent = error.message || 'Invalid or expired verification code. Please check and try again.';
-          srmCodeError.style.display = 'block';
-        }
-        if (btnVerifyCode) btnVerifyCode.disabled = false;
-        if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
-        return;
-      }
-
-      // Read authenticated session user
-      const authEmail = (data && data.user && data.user.email) ? data.user.email.toLowerCase().trim() : (data && data.session && data.session.user && data.session.user.email) ? data.session.user.email.toLowerCase().trim() : '';
-
-      // Critical Security Check: authenticated email MUST end with @srmist.edu.in
-      if (isValidSrmEmail(authEmail)) {
-        localStorage.setItem('isSRMVerified', 'true');
-        state.profile.email = authEmail;
-        saveStoredProfile();
-
-        if (btnVerifyCode) btnVerifyCode.disabled = false;
-        if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
-
-        // Transition to verified success screen
-        switchGateStep(gateStepSuccess);
-      } else {
-        await client.auth.signOut();
-        localStorage.removeItem('isSRMVerified');
-        if (srmCodeError) {
-          srmCodeError.textContent = 'Access restricted to verified SRM students.';
-          srmCodeError.style.display = 'block';
-        }
-        if (btnVerifyCode) btnVerifyCode.disabled = false;
-        if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
-      }
-    } catch (err) {
-      console.error('[Supabase OTP Verification Exception]', err);
-      if (srmCodeError) {
-        srmCodeError.textContent = 'Network error during verification. Please try again.';
-        srmCodeError.style.display = 'block';
-      }
-      if (btnVerifyCode) btnVerifyCode.disabled = false;
-      if (btnVerifyCodeText) btnVerifyCodeText.textContent = 'Verify Code';
-    }
-  });
-}
-
-if (btnEnterRexchange) {
-  btnEnterRexchange.addEventListener('click', () => {
-    localStorage.setItem('isSRMVerified', 'true');
-    if (srmAccessGate) srmAccessGate.style.display = 'none';
-    if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
-    document.body.style.overflow = 'auto';
-    renderProfile();
-    createNotification({
-      type: 'listings',
-      icon: '✓',
-      title: 'SRM Verified',
-      desc: 'Your official @srmist.edu.in student verification is active. Welcome to RExchange!',
-      targetId: 'profile',
-      actionType: 'open-profile'
-    });
-    showToast('🎓 Welcome to RExchange, verified SRM student!');
-  });
+if (btnGoogleLogin) {
+  btnGoogleLogin.addEventListener('click', handleGoogleSignIn);
 }
 
 if (btnProtectionVerifyNow) {
   btnProtectionVerifyNow.addEventListener('click', () => {
     if (srmProtectionModal) srmProtectionModal.style.display = 'none';
-    if (srmAccessGate) srmAccessGate.style.display = 'flex';
-    switchGateStep(gateStepEmail);
-    if (srmEmailInput) srmEmailInput.focus();
+    handleGoogleSignIn();
   });
 }
 
 if (btnProtectionCancel) {
   btnProtectionCancel.addEventListener('click', () => {
     if (srmProtectionModal) srmProtectionModal.style.display = 'none';
-    document.body.style.overflow = 'auto';
+    if (!isSRMVerified() && srmAccessGate && srmAccessGate.style.display === 'flex') {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
   });
 }
 
-function resetSRMVerification() {
+async function resetSRMVerification() {
+  const client = getSupabaseClient();
+  if (client) {
+    try {
+      await client.auth.signOut();
+    } catch (e) {}
+  }
   localStorage.removeItem('isSRMVerified');
+  state.currentSrmEmail = '';
   initSRMVerification();
-  showToast('🔒 Verification reset to student sign-in.');
+  showToast('🔒 Verification reset to Google sign-in.');
 }
 
 if (btnResetSrmDemo) {
@@ -2523,6 +2339,7 @@ if (btnResetSrmDemo) {
 }
 
 window.resetSRMVerification = resetSRMVerification;
+window.handleGoogleSignIn = handleGoogleSignIn;
 
 // ==========================================================================
 // User Logout Confirmation Workflow
@@ -2558,14 +2375,17 @@ async function performLogout() {
     }
   }
 
-  // Clear ONLY the current user's local session/verification state
+  // Clear local session / verification state
   localStorage.removeItem('isSRMVerified');
   state.currentSrmEmail = '';
 
-  // Return the user to the existing SRM verification screen
-  initSRMVerification();
-  switchGateStep(gateStepWelcome);
+  // Return the user to the Google sign-in screen
+  if (srmAccessGate) srmAccessGate.style.display = 'flex';
+  if (navSrmBadge) navSrmBadge.style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  clearGateAuthError();
 
+  renderProfile();
   showToast("✓ You've been logged out.");
 }
 

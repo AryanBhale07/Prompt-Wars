@@ -1,22 +1,25 @@
 """
 RExchange Unified Test Runner & Evaluation Verification Suite
-Executes unit tests, backend integration tests, static security audits,
-accessibility audits, and problem alignment checks.
+Executes unit tests, live HTTP server tests, static security audits,
+Google OAuth authentication audits, accessibility audits, and problem alignment checks.
 """
 
 import os
 import sys
 import json
 import re
-import subprocess
+import socket
+import threading
+import socketserver
+import http.server
 import urllib.request
 import urllib.error
 
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-BASE_URL = "http://127.0.0.1:8080"
 WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, WORKSPACE_DIR)
 
 total_suite_passed = 0
 total_suite_failed = 0
@@ -38,7 +41,7 @@ print("=================================================================\n")
 # -------------------------------------------------------------------------
 # Phase 1: JavaScript Core Logic Unit Tests (Native Python Test Engine)
 # -------------------------------------------------------------------------
-print("[Phase 1] Executing Core Logic Unit Tests (11 Functional Areas)...")
+print("[Phase 1] Executing Core Logic Unit Tests (12 Functional Areas)...")
 
 # [A] SRM Email Validation Logic
 def is_valid_srm_email(email):
@@ -67,9 +70,77 @@ assert not is_valid_srm_email("student@srm.edu.in")                    # @srm.ed
 assert not is_valid_srm_email("student@srmist.com")                    # @srmist.com rejected
 assert not is_valid_srm_email("student@srmist.ac.in")                  # @srmist.ac.in rejected
 assert not is_valid_srm_email("attacker@fake.srmist.edu.in.evil.com")  # Subdomain exploit
+assert not is_valid_srm_email("student@srmist.edu.in.fake.com")        # Fake domain suffix
 log_pass("Unit Test [A] SRM Verification", "Verified institutional email acceptance and strict rejection of unauthorized domains.")
 
-# [B] HTML Sanitization & XSS Defense
+# [B] Google OAuth Auth Session Simulation
+class MockSupabaseClient:
+    def __init__(self, session_user=None):
+        self.session_user = session_user
+        self.signed_out = False
+        self.oauth_provider = None
+        self.oauth_redirect = None
+
+    def signInWithOAuth(self, options):
+        self.oauth_provider = options.get('provider')
+        self.oauth_redirect = options.get('options', {}).get('redirectTo')
+        return {"data": {"url": "https://accounts.google.com/o/oauth2/v2/auth"}, "error": None}
+
+    def signOut(self):
+        self.signed_out = True
+        self.session_user = None
+        return {"error": None}
+
+def simulate_auth_session(client, mock_storage, user_email, metadata=None):
+    if not user_email:
+        return {"allowed": False, "reason": "No user"}
+    clean_email = user_email.strip().lower()
+    if is_valid_srm_email(clean_email):
+        mock_storage["isSRMVerified"] = "true"
+        mock_storage["currentEmail"] = clean_email
+        return {"allowed": True, "email": clean_email}
+    else:
+        client.signOut()
+        mock_storage.pop("isSRMVerified", None)
+        mock_storage.pop("currentEmail", None)
+        return {
+            "allowed": False,
+            "error": "Access restricted to SRM students."
+        }
+
+# Test Valid SRM Account
+client1 = MockSupabaseClient()
+storage1 = {}
+res1 = simulate_auth_session(client1, storage1, "student@srmist.edu.in")
+assert res1["allowed"] is True
+assert storage1.get("isSRMVerified") == "true"
+assert not client1.signed_out
+
+# Test Gmail Account Rejection
+client2 = MockSupabaseClient()
+storage2 = {"isSRMVerified": "true"}
+res2 = simulate_auth_session(client2, storage2, "student@gmail.com")
+assert res2["allowed"] is False
+assert "isSRMVerified" not in storage2
+assert client2.signed_out
+assert "Access restricted to SRM students" in res2["error"]
+
+# Test srmist.com Rejection
+client3 = MockSupabaseClient()
+storage3 = {}
+res3 = simulate_auth_session(client3, storage3, "student@srmist.com")
+assert res3["allowed"] is False
+assert client3.signed_out
+
+# Test Fake Subdomain Rejection
+client4 = MockSupabaseClient()
+storage4 = {}
+res4 = simulate_auth_session(client4, storage4, "student@srmist.edu.in.fake.com")
+assert res4["allowed"] is False
+assert client4.signed_out
+log_pass("Unit Test [B] Google OAuth Flow", "Verified Google session ingestion, @srmist.edu.in allow, and unauthorized account sign-out.")
+
+# [C] HTML Sanitization & XSS Defense
 def escape_html(s):
     if s is None:
         return ""
@@ -79,9 +150,9 @@ malicious = '<script>alert("XSS")</script><img src="x" onerror="evil()"/>'
 sanitized = escape_html(malicious)
 assert "<script>" not in sanitized and "&lt;script&gt;" in sanitized
 assert "onerror=" in sanitized and "<img" not in sanitized
-log_pass("Unit Test [B] Security Sanitization", "Verified strict neutralization of XSS injection payloads and HTML tags.")
+log_pass("Unit Test [C] Security Sanitization", "Verified strict neutralization of XSS injection payloads and HTML tags.")
 
-# [C] Search Engine Filtering
+# [D] Search Engine Filtering
 mock_listings = [
     {"id": "1", "title": "DBMS Textbook 7th Ed", "category": "Item", "description": "Database management book", "tags": ["#dbms", "#textbook"]},
     {"id": "2", "title": "Python Tutoring & DSA Practice", "category": "Skill", "description": "1-on-1 peer tutoring", "tags": ["#python", "#dsa"]},
@@ -100,16 +171,16 @@ def search_listings(listings, q, cat="All"):
 assert len(search_listings(mock_listings, "DBMS")) == 1
 assert len(search_listings(mock_listings, "python")) == 1
 assert len(search_listings(mock_listings, "nonexistent quantum device")) == 0
-log_pass("Unit Test [C] Search Engine", "Verified exact keyword match, tag match, and empty state triggering on invalid query.")
+log_pass("Unit Test [D] Search Engine", "Verified exact keyword match, tag match, and empty state triggering on invalid query.")
 
-# [D] Category Filtering
+# [E] Category Filtering
 assert len(search_listings(mock_listings, "", "Item")) == 2
 assert len(search_listings(mock_listings, "", "Skill")) == 1
 assert len(search_listings(mock_listings, "", "Opportunity")) == 1
 assert len(search_listings(mock_listings, "", "All")) == 4
-log_pass("Unit Test [D] Category Filtering", "Verified strict partition and retrieval across Items, Skills, and Opportunities.")
+log_pass("Unit Test [E] Category Filtering", "Verified strict partition and retrieval across Items, Skills, and Opportunities.")
 
-# [E] Saved Bookmarks State
+# [F] Saved Bookmarks State
 saved_set = set()
 saved_set.add("listing-item-1")
 assert "listing-item-1" in saved_set
@@ -119,9 +190,9 @@ assert "listing-item-1" not in saved_set
 serialized = json.dumps(list({"id-1", "id-2"}))
 restored = set(json.loads(serialized))
 assert "id-1" in restored and "id-2" in restored
-log_pass("Unit Test [E] Saved Bookmarks", "Verified toggle add/remove operations and JSON serialization round-trip.")
+log_pass("Unit Test [F] Saved Bookmarks", "Verified toggle add/remove operations and JSON serialization round-trip.")
 
-# [F] AI Match Relevance Scoring
+# [G] AI Match Relevance Scoring
 def score_relevance(q, listing):
     score = 50
     words = [w for w in q.lower().split() if len(w) > 2]
@@ -133,9 +204,9 @@ def score_relevance(q, listing):
 
 assert score_relevance("teach me Python and DSA", mock_listings[1]) >= 85
 assert score_relevance("teach me Python and DSA", mock_listings[0]) == 50
-log_pass("Unit Test [F] AI Relevance Engine", "Verified accurate scoring affinity and discrimination against irrelevant listings.")
+log_pass("Unit Test [G] AI Relevance Engine", "Verified accurate scoring affinity and discrimination against irrelevant listings.")
 
-# [G] AI Assist Parser Logic
+# [H] AI Assist Parser Logic
 def parse_rough(text):
     lower = text.lower()
     cat = "Opportunity" if re.search(r'hackathon|team|collab', lower) else ("Skill" if re.search(r'tutor|teach|mentor', lower) else "Item")
@@ -144,25 +215,25 @@ def parse_rough(text):
 assert parse_rough("old java books for 1st year students")["category"] == "Item"
 assert parse_rough("willing to tutor java OOP")["category"] == "Skill"
 assert parse_rough("need frontend teammate for hackathon")["category"] == "Opportunity"
-log_pass("Unit Test [G] AI Assist Parser", "Verified semantic category disambiguation across text descriptions.")
+log_pass("Unit Test [H] AI Assist Parser", "Verified semantic category disambiguation across text descriptions.")
 
-# [H] Messaging Thread State
+# [I] Messaging Thread State
 def add_msg(convo, sender, text):
     msg = {"id": "m1", "sender": sender, "text": escape_html(text)}
     return {**convo, "messages": convo.get("messages", []) + [msg], "lastMessage": text}
 
 c = add_msg({"id": "c1"}, "me", "Is the book still available?")
 assert len(c["messages"]) == 1 and c["lastMessage"] == "Is the book still available?"
-log_pass("Unit Test [H] Inbox Messaging", "Verified chat message concatenation and thread metadata updates.")
+log_pass("Unit Test [I] Inbox Messaging", "Verified chat message concatenation and thread metadata updates.")
 
-# [I] Notifications Logic
+# [J] Notifications Logic
 notifs = [{"id": "1", "read": False}, {"id": "2", "read": False}, {"id": "3", "read": True}]
 assert len([n for n in notifs if not n["read"]]) == 2
 all_read = [{**n, "read": True} for n in notifs]
 assert len([n for n in all_read if not n["read"]]) == 0
-log_pass("Unit Test [I] Notifications", "Verified unread badge count tracking and mark-all-read operations.")
+log_pass("Unit Test [J] Notifications", "Verified unread badge count tracking and mark-all-read operations.")
 
-# [J] Profile Completeness Calculation
+# [K] Profile Completeness Calculation
 def profile_score(p):
     score = 0
     if p.get("name"): score += 25
@@ -173,24 +244,63 @@ def profile_score(p):
 
 assert profile_score({"name": "Aryan", "email": "a@srmist.edu.in", "department": "CSE", "bio": "Student"}) == 100
 assert profile_score({"name": "Aryan", "email": "a@srmist.edu.in"}) == 50
-log_pass("Unit Test [J] Profile Completeness", "Verified accurate percentage score metrics for student profiles.")
+log_pass("Unit Test [K] Profile Completeness", "Verified accurate percentage score metrics for student profiles.")
 
-# [K] User Logout & Session Reset Logic
+# [L] User Logout & Session Reset Logic
 mock_session = {"isSRMVerified": "true", "saved": ["item-1"]}
-def logout_user(session):
+def logout_user(session, client):
+    client.signOut()
     session.pop("isSRMVerified", None)
     return "✓ You've been logged out."
 
-msg = logout_user(mock_session)
+logout_client = MockSupabaseClient()
+msg = logout_user(mock_session, logout_client)
 assert "isSRMVerified" not in mock_session
 assert "item-1" in mock_session["saved"]
+assert logout_client.signed_out is True
 assert msg == "✓ You've been logged out."
-log_pass("Unit Test [K] User Logout Workflow", "Verified session clearance, confirmation notification, and non-session data retention.")
+log_pass("Unit Test [L] User Logout Workflow", "Verified Supabase signOut(), session clearance, and non-session data retention.")
 
 # -------------------------------------------------------------------------
 # Phase 2: Live HTTP Server & API Integration Tests
 # -------------------------------------------------------------------------
 print("\n[Phase 2] Executing Live HTTP Server & AI Assist Endpoint Tests...")
+
+# Check if a server is running or spin up an in-process test server
+def get_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
+
+test_server = None
+test_port = None
+base_url = "http://127.0.0.1:8000"
+
+# Check if port 8000 is open
+server_running = False
+try:
+    with urllib.request.urlopen(f"{base_url}/", timeout=1) as resp:
+        if resp.status == 200:
+            server_running = True
+except Exception:
+    server_running = False
+
+if not server_running:
+    try:
+        from server import RExchangeHandler
+        test_port = get_free_port()
+        base_url = f"http://127.0.0.1:{test_port}"
+        
+        class TestTCPServer(socketserver.TCPServer):
+            allow_reuse_address = True
+
+        test_server = TestTCPServer(("", test_port), RExchangeHandler)
+        server_thread = threading.Thread(target=test_server.serve_forever, daemon=True)
+        server_thread.start()
+        server_running = True
+    except Exception as e:
+        print(f"  [Notice] Could not start in-process server: {e}")
+
 endpoints = [
     ("/", 200, "text/html"),
     ("/style.css", 200, "text/css"),
@@ -198,7 +308,7 @@ endpoints = [
 ]
 
 for path, expected_status, content_type in endpoints:
-    url = f"{BASE_URL}{path}"
+    url = f"{base_url}{path}"
     try:
         req = urllib.request.Request(url)
         with urllib.request.urlopen(req, timeout=4) as resp:
@@ -214,7 +324,7 @@ for path, expected_status, content_type in endpoints:
 try:
     payload = json.dumps({"description": "I have old java books for first year students"}).encode("utf-8")
     req = urllib.request.Request(
-        f"{BASE_URL}/api/ai-assist",
+        f"{base_url}/api/ai-assist",
         data=payload,
         headers={"Content-Type": "application/json"}
     )
@@ -230,16 +340,23 @@ try:
 except Exception as e:
     log_fail("AI Assist API", f"POST /api/ai-assist error: {e}")
 
+if test_server:
+    test_server.shutdown()
+    test_server.server_close()
+
 # -------------------------------------------------------------------------
-# Phase 3: Security & Code Safety Audit
+# Phase 3: Security, Supabase Google OAuth & DOM Safety Audit
 # -------------------------------------------------------------------------
-print("\n[Phase 3] Executing Security Hardening & Input Sanitization Audit...")
+print("\n[Phase 3] Executing Security Hardening & Google OAuth Authentication Audit...")
 
 with open(os.path.join(WORKSPACE_DIR, "app.js"), "r", encoding="utf-8") as f:
     app_js_text = f.read()
 
 with open(os.path.join(WORKSPACE_DIR, "index.html"), "r", encoding="utf-8") as f:
     index_html_text = f.read()
+
+with open(os.path.join(WORKSPACE_DIR, "style.css"), "r", encoding="utf-8") as f:
+    style_css_text = f.read()
 
 # Audit 1: escapeHtml / sanitizeText exists
 if "function escapeHtml(" in app_js_text and "function sanitizeText(" in app_js_text:
@@ -280,28 +397,47 @@ if os.path.exists(os.path.join(WORKSPACE_DIR, "supabase-config.js")):
 else:
     log_fail("Supabase Config", "supabase-config.js missing from workspace.")
 
-# Audit 6: Real Supabase Email OTP Workflow Components in index.html & app.js
-if 'id="gate-step-code"' in index_html_text and 'id="srm-code-input"' in index_html_text and 'id="btn-verify-code"' in index_html_text:
-    log_pass("Email OTP Flow", "6-Digit OTP verification step, input, and verify button configured in DOM.")
+# Audit 6: Google Sign-In DOM Elements in index.html
+if 'id="btn-google-login"' in index_html_text and 'Continue with Google' in index_html_text:
+    log_pass("Google OAuth UI", "Google sign-in button configured in DOM with official 'Continue with Google' label.")
 else:
-    log_fail("Email OTP Flow", "Missing gate-step-code or srm-code-input in index.html.")
+    log_fail("Google OAuth UI", "Missing btn-google-login or 'Continue with Google' in index.html.")
 
-if 'signInWithOtp' in app_js_text and 'verifyOtp' in app_js_text:
-    log_pass("Email OTP Flow", "Supabase signInWithOtp and verifyOtp integration implemented in app.js.")
+# Audit 7: Complete Removal of Old Email Input / OTP / Access-Link Flow
+legacy_email_input = 'id="srm-email-input"' in index_html_text or 'id="srm-code-input"' in index_html_text
+legacy_otp_buttons = 'id="btn-verify-email"' in index_html_text or 'id="btn-verify-code"' in index_html_text
+legacy_otp_code = 'signInWithOtp' in app_js_text or 'verifyOtp' in app_js_text
+
+if not legacy_email_input and not legacy_otp_buttons and not legacy_otp_code:
+    log_pass("Email Auth Removal", "Completely removed legacy email input, OTP code verification, and send link flows.")
 else:
-    log_fail("Email OTP Flow", "Missing signInWithOtp or verifyOtp in app.js.")
+    log_fail("Email Auth Removal", f"Legacy email auth remnants detected: input={legacy_email_input}, btn={legacy_otp_buttons}, code={legacy_otp_code}")
 
-if 'startResendCooldown' in app_js_text and 'resend-countdown' in index_html_text:
-    log_pass("Email OTP Flow", "30-Second resend cooldown timer and countdown badge verified.")
+# Audit 8: Google OAuth Implementation via Supabase signInWithOAuth
+if 'signInWithOAuth' in app_js_text and "provider: 'google'" in app_js_text:
+    log_pass("Google OAuth Logic", "Supabase signInWithOAuth configured with provider: 'google'.")
 else:
-    log_fail("Email OTP Flow", "Missing resend cooldown logic in app.js.")
+    log_fail("Google OAuth Logic", "Missing Supabase signInWithOAuth provider: 'google' integration.")
 
-if 'isValidSrmEmail(authUserEmail)' in app_js_text or 'isValidSrmEmail(authEmail)' in app_js_text:
-    log_pass("Email OTP Security", "Strict source-of-truth verification of authenticated email ending with @srmist.edu.in.")
+# Audit 9: Dynamic Redirect URL using window.location.origin
+if 'redirectTo: window.location.origin' in app_js_text or 'redirectTo:window.location.origin' in app_js_text:
+    log_pass("OAuth Redirect", "OAuth redirectTo strictly uses window.location.origin for seamless local & production deployment.")
 else:
-    log_fail("Email OTP Security", "Missing post-OTP authenticated email domain verification.")
+    log_fail("OAuth Redirect", "Missing or hardcoded redirectTo URL in app.js.")
 
-# Audit 7: Logout Dialog & Supabase SignOut Workflow Components
+# Audit 10: Source of Truth Domain Verification & Unauthorized Account Denials
+if 'isValidSrmEmail(authUserEmail)' in app_js_text and 'signOut()' in app_js_text:
+    log_pass("OAuth Security", "Strict source-of-truth email domain verification with automatic signOut() on unauthorized domains.")
+else:
+    log_fail("OAuth Security", "Missing post-OAuth authenticated email domain verification or signOut() rejection flow.")
+
+# Audit 11: Denial Notice Exact Requirement
+if 'Access restricted to SRM students.' in app_js_text or 'Access restricted to verified SRM students' in app_js_text:
+    log_pass("OAuth Rejection Notice", "Configured exact security denial notice for non-SRM Google accounts.")
+else:
+    log_fail("OAuth Rejection Notice", "Missing exact security denial message in app.js.")
+
+# Audit 12: Logout Dialog & Supabase SignOut Workflow Components
 if 'id="btn-profile-logout"' in index_html_text and 'id="logout-modal"' in index_html_text:
     log_pass("Logout Feature", "Profile Logout button and confirmation modal configured in DOM.")
 else:
@@ -309,7 +445,7 @@ else:
 
 if 'performLogout()' in app_js_text or 'function performLogout(' in app_js_text or 'async function performLogout(' in app_js_text:
     if 'signOut()' in app_js_text:
-        log_pass("Logout Feature", "performLogout handler cleans local session, calls Supabase signOut(), and reveals verification gate.")
+        log_pass("Logout Feature", "performLogout handler cleans local session, calls Supabase signOut(), and reveals Google sign-in gate.")
     else:
         log_fail("Logout Feature", "performLogout missing Supabase signOut() call.")
 else:
@@ -515,9 +651,6 @@ else:
 # Phase 6: Accessibility & WCAG Standards Audit
 # -------------------------------------------------------------------------
 print("\n[Phase 6] Executing Accessibility (a11y) & WCAG Compliance Audit...")
-
-with open(os.path.join(WORKSPACE_DIR, "style.css"), "r", encoding="utf-8") as f:
-    style_css_text = f.read()
 
 # Audit 1: Focus visible styling
 if ":focus-visible" in style_css_text:

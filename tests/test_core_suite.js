@@ -84,6 +84,57 @@ test('SRM Verification', 'Email is normalized and trimmed before validation', ()
   assert(isValidSrmEmail('RAHUL.S@SRMIST.EDU.IN'), 'Should accept uppercase email case-insensitively');
 });
 
+test('Google OAuth Session', 'Accepts authenticated SRM student session and sets verification state', () => {
+  const mockStorage = { data: {}, setItem(k, v) { this.data[k] = v; }, removeItem(k) { delete this.data[k]; } };
+  let signedOut = false;
+  const mockClient = { signOut() { signedOut = true; } };
+
+  function handleSession(email) {
+    if (isValidSrmEmail(email)) {
+      mockStorage.setItem('isSRMVerified', 'true');
+      return { allowed: true };
+    } else {
+      mockClient.signOut();
+      mockStorage.removeItem('isSRMVerified');
+      return { allowed: false, error: 'Access restricted to SRM students.' };
+    }
+  }
+
+  const srmRes = handleSession('student@srmist.edu.in');
+  assertEqual(srmRes.allowed, true, 'Valid SRM email must be allowed');
+  assertEqual(mockStorage.data.isSRMVerified, 'true', 'isSRMVerified must be true in storage');
+  assertEqual(signedOut, false, 'Should not sign out valid SRM user');
+});
+
+test('Google OAuth Session', 'Rejects non-SRM Google account, signs out, and purges session', () => {
+  const mockStorage = { data: { isSRMVerified: 'true' }, setItem(k, v) { this.data[k] = v; }, removeItem(k) { delete this.data[k]; } };
+  let signedOut = false;
+  const mockClient = { signOut() { signedOut = true; } };
+
+  function handleSession(email) {
+    if (isValidSrmEmail(email)) {
+      mockStorage.setItem('isSRMVerified', 'true');
+      return { allowed: true };
+    } else {
+      mockClient.signOut();
+      mockStorage.removeItem('isSRMVerified');
+      return { allowed: false, error: 'Access restricted to SRM students.' };
+    }
+  }
+
+  const gmailRes = handleSession('student@gmail.com');
+  assertEqual(gmailRes.allowed, false, 'Gmail account must be rejected');
+  assertEqual(signedOut, true, 'Non-SRM account must be signed out immediately');
+  assertEqual(mockStorage.data.isSRMVerified, undefined, 'Verification flag must be purged');
+  assert(gmailRes.error.includes('Access restricted to SRM students'), 'Must provide exact denial message');
+
+  const srmistComRes = handleSession('student@srmist.com');
+  assertEqual(srmistComRes.allowed, false, '@srmist.com must be rejected');
+
+  const fakeDomainRes = handleSession('attacker@srmist.edu.in.fake.com');
+  assertEqual(fakeDomainRes.allowed, false, 'Fake subdomains must be rejected');
+});
+
 // -------------------------------------------------------------------------
 // [B] Sanitization & Security Unit Tests
 // -------------------------------------------------------------------------

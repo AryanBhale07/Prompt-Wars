@@ -38,10 +38,10 @@
         <span class="badge-mono-text">EXCLUSIVE CAMPUS ACCESS</span>
       </div>
 
-      <!-- Step 1: Welcome Screen -->
+      <!-- Google Sign-In Gate Block -->
       <div id="gate-step-welcome" class="gate-step-block">
         <h1 id="gate-main-heading" class="gate-title">Welcome to <span class="text-gradient-green">RExchange.</span></h1>
-        <p class="gate-subtitle">Your private campus exchange for SRM students.</p>
+        <p class="gate-subtitle">Sign in with your SRM Google account to continue.</p>
         <p class="gate-description">
           RExchange is a trusted campus network where verified SRM students exchange textbooks, share technical skills, and collaborate on student projects and hackathons.
         </p>
@@ -70,115 +70,23 @@
           </div>
         </div>
 
-        <button type="button" id="btn-continue-srm" class="btn-gate-primary">
-          Sign in as SRM Student →
+        <!-- Auth Error Banner (e.g. non-SRM account rejection) -->
+        <div id="gate-auth-error" class="gate-error-banner" style="display: none;" role="alert"></div>
+
+        <!-- Google OAuth Primary Button -->
+        <button type="button" id="btn-google-login" class="btn-google-signin">
+          <svg class="google-icon-svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Continue with Google</span>
         </button>
-      </div>
 
-      <!-- Step 2: Institutional Email Verification Form -->
-      <div id="gate-step-email" class="gate-step-block" style="display: none;">
-        <button type="button" id="btn-email-back" class="btn-gate-back">← Back</button>
-        
-        <h2 class="gate-step-title">Verify your SRM identity</h2>
-        <p class="gate-step-subtitle">Use your official SRM student email to access RExchange.</p>
-
-        <form id="srm-email-form" class="gate-form" novalidate>
-          <div class="gate-input-group">
-            <label for="srm-email-input" class="gate-label">Institutional Email Address</label>
-            <div class="gate-input-wrapper">
-              <span class="gate-input-icon">✉️</span>
-              <input 
-                type="email" 
-                id="srm-email-input" 
-                class="gate-input" 
-                placeholder="yourname@srmist.edu.in" 
-                autocomplete="email"
-                required
-              >
-            </div>
-            <span id="srm-email-error" class="gate-error-text" style="display: none;">Please use a valid @srmist.edu.in student email.</span>
-            <span class="gate-hint-text">Must be a valid SRM student email address ending with @srmist.edu.in</span>
-          </div>
-
-          <button type="submit" id="btn-verify-email" class="btn-gate-primary">
-            <span id="btn-verify-email-text">Send Verification Code</span>
-          </button>
-        </form>
-      </div>
-
-      <!-- Step 3: Real Supabase Email OTP Verification -->
-      <div id="gate-step-code" class="gate-step-block" style="display: none;">
-        <button type="button" id="btn-code-back" class="btn-gate-back">← Change Email</button>
-        
-        <div class="gate-success-icon-wrap" style="width:48px; height:48px; font-size:1.3rem; margin:0 auto 12px;">
-          <span class="success-check-icon">✉️</span>
-        </div>
-
-        <h2 class="gate-step-title">Verification code sent</h2>
-        <p class="gate-step-subtitle">Enter the 6-digit code sent to your SRM email.</p>
-
-        <div class="gate-detected-email-badge" style="display:inline-flex; align-items:center; gap:6px; background:rgba(0,255,133,0.08); border:1px solid rgba(0,255,133,0.25); border-radius:var(--radius-full); padding:4px 14px; font-size:0.84rem; font-weight:600; color:var(--accent-green); margin-bottom:14px;">
-          <span>✓ SRM email detected:</span> <strong id="srm-target-email">student@srmist.edu.in</strong>
-        </div>
-
-        <form id="srm-code-form" class="gate-form" novalidate>
-          <div class="gate-input-group">
-            <label for="srm-code-input" class="gate-label">6-Digit Verification Code</label>
-            <div class="gate-input-wrapper">
-              <span class="gate-input-icon">🔢</span>
-              <input 
-                type="text" 
-                id="srm-code-input" 
-                class="gate-input" 
-                placeholder="123456" 
-                maxlength="6"
-                inputmode="numeric"
-                pattern="[0-9]{6}"
-                autocomplete="one-time-code"
-                required
-                style="letter-spacing: 4px; font-weight: 700; font-size: 1.15rem; text-align: center;"
-              >
-            </div>
-            <span id="srm-code-error" class="gate-error-text" style="display: none;">Invalid or expired verification code.</span>
-            <span class="gate-hint-text">Check your SRM inbox or spam folder for the one-time code.</span>
-          </div>
-
-          <button type="submit" id="btn-verify-code" class="btn-gate-primary">
-            <span id="btn-verify-code-text">Verify Code</span>
-          </button>
-
-          <div style="margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <button type="button" id="btn-resend-code" class="btn-gate-resend" style="background:transparent; border:none; color:var(--text-secondary); font-size:0.84rem; cursor:pointer; text-decoration:underline;">
-              Resend Code
-            </button>
-            <span id="resend-countdown" style="font-size:0.82rem; color:var(--text-muted); display:none;">(30s)</span>
-          </div>
-        </form>
-      </div>
-
-      <!-- Step 4: Verification Success Screen -->
-      <div id="gate-step-success" class="gate-step-block" style="display: none;">
-        <div class="gate-success-icon-wrap">
-          <span class="success-check-icon">✓</span>
-        </div>
-        
-        <h2 class="gate-step-title">✓ SRM Student Verified</h2>
-        <p class="gate-step-subtitle">Verified with institutional email</p>
-
-        <div class="gate-verified-card">
-          <div class="verified-card-top">
-            <div class="verified-avatar-badge">SRM</div>
-            <div class="verified-card-info">
-              <span class="verified-status-tag">✓ VERIFIED SRM STUDENT</span>
-              <span class="verified-campus-name" id="srm-target-email">student@srmist.edu.in</span>
-            </div>
-          </div>
-          <p class="verified-card-body">You now have full access to create listings, message verified classmates, save study materials, and access AI Match.</p>
-        </div>
-
-        <button type="button" id="btn-enter-rexchange" class="btn-gate-primary">
-          Enter RExchange →
-        </button>
+        <p class="gate-restriction-text">
+          🔒 Access is restricted to <span class="badge-srm-domain">@srmist.edu.in</span> accounts.
+        </p>
       </div>
 
     </div>
@@ -1637,7 +1545,7 @@
 
       <div class="profile-edit-actions" style="justify-content: center; gap: 12px;">
         <button type="button" id="btn-protection-cancel" class="btn-gate-secondary">Cancel</button>
-        <button type="button" id="btn-protection-verify-now" class="btn-gate-primary" style="margin-top: 0;">Verify Now →</button>
+        <button type="button" id="btn-protection-verify-now" class="btn-gate-primary" style="margin-top: 0;">Sign in with Google →</button>
       </div>
     </div>
   </div>
