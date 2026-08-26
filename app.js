@@ -2673,11 +2673,10 @@ function initCampusMap() {
         zoomControl: true
       });
 
-      // CartoDB Dark Matter Basemap
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
+      // OpenStreetMap Standard Free No-Key Basemap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+        maxZoom: 19
       }).addTo(campusMap);
 
       mapMarkersLayer = L.layerGroup().addTo(campusMap);

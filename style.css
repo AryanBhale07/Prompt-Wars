@@ -5321,7 +5321,7 @@ html, body {
 }
 
 .leaflet-tile {
-  filter: brightness(0.85) contrast(1.15) saturate(0.85);
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(90%);
 }
 
 .leaflet-control-zoom {
