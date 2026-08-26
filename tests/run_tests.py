@@ -568,10 +568,10 @@ else:
     log_fail("Student Credibility", "Missing secure target/rel attributes on external profile links.")
 
 # Credibility Test 4: Badge Nomenclature & Trust Integrity
-if '✓ Institutional email verified' in index_html_text and 'Profile linked' in index_html_text:
-    log_pass("Student Credibility", "Institutional SRM verification badge strictly distinguished from linked external profiles.")
+if ('✓ Google account verified' in index_html_text or '✓ Verified' in index_html_text) and 'Profile linked' in index_html_text:
+    log_pass("Student Credibility", "Google account verification badge strictly distinguished from linked external profiles.")
 else:
-    log_fail("Student Credibility", "Incorrect badge wording found; institutional verification blurred with external links.")
+    log_fail("Student Credibility", "Incorrect badge wording found; verification blurred with external links.")
 
 # Credibility Test 5: Python simulation of JavaScript URL validator
 def py_validate_github(val):

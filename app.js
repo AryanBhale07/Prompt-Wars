@@ -2085,18 +2085,13 @@ activityFilterButtons.forEach((btn) => {
 });
 
 // ==========================================================================
-// SRM Student Sign-In & Supabase Google OAuth (@srmist.edu.in)
+// Google OAuth Sign-In (Universal Campus Access)
 // --------------------------------------------------------------------------
-// SECURITY ARCHITECTURE:
+// AUTHENTICATION ARCHITECTURE:
 // 1. Google OAuth initiated via Supabase (provider: 'google', redirectTo: window.location.origin).
-// 2. Authenticated user's actual email is retrieved from Supabase session (getSession / onAuthStateChange).
-//    Frontend never trusts user-typed email inputs.
-// 3. Strict Domain Validation: User is only granted access if email ends with @srmist.edu.in.
-// 4. Unauthorized domain rejection: If non-SRM email (@gmail.com, @srmist.com, fake subdomains):
-//    - Immediately call Supabase signOut()
-//    - Clear local session & state
-//    - Return to login screen
-//    - Display "Access restricted to verified SRM students. Please use your SRM Google account."
+// 2. Authenticated user's actual email & profile metadata are retrieved from Supabase session (getSession / onAuthStateChange).
+// 3. Any authenticated Google account is granted access.
+// 4. Logout cleanly calls Supabase signOut() and returns to the Google Sign-In gate.
 // 5. Zero exposed secrets or client credentials in frontend code.
 // ==========================================================================
 
