@@ -2184,6 +2184,7 @@ async function handleAuthSession(session) {
 
   if (srmAccessGate) srmAccessGate.style.display = 'none';
   if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
+  if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'none';
   clearGateAuthError();
   document.body.style.overflow = 'auto';
   renderProfile();
@@ -2193,19 +2194,27 @@ async function handleAuthSession(session) {
 async function initSRMVerification() {
   const client = getSupabaseClient();
 
+  // Initial sync check based on active session storage
+  const initialVerified = isSRMVerified();
+  if (navSrmBadge) navSrmBadge.style.display = initialVerified ? 'inline-flex' : 'none';
+  if (btnResetSrmDemo) btnResetSrmDemo.style.display = initialVerified ? 'none' : 'inline-block';
+  if (srmAccessGate) srmAccessGate.style.display = initialVerified ? 'none' : 'flex';
+  if (initialVerified) document.body.style.overflow = 'auto';
+
   if (client) {
     // Register real-time auth state listener once
     if (!window._supabaseAuthListenerAttached) {
       window._supabaseAuthListenerAttached = true;
       try {
         client.auth.onAuthStateChange(async (event, session) => {
-          if (event === 'SIGNED_IN' && session && session.user) {
+          if (session && session.user) {
             await handleAuthSession(session);
-          } else if (event === 'SIGNED_OUT') {
+          } else if (event === 'SIGNED_OUT' || !session) {
             localStorage.removeItem('isSRMVerified');
             state.currentSrmEmail = '';
             if (srmAccessGate) srmAccessGate.style.display = 'flex';
             if (navSrmBadge) navSrmBadge.style.display = 'none';
+            if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
             document.body.style.overflow = 'hidden';
             renderProfile();
           }
@@ -2226,6 +2235,7 @@ async function initSRMVerification() {
         state.currentSrmEmail = '';
         if (srmAccessGate) srmAccessGate.style.display = 'flex';
         if (navSrmBadge) navSrmBadge.style.display = 'none';
+        if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
         document.body.style.overflow = 'hidden';
         renderProfile();
         return;
@@ -2240,10 +2250,12 @@ async function initSRMVerification() {
   if (verified) {
     if (srmAccessGate) srmAccessGate.style.display = 'none';
     if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
+    if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'none';
     document.body.style.overflow = 'auto';
   } else {
     if (srmAccessGate) srmAccessGate.style.display = 'flex';
     if (navSrmBadge) navSrmBadge.style.display = 'none';
+    if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
     document.body.style.overflow = 'hidden';
   }
 
@@ -2293,7 +2305,11 @@ async function resetSRMVerification() {
   }
   localStorage.removeItem('isSRMVerified');
   state.currentSrmEmail = '';
-  initSRMVerification();
+  if (srmAccessGate) srmAccessGate.style.display = 'flex';
+  if (navSrmBadge) navSrmBadge.style.display = 'none';
+  if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
+  document.body.style.overflow = 'hidden';
+  renderProfile();
   showToast('🔒 Verification reset to Google sign-in.');
 }
 
@@ -2345,6 +2361,7 @@ async function performLogout() {
   // Return the user to the Google sign-in screen
   if (srmAccessGate) srmAccessGate.style.display = 'flex';
   if (navSrmBadge) navSrmBadge.style.display = 'none';
+  if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
   document.body.style.overflow = 'hidden';
   clearGateAuthError();
 
