@@ -736,6 +736,8 @@ function saveConversationsToStorage() {
 // Application State
 const state = {
   listings: [...INITIAL_LISTINGS],
+  isLoadingListings: false,
+  currentUserId: null,
   conversations: loadStoredConversations(),
   savedIds: loadStoredSavedIds(),
   profile: loadStoredProfile(),
@@ -2168,6 +2170,7 @@ async function handleAuthSession(session) {
   // Universal Google Authentication: Any authenticated Google account is granted access
   localStorage.setItem('isSRMVerified', 'true');
   state.currentSrmEmail = authUserEmail;
+  state.currentUserId = session.user.id;
   state.profile.email = authUserEmail;
 
   if (session.user.user_metadata) {
@@ -2182,12 +2185,35 @@ async function handleAuthSession(session) {
   }
   saveStoredProfile();
 
+  // Ensure public.profiles record is synced with the authenticated user
+  const client = getSupabaseClient();
+  if (client) {
+    try {
+      await client.from('profiles').upsert({
+        id: session.user.id,
+        email: authUserEmail,
+        full_name: state.profile.name || 'Campus Student',
+        avatar: state.profile.avatar || 'CS',
+        department: state.profile.department || 'Computer Science & Engineering',
+        year: state.profile.year || '3rd Year',
+        bio: state.profile.bio || '',
+        skills: state.profile.skills || [],
+        github_url: state.profile.github || '',
+        linkedin_url: state.profile.linkedin || '',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch (profileSyncErr) {
+      console.warn('[Profile Sync Warning]', profileSyncErr);
+    }
+  }
+
   if (srmAccessGate) srmAccessGate.style.display = 'none';
   if (navSrmBadge) navSrmBadge.style.display = 'inline-flex';
   if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'none';
   clearGateAuthError();
   document.body.style.overflow = 'auto';
   renderProfile();
+  loadListingsFromSupabase();
   return true;
 }
 
@@ -2208,10 +2234,12 @@ async function initSRMVerification() {
       try {
         client.auth.onAuthStateChange(async (event, session) => {
           if (session && session.user) {
+            state.currentUserId = session.user.id;
             await handleAuthSession(session);
           } else if (event === 'SIGNED_OUT' || !session) {
             localStorage.removeItem('isSRMVerified');
             state.currentSrmEmail = '';
+            state.currentUserId = null;
             if (srmAccessGate) srmAccessGate.style.display = 'flex';
             if (navSrmBadge) navSrmBadge.style.display = 'none';
             if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
@@ -2227,12 +2255,14 @@ async function initSRMVerification() {
     try {
       const { data, error } = await client.auth.getSession();
       if (data && data.session && data.session.user) {
+        state.currentUserId = data.session.user.id;
         const isAllowed = await handleAuthSession(data.session);
         if (isAllowed) return;
       } else {
         // No active Supabase session -> show login screen
         localStorage.removeItem('isSRMVerified');
         state.currentSrmEmail = '';
+        state.currentUserId = null;
         if (srmAccessGate) srmAccessGate.style.display = 'flex';
         if (navSrmBadge) navSrmBadge.style.display = 'none';
         if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
@@ -2305,6 +2335,7 @@ async function resetSRMVerification() {
   }
   localStorage.removeItem('isSRMVerified');
   state.currentSrmEmail = '';
+  state.currentUserId = null;
   if (srmAccessGate) srmAccessGate.style.display = 'flex';
   if (navSrmBadge) navSrmBadge.style.display = 'none';
   if (btnResetSrmDemo) btnResetSrmDemo.style.display = 'inline-block';
@@ -2319,6 +2350,137 @@ if (btnResetSrmDemo) {
 
 window.resetSRMVerification = resetSRMVerification;
 window.handleGoogleSignIn = handleGoogleSignIn;
+
+// ==========================================================================
+// Supabase Data Layer: Listings Normalization & CRUD
+// ==========================================================================
+
+function mapDatabaseListingToState(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    userId: row.user_id,
+    title: row.title || 'Untitled Listing',
+    category: row.category || 'Item',
+    description: row.description || '',
+    studentName: row.student_name || 'Campus Student',
+    department: row.department || 'Computer Science & Engineering',
+    year: row.year || '3rd Year',
+    avatar: row.avatar || 'CS',
+    contact: row.contact || '',
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    availability: row.availability || 'Available',
+    isFree: Boolean(row.is_free),
+    icon: row.icon || (row.category === 'Item' ? '📦' : row.category === 'Skill' ? '💡' : '🚀'),
+    matchScore: 94,
+    matchReason: 'Active campus listing from the SRM network.',
+    location: {
+      name: row.location_name || 'Central Library',
+      area: row.location_area || 'Campus Exchange Spot',
+      lat: parseFloat(row.location_lat) || 12.8236,
+      lng: parseFloat(row.location_lng) || 80.0438
+    },
+    createdAt: new Date(row.created_at || Date.now())
+  };
+}
+
+async function loadListingsFromSupabase() {
+  const client = getSupabaseClient();
+  if (!client) return;
+
+  state.isLoadingListings = true;
+  try {
+    const { data, error } = await client
+      .from('listings')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('[Supabase loadListings Error]', error);
+      return;
+    }
+
+    if (Array.isArray(data) && data.length > 0) {
+      state.listings = data.map(mapDatabaseListingToState);
+      renderHomeFeatured();
+      renderSmartMatches();
+      renderListings();
+      renderProfile();
+      if (campusMap) {
+        renderMapMarkers();
+      }
+    }
+  } catch (err) {
+    console.warn('[Supabase loadListings Exception]', err);
+  } finally {
+    state.isLoadingListings = false;
+  }
+}
+
+async function updateListingInSupabase(listingId, updates) {
+  const client = getSupabaseClient();
+  if (!client) return { success: false, error: 'Database client unavailable' };
+  try {
+    const dbUpdates = {};
+    if (updates.title !== undefined) dbUpdates.title = updates.title;
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.contact !== undefined) dbUpdates.contact = updates.contact;
+    if (updates.availability !== undefined) dbUpdates.availability = updates.availability;
+    if (updates.isFree !== undefined) dbUpdates.is_free = updates.isFree;
+    if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+    if (updates.location) {
+      if (updates.location.name) dbUpdates.location_name = updates.location.name;
+      if (updates.location.area) dbUpdates.location_area = updates.location.area;
+      if (updates.location.lat) dbUpdates.location_lat = updates.location.lat;
+      if (updates.location.lng) dbUpdates.location_lng = updates.location.lng;
+    }
+    dbUpdates.updated_at = new Date().toISOString();
+
+    const { data, error } = await client
+      .from('listings')
+      .update(dbUpdates)
+      .eq('id', listingId)
+      .select();
+
+    if (error) {
+      showToast(`❌ Failed to update: ${error.message}`);
+      return { success: false, error };
+    }
+
+    await loadListingsFromSupabase();
+    showToast('✓ Listing updated');
+    return { success: true, data };
+  } catch (err) {
+    showToast('❌ Failed to update listing.');
+    return { success: false, error: err };
+  }
+}
+
+async function deleteListingFromSupabase(listingId) {
+  const client = getSupabaseClient();
+  if (!client) return { success: false, error: 'Database client unavailable' };
+  try {
+    const { error } = await client
+      .from('listings')
+      .delete()
+      .eq('id', listingId);
+
+    if (error) {
+      showToast(`❌ Failed to remove listing: ${error.message}`);
+      return { success: false, error };
+    }
+
+    state.listings = state.listings.filter((l) => l.id !== listingId);
+    renderListings();
+    renderProfile();
+    showToast('✓ Listing removed');
+    return { success: true };
+  } catch (err) {
+    showToast('❌ Failed to remove listing.');
+    return { success: false, error: err };
+  }
+}
 
 // ==========================================================================
 // User Logout Confirmation Workflow
@@ -2357,6 +2519,7 @@ async function performLogout() {
   // Clear local session / verification state
   localStorage.removeItem('isSRMVerified');
   state.currentSrmEmail = '';
+  state.currentUserId = null;
 
   // Return the user to the Google sign-in screen
   if (srmAccessGate) srmAccessGate.style.display = 'flex';
@@ -2572,6 +2735,19 @@ function createListingCardHTML(listing) {
 
 function renderListings() {
   const query = state.searchQuery.trim().toLowerCase();
+
+  if (state.isLoadingListings && state.listings.length === 0) {
+    if (emptyState) emptyState.style.display = 'none';
+    if (listingsFeed) {
+      listingsFeed.innerHTML = `
+        <div class="listings-loading-indicator" style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 0.92rem; font-family: var(--font-mono);">
+          <span style="display: inline-block; animation: pulse 1.2s infinite ease-in-out; font-size: 1.4rem; margin-bottom: 8px;">⚡</span>
+          <div>Fetching live campus listings from Supabase...</div>
+        </div>
+      `;
+    }
+    return;
+  }
 
   let filtered = state.listings.filter((listing) => {
     const matchesCategory = state.activeFilter === 'All' || listing.category === state.activeFilter;
@@ -3655,12 +3831,16 @@ if (btnMatchDetailsConnect) {
 // ==========================================================================
 
 function getMyListings() {
+  const currentUserId = state.currentUserId;
   const pName = (state.profile.name || '').toLowerCase();
   const pAvatar = (state.profile.avatar || '').toUpperCase();
   return state.listings.filter((l) => {
+    if (currentUserId && l.userId) {
+      return l.userId === currentUserId;
+    }
     const lName = (l.studentName || '').toLowerCase();
     const lAvatar = (l.avatar || '').toUpperCase();
-    return lName === pName || lName.includes('you') || lAvatar === pAvatar || l.id.startsWith('my-listing-');
+    return lName === pName || lName.includes('you') || lAvatar === pAvatar || (l.id && String(l.id).startsWith('my-listing-'));
   });
 }
 
@@ -5055,8 +5235,138 @@ form.addEventListener('submit', (e) => {
     };
   }
 
+  const isFreeFlag = /\bfree\b/i.test(description + ' ' + title);
+
+  // =========================================================================
+  // AUTHORITATIVE SUPABASE PATH
+  // The listing is NOT added to state.listings until PostgreSQL confirms the
+  // INSERT. A failed INSERT shows an error inline with no ghost listing left.
+  // =========================================================================
+  const _supClient = getSupabaseClient();
+  if (_supClient && state.currentUserId) {
+    const submitBtn = document.getElementById('submit-btn');
+    const originalBtnText = submitBtn ? submitBtn.textContent : 'Post Listing';
+    if (submitBtn) {
+      submitBtn.textContent = '\u23f3 Saving\u2026';
+      submitBtn.disabled = true;
+    }
+
+    const dbPayload = {
+      user_id: state.currentUserId,
+      title,
+      category,
+      description,
+      student_name: state.profile.name || 'Campus Student',
+      department: state.profile.department || 'Computer Science & Engineering',
+      year: state.profile.year || '3rd Year',
+      avatar: state.profile.avatar || 'CS',
+      contact,
+      tags: listingTags,
+      availability: 'Available',
+      is_free: isFreeFlag,
+      icon: category === 'Item' ? '\ud83d\udce6' : category === 'Skill' ? '\ud83d\udca1' : '\ud83d\ude80',
+      location_name: selectedLocation ? selectedLocation.name : null,
+      location_area: selectedLocation ? selectedLocation.area : null,
+      location_lat: selectedLocation ? selectedLocation.lat : null,
+      location_lng: selectedLocation ? selectedLocation.lng : null
+    };
+
+    // Upsert profile FK row first, then insert the listing
+    _supClient.from('profiles').upsert({
+      id: state.currentUserId,
+      email: state.currentSrmEmail || '',
+      full_name: state.profile.name || 'Campus Student',
+      avatar: state.profile.avatar || 'CS',
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' }).then(() => {
+      return _supClient.from('listings').insert([dbPayload]).select().single();
+    }).then(({ data: insertedRow, error: insertError }) => {
+      if (submitBtn) {
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      }
+
+      if (insertError) {
+        // DB rejected the INSERT — leave state.listings completely unchanged
+        console.error('[Supabase Insert Listing Error]', insertError);
+        errorMessage.textContent = 'Failed to publish: ' + insertError.message;
+        errorMessage.style.display = 'block';
+        showToast('\u274c Could not save listing: ' + insertError.message);
+        return;
+      }
+
+      if (!insertedRow) {
+        errorMessage.textContent = 'Listing could not be confirmed by the database. Please try again.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      // DB confirmed — add the real DB row (with real UUID) to state
+      const confirmedListing = mapDatabaseListingToState(insertedRow);
+      state.listings.unshift(confirmedListing);
+      state.postPendingTags = null;
+
+      if (state.activeFilter !== 'All' && state.activeFilter !== category) {
+        setActiveFilter('All');
+      } else {
+        renderListings();
+      }
+
+      createNotification({
+        type: 'listings',
+        icon: '\ud83c\udf89',
+        title: 'Listing Published',
+        desc: 'Your listing "' + title + '" is now live on SRM campus exchange!',
+        targetId: confirmedListing.id,
+        actionType: 'open-listing'
+      });
+
+      renderProfile();
+      hideAiSuggestions();
+
+      const successState = document.getElementById('post-success-state');
+      if (successState) {
+        form.style.display = 'none';
+        if (aiSuggestionBox) aiSuggestionBox.style.display = 'none';
+        successState.style.display = 'flex';
+      }
+
+      setTimeout(() => {
+        if (successState) successState.style.display = 'none';
+        form.style.display = 'block';
+        form.reset();
+        closePostModal();
+        showToast('\u2713 Listing published');
+        const exploreSection = document.getElementById('explore');
+        if (exploreSection) {
+          exploreSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 1200);
+
+    }).catch((err) => {
+      // Network exception — restore button, show error, no state mutation
+      if (submitBtn) {
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      }
+      console.error('[Supabase Insert Listing Exception]', err);
+      errorMessage.textContent = 'A network error occurred. Please check your connection and try again.';
+      errorMessage.style.display = 'block';
+      showToast('\u274c Failed to publish listing. Please try again.');
+    });
+
+    return; // async Supabase path handles everything above
+  }
+
+  // =========================================================================
+  // OFFLINE / TEST FALLBACK PATH
+  // Used when getSupabaseClient() is null (test environment, no config).
+  // Unauthenticated users never reach this point (requireSRMVerification
+  // gates them above) but if somehow they do, no user_id means Supabase
+  // path is skipped and we just add to local state safely.
+  // =========================================================================
   const newListing = {
-    id: `my-listing-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: 'my-listing-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
     title,
     category,
     description,
@@ -5067,8 +5377,8 @@ form.addEventListener('submit', (e) => {
     contact,
     tags: listingTags,
     availability: 'Available',
-    isFree: /\bfree\b/i.test(description + ' ' + title),
-    icon: category === 'Item' ? '📦' : category === 'Skill' ? '💡' : '🚀',
+    isFree: isFreeFlag,
+    icon: category === 'Item' ? '\ud83d\udce6' : category === 'Skill' ? '\ud83d\udca1' : '\ud83d\ude80',
     matchScore: 96,
     matchReason: 'Your newly created listing on the SRM network.',
     location: selectedLocation,
@@ -5086,9 +5396,9 @@ form.addEventListener('submit', (e) => {
 
   createNotification({
     type: 'listings',
-    icon: '🎉',
+    icon: '\ud83c\udf89',
     title: 'Listing Published',
-    desc: `Your listing "${title}" is now live on SRM campus exchange!`,
+    desc: 'Your listing "' + title + '" is now live on SRM campus exchange!',
     targetId: newListing.id,
     actionType: 'open-listing'
   });
@@ -5108,8 +5418,7 @@ form.addEventListener('submit', (e) => {
     form.style.display = 'block';
     form.reset();
     closePostModal();
-    showToast('✓ Listing published');
-
+    showToast('\u2713 Listing published');
     const exploreSection = document.getElementById('explore');
     if (exploreSection) {
       exploreSection.scrollIntoView({ behavior: 'smooth' });
@@ -5373,6 +5682,10 @@ window.getStudentInfo = getStudentInfo;
 window.renderProfile = renderProfile;
 window.setupStudentHoverCards = setupStudentHoverCards;
 window.state = state;
+window.mapDatabaseListingToState = mapDatabaseListingToState;
+window.loadListingsFromSupabase = loadListingsFromSupabase;
+window.updateListingInSupabase = updateListingInSupabase;
+window.deleteListingFromSupabase = deleteListingFromSupabase;
 
 
 
